@@ -4,10 +4,10 @@ const todoList = document.querySelector<HTMLUListElement>('#todo_list');
 const doneList = document.querySelector<HTMLUListElement>('#done_list');
 
 if (!input || !form || !todoList || !doneList) {
-    throw new Error("Required elements not found in the document.");
+    throw new Error("Not found");
 }
 
-// 해야 할 일에 item 생성
+// 할 일에 item 생성
 const createItem = (text: string): HTMLLIElement => {
     const item = document.createElement('li');  
     item.textContent = text;
