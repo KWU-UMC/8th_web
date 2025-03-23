@@ -1,0 +1,1 @@
+https://velog.io/@gpdnjs8/UMC-TypeScript%EC%9D%98-%EA%B8%B0%EB%B3%B8 
