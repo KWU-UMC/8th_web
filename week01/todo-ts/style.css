@@ -1,0 +1,98 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+body{
+    font-family: 'Roboto',sans-serif;
+    display: flex;
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬  */
+    height: 100vh; /* vh 브라우저 창 높이 기준 100vh 창의 전체 높이이*/
+    background-color: #f1f1f1;
+}
+.todo-container{
+    background-color: white;
+    padding: 20px;
+    border-radius: 13px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 350px;
+    text-align: center;
+}
+.todo-container__header{
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+.todo-container__form{
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px; 
+}
+.todo-container__input{
+    flex: 1; /* flex-grow 남은 공간을 비율로 나누어 요소의 크기 조정 flex:1 남은 공간을 모두 차지지 */
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+.todo-container__button{
+    background-color: rgb(10, 162, 10);
+    border: none;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer; /*마우스를 가져다 되면 눌리는 듯한 표시 뜸*/
+    transition: background-color 0.3s ease;
+}
+.todo-container__button:hover{
+    background-color: green;
+}
+.render-container{
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+.render-container__title{
+    font-size: 18px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+}
+.render-container__section{
+    width: 100%;
+    text-align: left;
+}
+.render-container__list{
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+}
+.render-container__item{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    margin-bottom: 6px;
+
+}
+.render-container__item-text{
+    flex: 1;
+}
+.render-container__item-button{
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 12px;
+    transition: background-color 0.3s easse; 
+
+}
+.render-container__item-button:hover{
+    background-color: #c82333;
+}
