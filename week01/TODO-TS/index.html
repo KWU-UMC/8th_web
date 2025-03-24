@@ -1,0 +1,64 @@
+<!--"!" 한 번 누르면 기본 틀이 자동적으로 생성됨 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--cs파일 업로드 하는 방식-->
+    <!--현재 html과 같은 선상에 있기 때문에 ./ 로 시작함-->
+    <link rel="stylesheet" href="./style.css" />
+    <!--js 파일 업로드 하는 방식-->
+    <!--tscofing.json 보면 script.js 가 빌드를 하면 dist라는 폴더 안에 
+    script.js 이 생기고 이거를 엮어주는게 js 파일 업로드임-->
+    <!-- 보통 body 끝나고(모든 코드가 끝나고) 해당 업로드를 하는게 보편적
+     (다 업로드가 된 후에 js가 동작하도록 하는 것이 일반적이므로)
+     다만 위에 적고 싶으면 지금 코드와 같이 defer를 붙여야하는거임-->
+    <script type="module" src="./dist/script.js" defer></script>
+    <title>UMC-TODO</title>
+</head>
+<body>
+    <!--class의 역할 : CSS 적용하거나 js에서 요소를 선택하기 위해 사용되는 속성-->
+    <!--나중에 css로 구현을 하게 된다면 해당 요소의 이름을 가져와서 
+    해당 부분을 꾸밀 수 있게 되는거임임-->
+    <div class="todo-container">
+        <!--나눈 구역 맨 처음에 먼저 header가 필요했음-->
+        <h1 class="todo-container__header">YOUNG TODO</h1>
+        <!--js에서 해당 요소를 선택하고 조작하기 위해서는 id가 필요-->
+        <!--js 요소는 언제 넣어야 하는 것인가?
+        사용자가 입력 처리할 때(이벤트 핸들링)
+        값을 가져오거나, 버튼 크릭 시, 동작을 추가할 때 js가 필요-->
+        <!--id와 class의 차이점은 무엇일까?
+        id는 html에서 고유해야함 -> 특정 하나의 요소를 선택하기 위해 사용함
+        class는 여러 개의 요소에서 반복 사용 ㄱ능 -> 여러 요소에 공통 스타일 또는 기능을 적용할 때 가능능-->
+        <form id="todo-form" class="todo-container__form">
+            <!--input 받기(type의 기본 값이 text 이기 때문에 굳이 적을 필요는 없음)
+            placeholder는 입력 받는 칸에 띄울 메시지
+            required는 꼭 값을 받아야한다는 의미로 추가-->
+            <input type="text" id="form-input" class="todo-container__input"
+            placeholder="할 일 입력"
+            required
+            />
+            <!--button 을 눌렀을 때 어떤 처리를 하고 싶다면 
+            반드시 type을 submit으로 지정해야 함-->
+            <button type="submit" class="todo-container__button">할 일 추가</button>
+        </form>
+
+        <!--render container-->
+        <div class ="render-container">
+        <!--할일 container-->
+        <div class="render-container__section">
+            <h2 class="render-container__title">할 일</h2>
+            <!--순서가 없는 ul 로 list를 만들 예정 -->
+            <!--이 친구는 완료하는가 안하는가에 따라 처리가 달라지기 때문에 id가 있어야함-->
+            <ul id="todo-list" class="render-container__list">
+                <!--js를 통해 안에 들어갈 내용들이 들어갈 예정임-->
+            </ul>
+        </div>
+        <div class="render-container__section">
+            <h2 class="render-container__title">완료</h2>
+            <ul id="done-list" class="render-container__list"></ul>
+        </div>
+    </div>
+    </div>
+</body>
+</html>
