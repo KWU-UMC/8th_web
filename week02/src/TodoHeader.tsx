@@ -1,9 +1,11 @@
-import {JSX, useRef} from "react";
+import {JSX, useContext, useRef} from "react";
 import './TodoHeader.css';
+import {TodoContext} from "./TodoContextType.ts";
+import Task from "./Task.ts";
 
-function TodoHeader({onSubmit}: {
-	onSubmit: (value: string) => void
-}): JSX.Element {
+function TodoHeader(): JSX.Element {
+	const context = useContext(TodoContext);
+
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	return (
@@ -16,7 +18,7 @@ function TodoHeader({onSubmit}: {
 					event.preventDefault();
 
 					if (inputRef.current && inputRef.current.value.trim()) {
-						onSubmit(inputRef.current.value)
+						context?.addTodoTask(new Task(inputRef.current.value));
 						inputRef.current.value = '';
 					}
 				}}
