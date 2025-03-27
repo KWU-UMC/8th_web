@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { TaskContext } from "../context/task";
 import { TodoI } from "../type";
 
 export default function Todo() {
-  const [todos, setTodos] = useState<TodoI[]>([]);
   const [value, setValue] = useState<string>("");
+  const todos = useContext(TaskContext);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.target.value);
@@ -11,7 +12,7 @@ export default function Todo() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (value.trim()) {
-      setTodos((prev) => [
+      todos?.setTodos((prev) => [
         ...prev,
         { id: Date.now(), task: value, isDone: false },
       ]);
@@ -19,14 +20,14 @@ export default function Todo() {
     }
   };
   const handleClick = (id: number) => {
-    const newTodos = todos.map((todo) =>
+    const newTodos = todos?.todos.map((todo) =>
       todo.id === id ? { ...todo, isDone: !todo.isDone } : todo
     );
-    setTodos(newTodos);
+    todos?.setTodos(newTodos as TodoI[]);
   };
   const handleDelete = (id: number) => {
-    const newTodos = todos.filter((todo) => todo.id !== id);
-    setTodos(newTodos);
+    const newTodos = todos?.todos.filter((todo) => todo.id !== id);
+    todos?.setTodos(newTodos as TodoI[]);
   };
 
   return (
@@ -42,7 +43,7 @@ export default function Todo() {
     >
       <div id="todo-container">
         <h2>To Do</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
           <input
             onChange={handleChange}
             placeholder="Write To Dos"
@@ -53,7 +54,7 @@ export default function Todo() {
         <div id="task-container" style={{ display: "flex", gap: "20px" }}>
           <div id="todo">
             <span>to do</span>
-            {todos
+            {todos?.todos
               .filter((todo) => !todo.isDone)
               .map((todo, index) => (
                 <div key={index}>
@@ -64,7 +65,7 @@ export default function Todo() {
           </div>
           <div id="done">
             <span>done</span>
-            {todos
+            {todos?.todos
               .filter((todo) => todo.isDone)
               .map((todo, index) => (
                 <div key={index}>
