@@ -3,20 +3,23 @@ import './App.css'
 import TodoInput from "./components/TodoInput";
 import TodoList from "./components/TodoList";
 import DoneList from "./components/DoneList";
+
 import { TodoProvider } from './context/TodoContext';
 
 export default function App(){
   return (
-    <TodoProvider>
-      <div className="todo-container">
-        <h1 className="todo-container__header">SEOYEON TODO</h1>
-        <TodoInput />
-        <div className="render-container">
-          <TodoList />
-          <DoneList />
+      <TodoProvider>
+        <div className='app-wrapper'>
+          <div className="todo-container">
+            <h1 className="todo-container__header">SEOYEON TODO</h1>
+            <TodoInput />
+            <div className="render-container">
+              <TodoList />
+              <DoneList />
+            </div>
+          </div>
         </div>
-      </div>
-    </TodoProvider>
+      </TodoProvider>
   )
 }
 
