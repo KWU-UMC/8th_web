@@ -1,0 +1,6 @@
+# 공통 무시 항목
+**/node_modules/
+**/dist/
+.DS_Store
+.env
+pnpm-lock.yaml
