@@ -1,9 +1,11 @@
 import './index.css';
-import {createBrowserRouter, Link, Outlet, RouterProvider} from "react-router-dom";
+import {createBrowserRouter, Link, Outlet, RouterProvider, useParams} from "react-router-dom";
 import {Movie, MovieResponse} from "./types/movie.ts";
 import {useEffect, useState} from "react";
 import {MovieGrid} from "./MovieGrid.tsx";
 import axios from 'axios';
+import {MovieDescription} from "./MovieDescription.tsx";
+import {Headers} from "./utils/auth.ts";
 
 const RootLayout = () => {
     return (
@@ -37,9 +39,7 @@ const TmdbMovieGrid = ({type}: {type: string}) => {
 
             try {
                 const {data} = await axios.get<MovieResponse>(`https://api.themoviedb.org/3/movie/${type}?language=en-US&page=${page}`, {
-                    headers: {
-                        'Authorization': `Bearer`,
-                    }
+                    headers: Headers
                 });
 
                 setMovies(data.results);
@@ -54,18 +54,25 @@ const TmdbMovieGrid = ({type}: {type: string}) => {
     return (
         <div className="flex flex-col gap-4 items-center">
             <div className="flex flex-row gap-4 items-center">
-                <button className="disabled:cursor-not-allowed" disabled={page <= 1} onClick={() => { setPage(page - 1) }}>이전</button>
+                <button className="disabled:cursor-not-allowed" disabled={page <= 1} onClick={() => { setPage(page - 1) }}>Prev</button>
                 <p>{page}</p>
-                <button onClick={() => { setPage(page + 1) }}>다음</button>
+                <button onClick={() => { setPage(page + 1) }}>Next</button>
             </div>
 
             {
-                isError ? <p>에러</p> : (
-                    isLoading ? <p>로딩 중...</p> : <MovieGrid movies={movies} />
+                isError ? <p>Error</p> : (
+                    isLoading ? <p>Loading...</p> : <MovieGrid movies={movies} />
                 )
             }
         </div>
     )
+};
+
+const MovieDescriptionPage = () => {
+    const params = useParams();
+    if (!params.movieId) return <p>Invalid request</p>
+
+    return <MovieDescription movieId={parseInt(params.movieId)} />
 };
 
 const router = createBrowserRouter([
@@ -94,6 +101,10 @@ const router = createBrowserRouter([
                 element: <TmdbMovieGrid key="upcoming" type="upcoming" />
             }
         ]
+    },
+    {
+        path: '/movie/:movieId',
+        element: <MovieDescriptionPage />,
     }
 ])
 
