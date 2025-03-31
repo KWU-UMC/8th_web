@@ -6,7 +6,7 @@ const MovieCard = ({ id, image, title, overview }: TmovieInfo) => {
     
     return (
         <div
-          className="relative w-[calc(100%/8-20px)] m-[10px] aspect-[2/3] overflow-hidden"
+          className="relative w-[calc(100%/10-20px)] m-[10px] aspect-[2/3] overflow-hidden"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
