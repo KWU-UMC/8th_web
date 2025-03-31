@@ -1,0 +1,8 @@
+* {
+    box-sizing: border-box; 
+}
+  
+html, body {
+  background-color: rgb(12, 12, 12); 
+  font-family: 'Pretendard', sans-serif; 
+}

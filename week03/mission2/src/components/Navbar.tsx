@@ -5,7 +5,7 @@ const Navbar = () => {
   const location = useLocation();
   
   return (
-    <nav className="flex justify-between items-center bg-white p-2">
+    <nav className="flex justify-between items-center p-3">
       <div className="flex gap-4 p-3">
         <Button to="/" variant="home">홈</Button>
         <Button to="/movies/popular" variant="popular">인기 영화</Button>
@@ -20,18 +20,18 @@ const Navbar = () => {
 const Button = ({ to, variant, children }: TbuttonProps) => {
   const location = useLocation();
 
-  const baseStyles = 'px-2.5 py-0.5 text-center transition-all duration-200 hover:text-lime-300 w-auto';
+  const baseStyles = 'px-2.5 py-0.5 text-center transition-all duration-200 hover:text-lime-200 w-auto';
   let buttonStyles;
 
   // 경로 일치 or 호버 시 색상
   if (location.pathname === to) {
-    buttonStyles = 'text-lime-300'; 
+    buttonStyles = 'text-lime-200'; 
   } else {
-    buttonStyles = 'text-black'; 
+    buttonStyles = 'text-white'; 
   }
 
   return (
-    <Link to={to} className={`${baseStyles} ${buttonStyles}`}>
+    <Link to={to} className={`${baseStyles} ${buttonStyles}  text-xl`}>
       {children}
     </Link>
   );
