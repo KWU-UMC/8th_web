@@ -3,28 +3,33 @@ import { useEffect, useState } from 'react';
 import { Movie, MovieResponse } from '../types/movie';
 import MovieCard from '../components/MovieCard';
 import {axiosInstance} from '../apis/axiosInstance';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Loader2 } from "lucide-react";
 import ErrorMessage from '../components/ErrorMessage';
 
 const MoviesPage = () => {
   const { category } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [page, setPage] = useState(1);  
+  const [page, setPage] = useState<number>(1);  
   const [totalPages, setTotalPages] = useState(1); 
 
   useEffect(() => {
-    setPage(1);
-  }, [category]);
+    const searchParams = new URLSearchParams(location.search);
+    const currentPage = Number(searchParams.get('page')) || 1;  
+    setPage(currentPage);  
+  }, [location.search]); 
 
   useEffect(() => {
     const fetchMovies = async () => {
       setLoading(true);
       setError(false);
       try {
-        const movieCategory = category || 'popular';    // 홈 페이지 PopularPage로 나오도록 설정
+        const movieCategory = category || 'popular';   
         const URL = `/${movieCategory}?language=en-US&page=${page}`;
 
         const { data }: { data: MovieResponse } = await axiosInstance.get(URL);
@@ -39,7 +44,12 @@ const MoviesPage = () => {
     };
 
     fetchMovies();
-  }, [category, page]); 
+  }, [category, page]);  
+
+  const handlePageChange = (newPage: number) => {
+    navigate(`?page=${newPage}`);
+    setPage(newPage);  
+  };
 
   if (loading) {
     return (
@@ -74,7 +84,7 @@ const MoviesPage = () => {
           className={`px-4 py-2 text-white bg-lime-200 rounded disabled:opacity-50 
             ${page === 1 ? 'cursor-not-allowed' : 'hover:bg-red-400'}`}
           disabled={page === 1}
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+          onClick={() => handlePageChange(Math.max(page - 1, 1))}
         >
           &lt;
         </button>
@@ -87,7 +97,7 @@ const MoviesPage = () => {
           className={`px-4 py-2 text-white bg-lime-200 rounded disabled:opacity-50 
             ${page === totalPages ? 'cursor-not-allowed' : 'hover:bg-red-400'}`}
           disabled={page === totalPages}
-          onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+          onClick={() => handlePageChange(Math.min(page + 1, totalPages))}
         >
           &gt;
         </button>
