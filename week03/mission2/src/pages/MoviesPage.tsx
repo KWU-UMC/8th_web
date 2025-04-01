@@ -43,7 +43,7 @@ const MoviesPage = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center absolute top-0 left-0 w-full h-full">
         <Loader2 className="w-16 h-16 text-lime-200 animate-spin" />
       </div>
     );
