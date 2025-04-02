@@ -1,5 +1,5 @@
 import './index.css';
-import {createBrowserRouter, Link, Outlet, RouterProvider, useParams} from "react-router-dom";
+import {createBrowserRouter, Link, Outlet, RouterProvider, useLocation, useParams} from "react-router-dom";
 import {Movie, MovieResponse} from "./types/movie.ts";
 import {useEffect, useState} from "react";
 import {MovieGrid} from "./MovieGrid.tsx";
@@ -8,16 +8,26 @@ import {MovieDescription} from "./MovieDescription.tsx";
 import {Headers} from "./utils/auth.ts";
 
 const RootLayout = () => {
+    const location = useLocation();
+
+    const paths = {
+        '/': 'Home',
+        '/popular': 'Popular',
+        '/now_playing': 'Now playing',
+        '/top_rated': 'Top rated',
+        '/upcoming': 'Upcoming'
+    }
+
     return (
         <div>
             <nav className="flex gap-4">
                 <h1 className="text-3xl font-bold">Movie</h1>
                 <div className="flex gap-4 items-center">
-                    <Link to="/">Home</Link>
-                    <Link to="/popular">Popular</Link>
-                    <Link to="/now_playing">Now playing</Link>
-                    <Link to="/top_rated">Top rated</Link>
-                    <Link to="/upcoming">Upcoming</Link>
+                    {
+                        Object.entries(paths).map(([path, name]) => (
+                            <Link className={location.pathname == path ? 'text-green-500' : 'text-neutral-950'} to={path}>{name}</Link>
+                        ))
+                    }
                 </div>
             </nav>
 
