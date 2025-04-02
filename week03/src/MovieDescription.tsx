@@ -3,17 +3,22 @@ import {MovieDetail} from "./types/movie_detail.ts";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {getMovieImageUrl, Headers} from "./utils/auth.ts";
+import {Cast, CreditsResponse, Crew} from "./types/credits.ts";
 
 const Production = ({ name, logoPath }: { name: string, logoPath: string }) => {
     return (
         <div className="w-32 flex flex-col justify-center">
-            <img className="border-white border-4 rounded-full w-32 h-32 object-center object-cover bg-white" src={ getMovieImageUrl('w300', logoPath) } alt="Production logo" />
+            <img className="border-white border-4 rounded-full w-32 h-32 object-center object-cover bg-white" src={ getMovieImageUrl('w300', logoPath) } alt="Profile" />
             <p className="text-sm text-white font-bold text-center mt-2">{name}</p>
         </div>
     )
 };
 
-const _MovieDescription = ({ movie }: { movie: MovieDetail }) => {
+const _MovieDescription = ({ movie, casts, crews }: {
+    movie: MovieDetail,
+    casts: Cast[],
+    crews: Crew[]
+}) => {
     return (
         <div className="bg-neutral-900">
             <div className="h-[70vh] w-full relative overflow-hidden">
@@ -30,10 +35,11 @@ const _MovieDescription = ({ movie }: { movie: MovieDetail }) => {
             </div>
 
             <div className="mt-8 p-12">
-                <p className="text-5xl text-white mb-4">Productions</p>
+                <p className="text-5xl text-white mb-4">Staffs</p>
 
                 <div className="grid gap-4 grid-cols-8">
-                    {movie.production_companies.map((production) => <Production key={production.id} name={production.name} logoPath={production.logo_path} />)}
+                    {casts.map((production) => <Production key={production.id} name={production.name} logoPath={production.profile_path} />)}
+                    {crews.map((production) => <Production key={production.id} name={production.name} logoPath={production.profile_path} />)}
                 </div>
             </div>
         </div>
@@ -44,16 +50,25 @@ export const MovieDescription = ({ movieId }: { movieId: number }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
     const [movie, setMovie] = useState<MovieDetail | null>(null);
+    const [casts, setCasts] = useState<Cast[]>([]);
+    const [crews, setCrews] = useState<Crew[]>([]);
 
     useEffect(() => {
         (async () => {
             try {
                 setIsError(false);
                 setIsLoading(true);
-                const {data} = await axios.get<MovieDetail>(`https://api.themoviedb.org/3/movie/${movieId}?language=en-US`, {
+                const [{data: movie}, {data: credits}] = await Promise.all([
+                    axios.get<MovieDetail>(`https://api.themoviedb.org/3/movie/${movieId}?language=en-US`, {
                     headers: Headers
-                });
-                setMovie(data);
+                    }),
+                    axios.get<CreditsResponse>(`https://api.themoviedb.org/3/movie/${movieId}/credits`, {
+                        headers: Headers
+                    })
+                ]);
+                setMovie(movie);
+                setCasts(credits.cast);
+                setCrews(credits.crew);
             } catch {
                 setIsError(true);
             } finally {
@@ -66,7 +81,7 @@ export const MovieDescription = ({ movieId }: { movieId: number }) => {
         <>
             {isError ? <p>에러...</p> : (
                 isLoading ? <p>로딩중...</p> : (
-                    <_MovieDescription movie={movie!} />
+                    <_MovieDescription movie={movie!} casts={casts} crews={crews} />
                 )
             )}
         </>
