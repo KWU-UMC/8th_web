@@ -5,20 +5,21 @@ import './App.css'
 //RouterProvider : react-router-dom 라이브러리에서 제공하는 컴포넌트
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 
+//직접 요소를 태그 한 것을 import 해주기
+import HomePage from './pages/home';
+import MoviePage from './pages/movies';
+import NotFound from './pages/not-found';
 
+//element 뒤에는 전달할 컴포넌트를 전달해주기 위함
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <h1>홈 페이지입니다.</h1>,
-        errorElement: (
-          <div>
-            <h1>너는 없는 경로에 들어왔음!</h1>
-            </div>
-        ),
+        element: <HomePage/>,
+        errorElement: <NotFound/>,
     },
     {
         path: '/movies',
-        element: <h1>영화 페이지 입니다.</h1>
+        element: <MoviePage/>
     }
 ])
 
