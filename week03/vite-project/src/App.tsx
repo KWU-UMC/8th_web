@@ -6,15 +6,17 @@ import './App.css'
 import {createBrowserRouter, RouterProvider} from "react-router-dom";
 
 //직접 요소를 태그 한 것을 import 해주기
-import HomePage from './pages/home';
+//import HomePage from './pages/home';
 import MoviePage from './pages/movies';
 import NotFound from './pages/not-found';
+import RootLayout from './layout/root-layout';
 
 //element 뒤에는 전달할 컴포넌트를 전달해주기 위함
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <HomePage/>,
+        //element: <HomePage/>
+        element: <RootLayout/>,
         errorElement: <NotFound/>,
     },
     {
