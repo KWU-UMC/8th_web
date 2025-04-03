@@ -10,6 +10,7 @@ import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import MoviePage from './pages/movies';
 import NotFound from './pages/not-found';
 import RootLayout from './layout/root-layout';
+import HomePage from './pages/home';
 
 //element 뒤에는 전달할 컴포넌트를 전달해주기 위함
 const router = createBrowserRouter([
@@ -18,11 +19,17 @@ const router = createBrowserRouter([
         //element: <HomePage/>
         element: <RootLayout/>,
         errorElement: <NotFound/>,
+        children:[
+            {
+                index : true,
+                element : <HomePage/>
+            },
+            {
+                path:'movies',
+                element: <MoviePage/>
+            }
+        ]
     },
-    {
-        path: '/movies',
-        element: <MoviePage/>
-    }
 ])
 
 //createBrowserRouter로 라우터를 정의하고
