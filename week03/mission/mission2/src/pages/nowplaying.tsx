@@ -1,3 +1,3 @@
 export default function Nowplaying() {
-  return null;
+  return <h2>nowplaying</h2>;
 }

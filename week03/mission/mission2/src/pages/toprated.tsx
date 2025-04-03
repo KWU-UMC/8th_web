@@ -1,3 +1,3 @@
 export default function Toprated() {
-  return null;
+  return <h2>toprating</h2>;
 }
