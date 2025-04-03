@@ -37,10 +37,10 @@ function App() {
   if (isLoading) return null;
 
   return (
-    <div className="w-full h-screen flex justify-center items-center">
-      <ul className="grid grid-cols-6">
+    <div className="w-full h-screen px-30 my-20 box-border">
+      <ul className="grid grid-cols-6 gap-[20px] max-[1000px]:grid-cols-5 max-[850px]:grid-cols-4 max-[730px]:grid-cols-3 max-[600px]:grid-cols-2 max-[480px]:grid-cols-1">
         {movies?.map((movie) => (
-          <li key={movie.id}>
+          <li className="min-w-[120px]" key={movie.id}>
             <MovieContainer movie={movie} />
           </li>
         ))}
