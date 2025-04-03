@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Movie, MovieResponse } from "./types/movie_type";
+import MovieContainer from "./components/movie";
 
 function App() {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -36,10 +37,12 @@ function App() {
   if (isLoading) return null;
 
   return (
-    <div className="w-full h-screen">
-      <ul>
+    <div className="w-full h-screen flex justify-center items-center">
+      <ul className="grid grid-cols-6">
         {movies?.map((movie) => (
-          <li key={movie.id}>{movie.title}</li>
+          <li key={movie.id}>
+            <MovieContainer movie={movie} />
+          </li>
         ))}
       </ul>
     </div>
