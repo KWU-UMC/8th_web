@@ -1,9 +1,16 @@
+import { useParams } from "react-router-dom";
+
 //movies.tsx
 const MoviePage = ()=>{
+    const params = useParams();
+
+    console.log(params);
+
     return(
-        <h1>
-            🎬Movies Page🎬
-        </h1>
+        <div>
+            <h1> 🎬Movies Page🎬 </h1>
+            <p> {params.movieId} 번의 Movies Page 입니다! </p>
+        </div>
     );
 }
 
