@@ -5,6 +5,7 @@ import Upcoming from "./src/pages/upcoming";
 import Toprated from "./src/pages/toprated";
 import Nowplaying from "./src/pages/nowplaying";
 import Errorpage from "./src/pages/errorpage";
+import Home from "./src/pages/home";
 
 export const router = createBrowserRouter([
   {
@@ -12,6 +13,10 @@ export const router = createBrowserRouter([
     element: <App />,
     errorElement: <Errorpage />,
     children: [
+      {
+        path: "/",
+        element: <Home />,
+      },
       {
         path: "/popular",
         element: <Popular />,
@@ -27,6 +32,10 @@ export const router = createBrowserRouter([
       {
         path: "/nowplaying",
         element: <Nowplaying />,
+      },
+      {
+        path: "/error",
+        element: <Errorpage />,
       },
     ],
   },

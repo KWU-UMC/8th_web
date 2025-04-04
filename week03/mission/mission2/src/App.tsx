@@ -3,10 +3,10 @@ import Navigation from "./layout/navigation";
 
 function App() {
   return (
-    <>
+    <div className="w-full h-full">
       <Navigation />
       <Outlet />
-    </>
+    </div>
   );
 }
 
