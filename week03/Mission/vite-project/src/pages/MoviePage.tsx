@@ -13,7 +13,8 @@ export default function MoviePage(){
     const [isError, setIsError] = useState(false);
     const [page, setPage] = useState(1);
 
-    const params = useParams<{
+    //구조 분해 할당
+    const {category} = useParams<{
         category: string;
     }>();
 
@@ -23,7 +24,7 @@ export default function MoviePage(){
 
         try{
             const{ data } = await axios.get<MovieResponse>(
-                `https://api.themoviedb.org/3/movie/${params.category}?language=ko-KR&page=${page}`,
+                `https://api.themoviedb.org/3/movie/${category}?language=ko-KR&page=${page}`,
                 {
                     headers : {
                         Authorization: `Bearer ${import.meta.env.VITE_TMDB_KEY}`,
@@ -40,7 +41,7 @@ export default function MoviePage(){
     };
     
     fetchMovies();  
-    }, [page]);
+    }, [page, category]);
 
     if(isError){
         return (
