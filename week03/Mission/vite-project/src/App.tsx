@@ -2,7 +2,7 @@ import './App.css'
 import HomePage from './pages/HomePage';
 import MoviePage from './pages/MoviePage'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import NotFoundpage from './pages/NotFoundPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 //v5 -> BrowserRouter
 //v6 -> createBrowserRouter
@@ -12,11 +12,11 @@ const router = createBrowserRouter([
   {
     path:'/',
     element: <HomePage/>,
-    errorElement: <NotFoundpage/>,
+    errorElement: <NotFoundPage/>,
     children: [
       {
         path:"movies/:category",
-        element: <MoviePage/>,
+        element: <MoviePage />,
       },
     ]
   },
