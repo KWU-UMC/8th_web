@@ -3,6 +3,7 @@ import HomePage from './pages/HomePage';
 import MoviePage from './pages/MoviePage'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import NotFoundPage from './pages/NotFoundPage';
+import MovieDetailPage from './components/MovieDetailPage';
 
 //v5 -> BrowserRouter
 //v6 -> createBrowserRouter
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
         path:"movies/:category",
         element: <MoviePage />,
       },
+      {
+        path: 'movie/:movieId',
+        element: <MovieDetailPage/>
+      }
     ]
   },
 ]);

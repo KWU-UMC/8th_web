@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Movie } from "../types/movie"
+import { useNavigate } from "react-router-dom";
 
 interface MovieCardProps{
     moive:Movie
@@ -7,13 +8,15 @@ interface MovieCardProps{
 
 export default function MovieCard({ moive }: MovieCardProps){
     const [isHovered, setIsHovered] = useState(false);
+    const navigate = useNavigate();
 
     return (
-        <div 
-        className='relative rounded-xl shadow-lg overflow-hidden 
-        cursor-pointer w-44 transition-transform duration-500 hover:scale-105' 
+        <div
+        className='relative rounded-xl shadow-lg overflow-hidden cursor-pointer w-44 transition-transform duration-500 hover:scale-105' 
         onMouseEnter={(): void => setIsHovered(true)}
-        onMouseLeave={(): void => setIsHovered(false)}>
+        onMouseLeave={(): void => setIsHovered(false)}
+        onClick={() => navigate(`/movie/${moive.id}`)}
+        >
             <img 
             src={`https://image.tmdb.org/t/p/w200${moive.poster_path}`} 
             alt={`${moive.title} 영화화의 이미지`}
