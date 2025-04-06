@@ -1,5 +1,6 @@
 import { useState } from "react"; // 컴포넌트 안에서 상태 관리할 수 있게 해주는 훅
 import { Movie } from "../types/movie"; // 우리가 정의한 영화 타입 가져옴
+import { useNavigate } from "react-router-dom";
 
 // 컴포넌트에 전달될 props의 타입 정의
 interface MovieCardProps {
@@ -9,10 +10,12 @@ interface MovieCardProps {
 export default function MovieCard({ movie }: MovieCardProps) {
   // 마우스를 올렸는지 여부를 저장하는 상태 (true: 올림, false: 안 올림)
   const [isHovered, setIsHovered] = useState(false);
+  const navigate = useNavigate(); // 페이지 이동을 위한 navigate 함수
 
   return (
     // 영화 카드 하나를 감싸는 div - hover 시 커지는 애니메이션 효과 포함
     <div
+      onClick={() => navigate(`/movie/${movie.id}`)} // 클릭 시 상세 페이지로 이동
       className="relative rounded-xl shadow-lg overflow-hidden cursor-pointer w-44 transition-transform duration-300 hover:scale-105"
       onMouseEnter={() => setIsHovered(true)} // 마우스를 올리면 상태 true
       onMouseLeave={() => setIsHovered(false)} // 마우스 내리면 상태 false
