@@ -7,13 +7,12 @@ import { Movie, Credit } from "../types/movie";
 import axios from 'axios';
 
 const MovieDetailPage = () => {
-  const { movieId } = useParams<{ movieId: string }>(); // URL 파라미터로 movieId 받아옴
+  const { movieId } = useParams<{ movieId: string }>();
   const [movie, setMovie] = useState<Movie | null>(null);
-  const [credits, setCredits] = useState<Credit | null>(null); // 감독/출연자 정보
+  const [credits, setCredits] = useState<Credit | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  // TMDB API에서 영화 정보 및 크레딧 정보 가져오기
   useEffect(() => {
     const fetchMovieDetails = async () => {
       setIsPending(true);
@@ -68,20 +67,20 @@ const MovieDetailPage = () => {
       )}
 
       {!isPending && movie && credits && (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-10">
           {/* 영화 상세 정보 */}
           <div className="flex flex-col md:flex-row gap-4">
-            <div className="w-full md:w-1/3">
+            <div className="w-full md:w-1/4 p-5">
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                 alt={movie.title}
                 className="rounded-lg shadow-lg"
               />
             </div>
-            <div className="w-full md:w-2/3">
-              <h2 className="text-2xl font-bold mb-2">{movie.title}</h2>
-              <p className="text-lg text-gray-500 mb-2">
-                {movie.release_date} | 평점: {movie.vote_average}
+            <div className="w-full md:w-2/3 p-5">
+              <h2 className="text-3xl font-bold mb-2">{movie.title}</h2>
+              <p className="text-lg text-gray-500 font-bold mb-2">
+                개봉일: {movie.release_date} | 평점: {movie.vote_average.toFixed(1)} / 10.0
               </p>
               <p className="text-sm text-gray-700">{movie.overview}</p>
 
@@ -93,7 +92,7 @@ const MovieDetailPage = () => {
                     {credits.crew
                       .filter((member) => member.job === "Director")
                       .map((director) => (
-                        <li key={director.id} className="text-gray-800">
+                        <li key={director.id} className="text-lg text-gray-800">
                           {director.name}
                         </li>
                       ))}
@@ -108,7 +107,7 @@ const MovieDetailPage = () => {
                   <ul>
                     {credits.cast.slice(0, 5).map((actor) => (
                       <li key={actor.id} className="text-gray-800">
-                        {actor.name} as {actor.character}
+                        <span className="text-lg">{actor.name}</span> <span className="text-sm text-gray-600">(as {actor.character})</span>
                       </li>
                     ))}
                   </ul>
