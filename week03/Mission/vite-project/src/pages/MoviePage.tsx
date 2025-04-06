@@ -45,20 +45,25 @@ export default function MoviePage(){
         )
     }
 
-    if(isPending){
-        return<LoadingSpinner/>;
-    }
-
     return(
         //반응형        
         <>  
             <PageButton page={page} setPage={setPage}/>
-            <div className='p-10 grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 
-            lg:grid-cols-5 xl:grid-cols-6'>
-                {movies?.map( movie => (
-                    <MovieCard key={movie.id} moive={movie}/>
-                ))}
-            </div>
+
+            {isPending && (
+                <div className="flex items-center justify-center h-dvh"> 
+                    <LoadingSpinner/>
+                </div>
+            )}
+
+            {!isPending && (
+                <div className='p-10 grid gap-4 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 
+                lg:grid-cols-5 xl:grid-cols-6'>
+                    {movies?.map( movie => (
+                        <MovieCard key={movie.id} moive={movie}/>
+                    ))}
+                </div>
+            )}
         </>
     );
 }  

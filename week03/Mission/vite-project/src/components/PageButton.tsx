@@ -9,7 +9,7 @@ export const PageButton = ({page, setPage}: PageButtonProps) => {
             <button
             className="bg-[#b2dab1] text-white px-3 py-2 roudned-lg shadow-md hover:bg=[#b2dab1]
             transition-all duration-200 disabled:bg-gray-300
-            cursor-pointer"
+            cursor-pointer disabled:cursor-not-allowed"
             disabled={page === 1}
             onClick={() : void => setPage((prev: number) => prev -1)}>
             {`<`} </button>
