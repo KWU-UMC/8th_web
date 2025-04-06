@@ -4,8 +4,12 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import HomePage from "./pages/home.tsx";
 import NotFound from "./pages/not-found.tsx";
-import Movies from "./pages/movies.tsx";
+import Popular from "./pages/popular.tsx";
 import RootLayout from "../layout/root-layout.tsx";
+import Upcoming from "./pages/upcoming.tsx";
+import TopRated from "./pages/top-rated.tsx";
+import NowPlaying from "./pages/now-playing.tsx";
+import MovieDetail from "./pages/movie-detail.tsx";
 
 const router = createBrowserRouter([
   {
@@ -18,9 +22,24 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        // /:을 활용해서, 동적으로 바뀌는 부분의 이름을 정의해줍시다.
-        path: "movies",
-        element: <Movies />,
+        path: "popular",
+        element: <Popular />,
+      },
+      {
+        path: "upcoming",
+        element: <Upcoming />,
+      },
+      {
+        path: "top-rated",
+        element: <TopRated />,
+      },
+      {
+        path: "now-playing",
+        element: <NowPlaying />,
+      },
+      {
+        path: "movie/:movieId",
+        element: <MovieDetail />,
       },
     ],
   },

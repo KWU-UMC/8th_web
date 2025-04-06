@@ -1,11 +1,30 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import styled from "styled-components";
+
+const NavContainer = styled.nav`
+  display: flex;
+  gap: 20px;
+`;
+
+const StyledNavLink = styled(NavLink)`
+  text-decoration: none;
+  color: gray;
+
+  &.active {
+    color: tomato;
+    font-weight: bold;
+  }
+`;
 
 const Navbar = () => {
   return (
-    <nav>
-      <Link to={"/"}>홈 페이지로 이동</Link>
-      <Link to="/movies">영화 목록 페이지로 이동</Link>
-    </nav>
+    <NavContainer>
+      <StyledNavLink to="/">홈</StyledNavLink>
+      <StyledNavLink to="/popular">인기 영화</StyledNavLink>
+      <StyledNavLink to="/upcoming">개봉 예정</StyledNavLink>
+      <StyledNavLink to="/top-rated">평점높은</StyledNavLink>
+      <StyledNavLink to="/now-playing">상영중</StyledNavLink>
+    </NavContainer>
   );
 };
 
