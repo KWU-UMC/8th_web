@@ -5,7 +5,10 @@ import MovieCard from "../components/MovieCard";
 
 export default function MoviePage(){
     const [movies, setMovies] = useState<Movie[]>([]);
-
+    
+    const [isPending, setIsPending] = useState(false);
+    const [isError, setIsError] = useState(false);
+    
     useEffect((): void => {
         const fetchMovies = async () : Promise<void>=>{
             const{ data } = await axios.get<MovieResponse>(
