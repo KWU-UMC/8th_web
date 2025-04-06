@@ -1,10 +1,10 @@
 import './App.css'
+import MoviePage from './pages/MoviePage'
 
 function App() {
-
   return (
     <>
-      <h1>hello</h1>
+      <MoviePage/>
     </>
   )
 }
