@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Movie, MovieResponse } from "../types/movie";
 import { styled } from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 // -------------------style------------------------
 
@@ -77,6 +78,7 @@ const NowPlaying = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const navigate = useNavigate();
 
   const min_date = "2024-01-01";
   const max_date = "2024-12-31";
@@ -128,7 +130,10 @@ const NowPlaying = () => {
 
       <MovieContainer>
         {movies.map((movie) => (
-          <MovieCard key={movie.id}>
+          <MovieCard
+            key={movie.id}
+            onClick={() => navigate(`/movie/${movie.id}`)}
+          >
             <MoviePoster
               src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
               alt={movie.title}

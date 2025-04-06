@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Movie, MovieResponse } from "../types/movie";
 import { styled } from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 // -------------------style------------------------
 
@@ -77,6 +78,7 @@ const TopRated = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTopRated = async () => {
@@ -125,7 +127,10 @@ const TopRated = () => {
 
       <MovieContainer>
         {movies.map((movie) => (
-          <MovieCard key={movie.id}>
+          <MovieCard
+            key={movie.id}
+            onClick={() => navigate(`/movie/${movie.id}`)}
+          >
             <MoviePoster
               src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
               alt={movie.title}

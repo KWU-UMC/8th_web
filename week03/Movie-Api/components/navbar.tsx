@@ -2,8 +2,12 @@ import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 
 const NavContainer = styled.nav`
+  position: fixed;
   display: flex;
   gap: 20px;
+  top: 10px;
+  left: 10px;
+  right: 10px;
 `;
 
 const StyledNavLink = styled(NavLink)`
