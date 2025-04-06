@@ -40,7 +40,9 @@ export default function MoviePage(){
     if(isError){
         return (
         <div>
-            <span className="text-red-500 text-2xl"> 에러가 발생했습니다. </span>
+            <span className="text-red-500 text-2xl flex items-center justify-center h-dvh"> 
+                ⚠️에러가 발생했습니다⚠️
+            </span>
         </div>
         )
     }

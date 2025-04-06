@@ -1,12 +1,26 @@
 import './App.css'
+import HomePage from './pages/HomePage';
 import MoviePage from './pages/MoviePage'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import NotFoundpage from './pages/NotFoundPage';
 
+//v5 -> BrowserRouter
+//v6 -> createBrowserRouter
+//v7 -> react-router-dom (remix, next.js)
+
+const router = createBrowserRouter([
+  {
+    path:'/',
+    element: <HomePage/>,
+    errorElement: <NotFoundpage/>,
+  },
+  {
+    path:'/movies',
+    element: <MoviePage/>
+  }
+]);
 function App() {
-  return (
-    <>
-      <MoviePage/>
-    </>
-  )
+  return <RouterProvider router={router}/>;
 }
 
 export default App
