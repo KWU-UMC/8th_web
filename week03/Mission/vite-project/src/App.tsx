@@ -13,12 +13,16 @@ const router = createBrowserRouter([
     path:'/',
     element: <HomePage/>,
     errorElement: <NotFoundpage/>,
+    children: [
+      {
+        path:"movies/:category",
+        element: <MoviePage/>,
+      },
+    ]
   },
-  {
-    path:'/movies',
-    element: <MoviePage/>
-  }
 ]);
+
+
 function App() {
   return <RouterProvider router={router}/>;
 }
