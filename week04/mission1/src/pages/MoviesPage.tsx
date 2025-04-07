@@ -2,53 +2,39 @@ import { useEffect, useState } from 'react';
 // import axios from 'axios';
 import { Movie, MovieResponse } from '../types/movie';
 import MovieCard from '../components/MovieCard';
-import {axiosInstance} from '../apis/axiosInstance';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Loader2 } from "lucide-react";
 import ErrorMessage from '../components/ErrorMessage';
+import { useCustomFetch } from '../hooks/useCustomFetch';
 
 const MoviesPage = () => {
   const { category } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [page, setPage] = useState<number>(1);  
-  const [totalPages, setTotalPages] = useState(1); 
+  const [page, setPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
-    const currentPage = Number(searchParams.get('page')) || 1;  
-    setPage(currentPage);  
-  }, [location.search]); 
+    const currentPage = Number(searchParams.get('page')) || 1;
+    setPage(currentPage);
+  }, [location.search]);
+
+  const movieCategory = category || 'popular';
+  const URL = `/${movieCategory}?language=en-US&page=${page}`;
+
+  const { data, loading, error } = useCustomFetch<MovieResponse>(URL);
 
   useEffect(() => {
-    const fetchMovies = async () => {
-      setLoading(true);
-      setError(false);
-      try {
-        const movieCategory = category || 'popular';   
-        const URL = `/${movieCategory}?language=en-US&page=${page}`;
-
-        const { data }: { data: MovieResponse } = await axiosInstance.get(URL);
-        setMovies(data.results);
-        setTotalPages(data.total_pages); 
-      } catch (error) {
-        console.error("Error fetching movies:", error);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMovies();
-  }, [category, page]);  
+    if (data?.total_pages) {
+      setTotalPages(data.total_pages);
+    }
+  }, [data]);
 
   const handlePageChange = (newPage: number) => {
     navigate(`?page=${newPage}`);
-    setPage(newPage);  
+    setPage(newPage);
   };
 
   if (loading) {
@@ -59,7 +45,7 @@ const MoviesPage = () => {
     );
   }
 
-  if (error) {
+  if (error || !data) {
     return <ErrorMessage message="영화를 불러오는 중 오류가 발생했습니다." />;
   }
 
@@ -67,7 +53,7 @@ const MoviesPage = () => {
     <div className="flex flex-col items-center overflow-hidden">
       {/* 영화 리스트 */}
       <div className="flex flex-wrap justify-start -m-2 overflow-hidden">
-        {movies.map((movie) => (
+        {data.results.map((movie) => (
           <MovieCard
             key={movie.id}
             id={movie.id}

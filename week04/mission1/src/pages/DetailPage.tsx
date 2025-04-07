@@ -1,51 +1,38 @@
-import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { axiosInstance } from '../apis/axiosInstance';
 import { TMovieDetails, TCredits } from '../types/movieInfo'; 
 import { Loader2 } from 'lucide-react';
 import ErrorMessage from '../components/ErrorMessage';
+import { useCustomFetch } from '../hooks/useCustomFetch';
 
 const DetailPage = () => {
     const { movieId } = useParams();
-    const [movieDetails, setMovieDetails] = useState<TMovieDetails | null>(null);
-    const [credits, setCredits] = useState<TCredits | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<boolean>(false);
+    const movieDetailsURL = `/${movieId}?language=en-US`;
+    const creditsURL = `/${movieId}/credits?language=en-US`;
 
-    useEffect(() => {
-        const fetchMovieDetails = async () => {
-            setLoading(true);
-            setError(false);
-            try {
-                const movieDetailsURL = `/${movieId}?language=en-US`; 
-                const creditsURL = `/${movieId}/credits?language=en-US`; 
-                const movieData = await axiosInstance.get(movieDetailsURL);
-                const creditsData = await axiosInstance.get(creditsURL);
+    const {
+        data: movieDetails,
+        loading: movieLoading,
+        error: movieError,
+    } = useCustomFetch<TMovieDetails>(movieDetailsURL);
 
-                setMovieDetails(movieData.data); 
-                setCredits(creditsData.data); 
-            } catch (error) {
-                console.error('Error fetching movie details:', error);
-                setError(true);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const {
+        data: credits,
+        loading: creditsLoading,
+        error: creditsError,
+    } = useCustomFetch<TCredits>(creditsURL);
 
-        if (movieId) {
-            fetchMovieDetails(); 
-        }
-    }, [movieId]); 
+    const isLoading = movieLoading || creditsLoading;
+    const isError = movieError || creditsError || !movieDetails || !credits;
 
-    if (loading) {
+    if (isLoading) {
         return (
-            <div className="flex items-center justify-center absolute top-0 left-0 w-full h-full">
-              <Loader2 className="w-16 h-16 text-lime-200 animate-spin" />
-            </div>
-          );
+        <div className="flex items-center justify-center absolute top-0 left-0 w-full h-full">
+            <Loader2 className="w-16 h-16 text-lime-200 animate-spin" />
+        </div>
+        );
     }
 
-    if (error || !movieDetails || !credits) {
+    if (isError) {
         return <ErrorMessage message="영화 정보를 불러오는 중 오류가 발생했습니다." />;
     }
 
