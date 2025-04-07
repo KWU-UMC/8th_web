@@ -4,6 +4,7 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Loader2 } from "lucide-react";
 import ErrorMessage from '../components/ErrorMessage';
 import { useCustomFetch } from '../hooks/useCustomFetch';
+import Pagination from '../components/Pagination';
 
 const MoviesPage = () => {
   const { category } = useParams();
@@ -12,7 +13,7 @@ const MoviesPage = () => {
 
   const searchParams = new URLSearchParams(location.search);
   const page = Number(searchParams.get('page')) || 1;
-
+  
   const movieCategory = category || 'popular';
   const URL = `/${movieCategory}?language=en-US&page=${page}`;
 
@@ -50,29 +51,11 @@ const MoviesPage = () => {
       </div>
 
       {/* 페이지네이션 버튼 */}
-      <div className="flex justify-center gap-4 mt-8 fixed bottom-20 w-full">
-        <button
-          className={`px-4 py-2 text-white bg-lime-200 rounded disabled:opacity-50 
-            ${page === 1 ? 'cursor-not-allowed' : 'hover:bg-red-400'}`}
-          disabled={page === 1}
-          onClick={() => handlePageChange(Math.max(page - 1, 1))}
-        >
-          &lt;
-        </button>
-
-        <span className="text-white text-lg flex items-center">
-          {page} 페이지
-        </span>
-
-        <button
-          className={`px-4 py-2 text-white bg-lime-200 rounded disabled:opacity-50 
-            ${page === data.total_pages ? 'cursor-not-allowed' : 'hover:bg-red-400'}`}
-          disabled={page === data.total_pages}
-          onClick={() => handlePageChange(Math.min(page + 1, data.total_pages))}
-        >
-          &gt;
-        </button>
-      </div>
+      <Pagination
+        currentPage={page}
+        totalPages={data.total_pages}
+        onPageChange={handlePageChange}
+      />
     </div>
   );
 };
