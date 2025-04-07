@@ -1,9 +1,8 @@
 import "./index.css";
 import {MovieDetail} from "./types/movie_detail.ts";
-import {useEffect, useState} from "react";
-import axios from "axios";
-import {getMovieImageUrl, Headers} from "./utils/auth.ts";
+import {getMovieImageUrl} from "./utils/auth.ts";
 import {Cast, CreditsResponse, Crew} from "./types/credits.ts";
+import {useTmdbFetch} from "./hooks/useTmdbFetch.ts";
 
 const Production = ({ name, logoPath }: { name: string, logoPath: string }) => {
     return (
@@ -47,41 +46,17 @@ const _MovieDescription = ({ movie, casts, crews }: {
 };
 
 export const MovieDescription = ({ movieId }: { movieId: number }) => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [isError, setIsError] = useState(false);
-    const [movie, setMovie] = useState<MovieDetail | null>(null);
-    const [casts, setCasts] = useState<Cast[]>([]);
-    const [crews, setCrews] = useState<Crew[]>([]);
+    const { data: movie, isLoading: isLoadingMovie, isError: isErrorMovie } = useTmdbFetch<MovieDetail>(`/movie/${movieId}?language=en-US`);
+    const { data: credits, isLoading: isLoadingCredits, isError: isErrorCredits } = useTmdbFetch<CreditsResponse>(`/movie/${movieId}/credits`);
 
-    useEffect(() => {
-        (async () => {
-            try {
-                setIsError(false);
-                setIsLoading(true);
-                const [{data: movie}, {data: credits}] = await Promise.all([
-                    axios.get<MovieDetail>(`https://api.themoviedb.org/3/movie/${movieId}?language=en-US`, {
-                    headers: Headers
-                    }),
-                    axios.get<CreditsResponse>(`https://api.themoviedb.org/3/movie/${movieId}/credits`, {
-                        headers: Headers
-                    })
-                ]);
-                setMovie(movie);
-                setCasts(credits.cast);
-                setCrews(credits.crew);
-            } catch {
-                setIsError(true);
-            } finally {
-                setIsLoading(false);
-            }
-        })();
-    }, [movieId]);
+    const isError = isErrorMovie || isErrorCredits;
+    const isLoading = isLoadingCredits || isLoadingMovie;
 
     return (
         <>
             {isError ? <p>에러...</p> : (
                 isLoading ? <p>로딩중...</p> : (
-                    <_MovieDescription movie={movie!} casts={casts} crews={crews} />
+                    <_MovieDescription movie={movie!} casts={credits!.cast} crews={credits!.crew} />
                 )
             )}
         </>
