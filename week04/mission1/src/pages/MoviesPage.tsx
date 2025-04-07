@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react';
-// import axios from 'axios';
-import { Movie, MovieResponse } from '../types/movie';
+import { MovieResponse } from '../types/movie';
 import MovieCard from '../components/MovieCard';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { Loader2 } from "lucide-react";
@@ -11,30 +9,17 @@ const MoviesPage = () => {
   const { category } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  
-  const [page, setPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const currentPage = Number(searchParams.get('page')) || 1;
-    setPage(currentPage);
-  }, [location.search]);
+  const searchParams = new URLSearchParams(location.search);
+  const page = Number(searchParams.get('page')) || 1;
 
   const movieCategory = category || 'popular';
   const URL = `/${movieCategory}?language=en-US&page=${page}`;
 
   const { data, loading, error } = useCustomFetch<MovieResponse>(URL);
 
-  useEffect(() => {
-    if (data?.total_pages) {
-      setTotalPages(data.total_pages);
-    }
-  }, [data]);
-
   const handlePageChange = (newPage: number) => {
     navigate(`?page=${newPage}`);
-    setPage(newPage);
   };
 
   if (loading) {
@@ -81,9 +66,9 @@ const MoviesPage = () => {
 
         <button
           className={`px-4 py-2 text-white bg-lime-200 rounded disabled:opacity-50 
-            ${page === totalPages ? 'cursor-not-allowed' : 'hover:bg-red-400'}`}
-          disabled={page === totalPages}
-          onClick={() => handlePageChange(Math.min(page + 1, totalPages))}
+            ${page === data.total_pages ? 'cursor-not-allowed' : 'hover:bg-red-400'}`}
+          disabled={page === data.total_pages}
+          onClick={() => handlePageChange(Math.min(page + 1, data.total_pages))}
         >
           &gt;
         </button>
