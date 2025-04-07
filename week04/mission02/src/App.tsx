@@ -1,34 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import './index.css'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className="mt-12 w-96 mx-auto bg-neutral-300 p-8 rounded-2xl">
+          <div className="flex gap-4 h-4 justify-center items-center relative">
+              <button className="absolute left-0 hover:bg-neutral-400 p-4 rounded-xl">&lt;</button>
+              <p className="text-2xl">로그인</p>
+          </div>
+
+          <div className="flex mt-8 p-4 border border-white rounded-xl items-center relative hover:ring-2 hover:ring-blue-500 cursor-pointer">
+              <span className="text-xl text-blue-500 absolute left-4">G</span>
+              <span className="w-full text-center">Google 로그인</span>
+          </div>
+
+          <hr className="my-4 border-gray-400" />
+
+          <input
+              type="email"
+              id="email"
+              className="mb-4 w-full p-2 border border-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="이메일을 입력하세요"
+          />
+
+          <input
+              type="password"
+              id="password"
+              className="mb-4 w-full p-2 border border-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="비밀번호를 입력하세요"
+          />
+
+          <button className="w-full p-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors">
+              로그인
+          </button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
   )
 }
 
