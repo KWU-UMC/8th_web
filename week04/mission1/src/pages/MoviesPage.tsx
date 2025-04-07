@@ -1,27 +1,19 @@
 import { MovieResponse } from '../types/movie';
 import MovieCard from '../components/MovieCard';
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Loader2 } from "lucide-react";
 import ErrorMessage from '../components/ErrorMessage';
 import { useCustomFetch } from '../hooks/useCustomFetch';
+import { usePagination } from '../hooks/usePagination';
 import Pagination from '../components/Pagination';
 
 const MoviesPage = () => {
   const { category } = useParams();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const { page, handlePageChange } = usePagination();
 
-  const searchParams = new URLSearchParams(location.search);
-  const page = Number(searchParams.get('page')) || 1;
-  
   const movieCategory = category || 'popular';
   const URL = `/${movieCategory}?language=en-US&page=${page}`;
-
   const { data, loading, error } = useCustomFetch<MovieResponse>(URL);
-
-  const handlePageChange = (newPage: number) => {
-    navigate(`?page=${newPage}`);
-  };
 
   if (loading) {
     return (
@@ -54,7 +46,7 @@ const MoviesPage = () => {
       <Pagination
         currentPage={page}
         totalPages={data.total_pages}
-        onPageChange={handlePageChange}
+        onPageChange={handlePageChange} 
       />
     </div>
   );
