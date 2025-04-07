@@ -1,11 +1,10 @@
 import './index.css';
 import {createBrowserRouter, Link, Outlet, RouterProvider, useLocation, useParams} from "react-router-dom";
-import {Movie, MovieResponse} from "./types/movie.ts";
-import {useEffect, useState} from "react";
+import {MovieResponse} from "./types/movie.ts";
+import {useState} from "react";
 import {MovieGrid} from "./MovieGrid.tsx";
-import axios from 'axios';
 import {MovieDescription} from "./MovieDescription.tsx";
-import {Headers} from "./utils/auth.ts";
+import {useTmdbFetch} from "./hooks/useTmdbFetch.ts";
 
 const RootLayout = () => {
     const location = useLocation();
@@ -37,29 +36,9 @@ const RootLayout = () => {
 }
 
 const TmdbMovieGrid = ({type}: {type: string}) => {
-    const [isLoading, setIsLoading] = useState(true);
-    const [isError, setIsError] = useState(false);
-    const [movies, setMovies] = useState<Movie[]>([]);
     const [page, setPage] = useState(1);
 
-    useEffect(() => {
-        (async () => {
-            setIsError(false);
-            setIsLoading(true);
-
-            try {
-                const {data} = await axios.get<MovieResponse>(`https://api.themoviedb.org/3/movie/${type}?language=en-US&page=${page}`, {
-                    headers: Headers
-                });
-
-                setMovies(data.results);
-            } catch {
-                setIsError(true);
-            } finally {
-                setIsLoading(false);
-            }
-        })();
-    }, [type, page]);
+    const { data, isError, isLoading } = useTmdbFetch<MovieResponse>(`/movie/${type}?language=en-US&page=${page}`);
 
     return (
         <div className="flex flex-col gap-4 items-center">
@@ -71,7 +50,7 @@ const TmdbMovieGrid = ({type}: {type: string}) => {
 
             {
                 isError ? <p>Error</p> : (
-                    isLoading ? <p>Loading...</p> : <MovieGrid movies={movies} />
+                    isLoading ? <p>Loading...</p> : <MovieGrid movies={data!.results} />
                 )
             }
         </div>
