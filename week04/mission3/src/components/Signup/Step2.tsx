@@ -19,9 +19,9 @@ const StepTwo = ({
 }: any) => {
   return (
     <>
-      <div className="flex items-center gap-2 mb-2">
-        <img src={Email} alt="email" className="w-5 h-5 invert" />
-        <div className="text-sm text-gray-400">{email}</div>
+      <div className="flex items-center gap-2 mb-4">
+        <img src={Email} alt="email" className="ml-[2px] w-5 h-5 invert" />
+        <div className="text-sm text-white-400">{email}</div>
       </div>
 
       <div className="relative">
@@ -62,7 +62,7 @@ const StepTwo = ({
       <button
         onClick={onNext}
         disabled={!password || !confirmPassword || !!errors.password || !!errors.confirmPassword}
-        className="w-full bg-pink-700 text-white py-2 mt-4 rounded disabled:bg-gray-700"
+        className="w-full bg-pink-700 text-white py-2 mt-4 rounded disabled:bg-neutral-800"
       >
         다음
       </button>

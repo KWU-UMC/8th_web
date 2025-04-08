@@ -17,7 +17,7 @@ const StepThree = ({ nickname, onChangeNickname, onSubmit }: any) => {
       <button
         onClick={onSubmit}
         disabled={!nickname.trim()}
-        className="w-full bg-pink-700 text-white py-2 mt-4 rounded disabled:bg-gray-700"
+        className="w-full bg-pink-700 text-white py-2 mt-4 rounded disabled:bg-neutral-800"
       >
         회원가입 완료
       </button>

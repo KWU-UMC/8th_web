@@ -22,7 +22,7 @@ const StepOne = ({ email, error, touched, onChange, onBlur, onNext }: any) => {
       <button
         onClick={onNext}
         disabled={!email || !!error}
-        className="w-full bg-pink-700 text-white py-2 mt-4 rounded disabled:bg-gray-700"
+        className="w-full bg-pink-700 text-white py-2 mt-4 rounded disabled:bg-neutral-800"
       >
         다음
       </button>
