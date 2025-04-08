@@ -49,5 +49,7 @@ export function useForm<T extends Record<string, any>>({
     errors,
     touched,
     getTextInputProps,
+    handleChangeInput, 
+    handleBlur, 
   };
 }
