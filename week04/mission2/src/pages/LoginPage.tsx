@@ -4,7 +4,7 @@ import GoogleLoginButton from "../components/GoogleLoginBtn";
 import InputField from "../components/InputField";
 import { validateLogin } from "../utils/validate";
 import { useForm } from "../hooks/useForm";
-import axios from "axios";
+import { postSignin } from "../apis/auth";
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -19,10 +19,7 @@ const LoginPage = () => {
     // 확인용
     const handlePressLogin = async () => {
         try {
-          const response = await axios.post("http://localhost:8000/v1/auth/signin", {
-            email: login.values.email,
-            password: login.values.password,
-          });
+          const response = await postSignin(login.values.email, login.values.password);
       
           if (response.status === 200 || response.status === 201) {
             console.log("로그인 성공", response.data);
