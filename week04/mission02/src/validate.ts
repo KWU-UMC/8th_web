@@ -6,22 +6,16 @@ export type SignInForm = {
 };
 
 export function validate(v: SignInForm): Record<keyof SignInForm, string> {
+    let email = '';
+    let password = '';
+
     if (!emailRegex.test(v.email)) {
-        return {
-            email: '올바른 이메일을 입력하세요.',
-            password: ''
-        }
+        email = '올바른 이메일을 입력하세요.';
     }
 
     if (v.password.length < 6) {
-        return {
-            email: '',
-            password: '비밀번호는 6자 이상이어야 합니다.'
-        }
+        password = '비밀번호는 6자 이상이어야 합니다.';
     }
 
-    return {
-        email: '',
-        password: ''
-    }
+    return { email, password };
 }
