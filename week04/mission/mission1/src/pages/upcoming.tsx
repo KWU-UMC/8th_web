@@ -1,44 +1,16 @@
-import { useEffect, useState } from "react";
-import { MovieResponse } from "../types/movie_type";
+import { useState } from "react";
 import MovieContainer from "../components/movie";
 import Loadindicator from "../components/loadindicator";
-import { useNavigate } from "react-router-dom";
 import Pagebutton from "../components/pagebutton";
+import { useMovie } from "../hooks/useFetch";
 
 export default function Upcoming() {
-  const navigate = useNavigate();
-  const [movies, setMovies] = useState<MovieResponse | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
-  const [pageTrigger, setPageTrigger] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchMovies = async () => {
-      const url = `https://api.themoviedb.org/3/movie/upcoming?language=en-US&page=${page}`;
-      const options = {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_MOVIE_API}`,
-        },
-      };
-
-      try {
-        const response = await fetch(url, options);
-        if (!response.ok) {
-          navigate("/error");
-          throw new Error(`API request error: ${response.status}`);
-        }
-        const data: MovieResponse = await response.json();
-        setMovies(data);
-        setIsLoading(false);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchMovies();
-  }, [pageTrigger]);
+  const { movies, isLoading, setPageTrigger } = useMovie({
+    type: "upcoming",
+    page,
+  });
 
   if (isLoading) return <Loadindicator />;
 

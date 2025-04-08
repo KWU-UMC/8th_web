@@ -1,73 +1,17 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { DetailI } from "../types/detail_type";
+import { useParams } from "react-router-dom";
 import Loadindicator from "../components/loadindicator";
-import { Credits, CreditsData } from "../types/credit_type";
 import Actor from "../components/actor";
+import { useCredit, useDetail } from "../hooks/useFetch";
 
 export default function Detail() {
-  const navigate = useNavigate();
   const params = useParams();
-  const [detail, setDetail] = useState<DetailI | null>(null);
-  const [credit, setCredit] = useState<CreditsData[] | null>(null);
-  const [detailLoading, setDetailLoading] = useState<boolean>(true);
-  const [creditLoading, setCreditLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    const fetchDetail = async () => {
-      const url = `https://api.themoviedb.org/3/movie/${params.movieId}?language=en-US`;
-      const options = {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_MOVIE_API}`,
-        },
-      };
+  const { detail, detailLoading } = useDetail({
+    movieId: params.movieId as string,
+  });
 
-      try {
-        const response = await fetch(url, options);
-        if (!response.ok) {
-          navigate("/error");
-          throw new Error(`API request error: ${response.status}`);
-        }
-        const data: DetailI = await response.json();
-        setDetail(data);
-        setDetailLoading(false);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    const fetchCredit = async () => {
-      const url = `https://api.themoviedb.org/3/movie/${params.movieId}/credits?language=en-US`;
-      const options = {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_MOVIE_API}`,
-        },
-      };
-
-      try {
-        const response = await fetch(url, options);
-        if (!response.ok) {
-          navigate("/error");
-          throw new Error(`API request error: ${response.status}`);
-        }
-        const data: Credits = await response.json();
-        const directors = data.crew.filter(
-          (member) => member.job === "Director"
-        );
-        const CreditsList: CreditsData[] = [...directors, ...data.cast];
-        setCredit(CreditsList);
-        setCreditLoading(false);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchDetail();
-    fetchCredit();
+  const { credit, creditLoading } = useCredit({
+    movieId: params.movieId as string,
   });
 
   if (detailLoading || creditLoading) return <Loadindicator />;
