@@ -14,7 +14,7 @@ export default function Navigation() {
           로그인
         </button>
         <button
-          onClick={() => navigate("/login")}
+          onClick={() => navigate("/signup")}
           className="text-white bg-pink-300"
         >
           회원가입
