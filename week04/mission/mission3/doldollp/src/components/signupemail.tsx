@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import UseLocalstorage from "../../hooks/useLocalstorage";
 
 interface SignupemailI {
   setSubmittedEmail: React.Dispatch<SetStateAction<string | null>>;
@@ -24,6 +25,8 @@ export default function Signupemail({ setSubmittedEmail }: SignupemailI) {
   });
   const onSubmit = (data: FormData) => {
     setSubmittedEmail(data.email);
+    const useLocalstorage = UseLocalstorage();
+    useLocalstorage({ key: "email", value: data.email });
   };
   const oninvalid = () => {
     console.error(errors);

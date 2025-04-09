@@ -3,6 +3,7 @@ import { SetStateAction, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
+import UseLocalstorage from "../../hooks/useLocalstorage";
 
 interface SignuppasswordI {
   setSubmittedPassword: React.Dispatch<SetStateAction<string | null>>;
@@ -36,6 +37,8 @@ export default function Signuppassword({
   });
   const onSubmit = (data: FormData) => {
     setSubmittedPassword(data.password);
+    const useLocalstorage = UseLocalstorage();
+    useLocalstorage({ key: "password", value: data.password });
   };
   const oninvalid = () => {
     console.error(errors);
