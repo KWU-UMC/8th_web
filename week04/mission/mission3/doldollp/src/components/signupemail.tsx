@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SetStateAction, useEffect } from "react";
+import { SetStateAction } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -28,9 +28,6 @@ export default function Signupemail({ setSubmittedEmail }: SignupemailI) {
   const oninvalid = () => {
     console.error(errors);
   };
-  useEffect(() => {
-    console.log(isDirty);
-  }, [isDirty]);
 
   return (
     <form

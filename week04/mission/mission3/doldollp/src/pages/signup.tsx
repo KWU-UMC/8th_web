@@ -3,7 +3,7 @@ import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 import Signuppassword from "../components/signuppassword";
 import Signupemail from "../components/signupemail";
-import { MdOutlineMarkEmailRead } from "react-icons/md";
+import { MdMarkEmailRead } from "react-icons/md";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ export default function Signup() {
       </div>
       {submittedEmail && (
         <div className="w-full flex gap-2 items-center">
-          <MdOutlineMarkEmailRead className="w-6 h-6" />
+          <MdMarkEmailRead className="w-6 h-6" />
           <span>{submittedEmail}</span>
         </div>
       )}
