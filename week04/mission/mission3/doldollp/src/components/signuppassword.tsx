@@ -4,7 +4,13 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 
-export default function Signuppassword() {
+interface SignuppasswordI {
+  setSubmittedPassword: React.Dispatch<SetStateAction<string | null>>;
+}
+
+export default function Signuppassword({
+  setSubmittedPassword,
+}: SignuppasswordI) {
   const [isPasswordSame, setIsPasswordSame] = useState<boolean>(true);
   const [value, setValue] = useState<string>("");
   const [viewPassword, setViewPassword] = useState<boolean>(false);
@@ -29,7 +35,7 @@ export default function Signuppassword() {
     },
   });
   const onSubmit = (data: FormData) => {
-    console.log(data);
+    setSubmittedPassword(data.password);
   };
   const oninvalid = () => {
     console.error(errors);

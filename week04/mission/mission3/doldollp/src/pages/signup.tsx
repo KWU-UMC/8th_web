@@ -4,10 +4,14 @@ import { useNavigate } from "react-router-dom";
 import Signuppassword from "../components/signuppassword";
 import Signupemail from "../components/signupemail";
 import { MdMarkEmailRead } from "react-icons/md";
+import Signupnickname from "../components/signupnickname";
 
 export default function Signup() {
   const navigate = useNavigate();
   const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
+  const [submittedPassword, setSubmittedPassword] = useState<string | null>(
+    null
+  );
 
   return (
     <div className="flex flex-col gap-6 w-100">
@@ -33,10 +37,12 @@ export default function Signup() {
         <hr className="solid flex-4" />
       </div>
       <div>
-        {submittedEmail ? (
-          <Signuppassword />
-        ) : (
+        {!submittedEmail ? (
           <Signupemail setSubmittedEmail={setSubmittedEmail} />
+        ) : !submittedPassword ? (
+          <Signuppassword setSubmittedPassword={setSubmittedPassword} />
+        ) : (
+          <Signupnickname />
         )}
       </div>
     </div>
