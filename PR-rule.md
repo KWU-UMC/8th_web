@@ -1,5 +1,6 @@
 n주차 - 주성/최주성 워크북 과제 제출
 https://github.com/potato637/juseong
+http://localhost:8000/docs
 
 # ✅ n주차 워크북 완료 🎉
 

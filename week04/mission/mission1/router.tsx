@@ -1,3 +1,4 @@
+import React from "react";
 import { createBrowserRouter } from "react-router-dom";
 import App from "./src/App";
 import Popular from "./src/pages/popular";
