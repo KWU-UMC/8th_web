@@ -7,6 +7,7 @@ export default function Navigation() {
     <div className="w-full h-13 fixed inset-0 bg-black flex justify-between p-4 items-center">
       <h2 className="text-2xl text-pink-300 font-bold">돌려돌려LP판</h2>
       <div className="flex gap-4">
+        {}
         <button
           onClick={() => navigate("/login")}
           className="text-white p-2 bg-gray-500"

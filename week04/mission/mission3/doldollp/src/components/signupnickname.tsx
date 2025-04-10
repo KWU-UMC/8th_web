@@ -5,6 +5,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import UseLocalstorage from "../../hooks/useLocalstorage";
+import { signup } from "../../apis/auth";
 
 interface SignupnicknameI {
   setSubmittedNickname: React.Dispatch<SetStateAction<string | null>>;
@@ -27,11 +28,11 @@ export default function Signupnickname({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     setSubmittedNickname(data.nickname);
     const useLocalstorage = UseLocalstorage();
-    useLocalstorage({ key: "email", value: data.nickname });
-
+    useLocalstorage({ key: "nickname", value: data.nickname });
+    const signupResponse = await signup();
     navigate("/");
   };
   const oninvalid = () => {
