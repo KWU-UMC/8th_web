@@ -14,7 +14,6 @@ interface SignupI {
     updatedAt: string;
   };
 }
-
 export async function signup(): Promise<AxiosResponse<SignupI> | undefined> {
   const email = window.localStorage.getItem("email");
   const password = window.localStorage.getItem("password");
@@ -36,4 +35,37 @@ export async function signup(): Promise<AxiosResponse<SignupI> | undefined> {
   }
 }
 
-export function signin() {}
+type SigninProp = {
+  email: string;
+  password: string;
+};
+interface SinginI {
+  statue: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    id: number;
+    name: string;
+    accessToken: string;
+    refreshToken: string;
+  };
+}
+export async function signin({
+  email,
+  password,
+}: SigninProp): Promise<AxiosResponse<SinginI> | undefined> {
+  console.log(email, password);
+  try {
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/signin`,
+      {
+        email,
+        password,
+      }
+    );
+
+    return data;
+  } catch (error) {
+    console.error("API request error: ", error);
+  }
+}

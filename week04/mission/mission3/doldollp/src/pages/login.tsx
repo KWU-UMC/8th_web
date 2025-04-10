@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
+import { signin } from "../../apis/auth";
 
 export default function Login() {
   const [email, setEmail] = useState<string>("");
@@ -16,7 +17,6 @@ export default function Login() {
   const checkValidPassword = (value: string) => {
     return value.length >= 8 ? true : false;
   };
-
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === "") {
       setIsValidEmail(true);
@@ -34,6 +34,11 @@ export default function Login() {
     }
 
     setPassword(e.target.value);
+  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const signinResponse = await signin({ email, password });
+    navigate("/");
   };
 
   return (
@@ -54,7 +59,7 @@ export default function Login() {
         <hr className="solid flex-4" />
       </div>
       <div>
-        <form className="flex flex-col gap-4 w-full">
+        <form className="flex flex-col gap-4 w-full" onSubmit={handleSubmit}>
           <input
             onChange={handleEmailChange}
             className="w-full p-2 bg-black border border-white rounded-xl"
