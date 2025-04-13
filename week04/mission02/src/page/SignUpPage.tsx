@@ -1,5 +1,6 @@
 import {useForm} from "../hooks/useForm.ts";
 import {ChangeEvent, useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 type SignUpForm = {
     email: string;
@@ -78,7 +79,6 @@ const PasswordInputField = ({placeholder, password, onPasswordChange, onBlur}: {
     return <div className={`mt-2 flex gap-x-2 px-2 items-center border border-white rounded-xl ${isFocused ? 'ring-2 ring-blue-500' : ''}`}>
         <input
             type={isHidden ? "password" : "text"}
-            id="password"
             className="w-full p-2 rounded-xl focus:outline-none grow"
             placeholder={placeholder}
             value={password}
@@ -222,7 +222,8 @@ const SignUpProfileImage = ({values, errors, getInputProps, onClickSubmit}: {
 };
 
 export const SignUpPage = () => {
-    const [type, setType] = useState(SignUpStep.EMAIL);
+    const navigate = useNavigate();
+    const [type, setType] = useState(SignUpStep.EMAIL)
 
     const { values, getInputProps, errors } = useForm<SignUpForm>({
         initialValue: {
@@ -234,6 +235,25 @@ export const SignUpPage = () => {
         validate: validateSignUp
     })
 
+    const handleSubmit = async () => {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/v1/auth/signup`, {
+            method: 'POST',
+            body: JSON.stringify({
+                email: values.email,
+                password: values.password,
+                name: values.username,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+
+        if (response.ok) {
+            console.log(await response.json())
+            navigate('/login')
+        }
+    }
+
     return (
         <div className="mt-12 w-96 mx-auto bg-neutral-300 p-8 rounded-2xl">
             <div className="flex gap-4 h-4 justify-center items-center relative">
@@ -244,6 +264,8 @@ export const SignUpPage = () => {
                             setType(SignUpStep.EMAIL)
                         } else if (type == SignUpStep.PROFILE_IMAGE) {
                             setType(SignUpStep.PASSWORD)
+                        } else {
+                            navigate(-1)
                         }
                     }}
                 >&lt;</button>
@@ -260,7 +282,7 @@ export const SignUpPage = () => {
                     : (
                         type == SignUpStep.PASSWORD ?
                             <SignUpPassword values={values} errors={errors} getInputProps={getInputProps} onClickNext={() => { setType(SignUpStep.PROFILE_IMAGE) }} />
-                            : <SignUpProfileImage values={values} errors={errors} getInputProps={getInputProps} onClickSubmit={() => {}} />
+                            : <SignUpProfileImage values={values} errors={errors} getInputProps={getInputProps} onClickSubmit={handleSubmit} />
                     )
             }
         </div>

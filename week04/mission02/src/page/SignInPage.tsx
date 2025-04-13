@@ -1,7 +1,13 @@
 import {useForm} from "../hooks/useForm.ts";
 import {SignInForm, validate} from "../validate.ts";
+import {useNavigate} from "react-router-dom";
+import useLocalStorage from "../hooks/useLocalStorage.ts";
 
 export const SignInPage = () => {
+    const navigate = useNavigate();
+    const [, setAccessToken] = useLocalStorage<string | undefined>('accessToken', undefined);
+    const [, setRefreshToken] = useLocalStorage<string | undefined>('refreshToken', undefined);
+
     const { values, getInputProps, errors } = useForm<SignInForm>({
         initialValue: {
             email: '',
@@ -10,12 +16,38 @@ export const SignInPage = () => {
         validate: validate
     });
 
+    const handleSignIn = async () => {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/v1/auth/signin`, {
+            method: 'POST',
+            body: JSON.stringify({
+                email: values.email,
+                password: values.password,
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const json = await response.json();
+            const accessToken = json.data.accessToken;
+            const refreshToken = json.data.refreshToken;
+
+            setAccessToken(accessToken);
+            setRefreshToken(refreshToken);
+
+            alert('로그인 성공');
+        } else {
+            alert('로그인 실패');
+        }
+    };
+
     return (
         <div className="mt-12 w-96 mx-auto bg-neutral-300 p-8 rounded-2xl">
             <div className="flex gap-4 h-4 justify-center items-center relative">
                 <button
                     className="absolute left-0 hover:bg-neutral-400 p-4 rounded-xl"
-                    onClick={() => { }}
+                    onClick={() => { navigate(-1) }}
                 >&lt;</button>
                 <p className="text-2xl">로그인</p>
             </div>
@@ -62,6 +94,7 @@ export const SignInPage = () => {
 
             <button
                 className="mt-4 w-full p-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors disabled:bg-blue-200"
+                onClick={handleSignIn}
                 disabled={values.password.length == 0 || values.email.length == 0 || errors?.password?.length != 0 || errors?.email?.length != 0}
             >
                 로그인
