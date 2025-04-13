@@ -9,12 +9,12 @@ export default function MovieDetailPage (){
     // const [credits,  setCredits] = useState<CreditResponse |null> (null);
     // const [isLoading, setIsLoading] = useState(false);
     // const [isError, setIsError] = useState(false);
-    const movieUrl = `https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR`;
-    const creditsUrl = `https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR`;
+    const movieUrl = `https://api.themoviedb.org/3/movie/${movieId}`;
+    const creditsUrl = `https://api.themoviedb.org/3/movie/${movieId}/credits`;
 
-    const {data: movie, isPending: isMovieLoading, isError: isMovieError} = useCustomFetch<MovieDetail>(movieUrl);
+    const {data: movie, isPending: isMovieLoading, isError: isMovieError} = useCustomFetch<MovieDetail>(movieUrl,'ko-KR');
 
-    const {data: credits, isPending: isCreditsLoading, isError: isCreditsError} = useCustomFetch<CreditResponse>(creditsUrl);
+    const {data: credits, isPending: isCreditsLoading, isError: isCreditsError} = useCustomFetch<CreditResponse>(creditsUrl,'ko-KR');
 
     const isLoading = isCreditsLoading || isMovieLoading;
     const isError = isMovieError || isCreditsError;

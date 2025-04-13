@@ -9,7 +9,7 @@ interface ApiResponse<T>{
 
 type Language = "ko-KR" | "en-US";
 
-function useCustomFetch<T>(url: string, language:Language): ApiResponse<T>{
+function useCustomFetch<T>(url: string, language:Language="en-US"): ApiResponse<T>{
     const [data, setData] = useState<T| null>(null);
     const [isPending, setIsPending] = useState(false);
     const [isError, setIsError] = useState(false);
@@ -36,7 +36,7 @@ function useCustomFetch<T>(url: string, language:Language): ApiResponse<T>{
             }
         };
         fetchData();
-    },[url]);
+    },[url, language]);
 
     return {data, isPending, isError};
 }

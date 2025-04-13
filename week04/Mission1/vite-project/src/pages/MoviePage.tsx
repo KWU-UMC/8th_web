@@ -15,7 +15,7 @@ export default function MoviePage(){
     const url = `https://api.themoviedb.org/3/movie/${category}?&page=${page}`;
     
 
-    const {data:movies, isPending, isError} = useCustomFetch<MovieResponse>(url, 'ko-KR');
+    const {data:movies, isPending, isError} = useCustomFetch<MovieResponse>(url);
 
     
 
