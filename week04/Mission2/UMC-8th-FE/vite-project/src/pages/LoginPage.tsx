@@ -18,14 +18,14 @@ const LoginPage = () => {
     Object.values(values).some((value) => value === "");
 
     return(
-        <div className="flex flex-col items-center h-screen justify-center h-full gap-4
+        <div className="flex flex-col items-center justify-center h-full gap-4
         bg-black text-white">
             <div className="flex flex-col gap-3">
                 <input 
                 {...getInputProps("email")}
                 className={`border border-[#ccc] 
                     w-[300px] p-[10px] focus:border-[#807bff] rounded-sm
-                    ${errors?.email && touched?.email ? "border-red-500 bg-red-200" : "border-gray-300"}`}
+                    ${errors?.email && touched?.email ? "border-blue-300" : "border-gray-300"}`}
                 type={"email"}
                 placeholder={"이메일"} 
                 />
@@ -36,7 +36,7 @@ const LoginPage = () => {
                 {...getInputProps("password")}
                 className={`border border-[#ccc] 
                     w-[300px] p-[10px] focus:border-[#807bff] rounded-sm
-                    ${errors?.password && touched?.password ? "border-red-500 bg-red-200" : "border-gray-300"}`}
+                    ${errors?.password && touched?.password ? "border-blue-300" : "border-gray-300"}`}
                 type={"password"}
                 placeholder={"비밀번호"} 
                 />

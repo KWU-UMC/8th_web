@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 
 const HomeLayout = () =>{
     return(
@@ -7,16 +7,23 @@ const HomeLayout = () =>{
             flex justify-between items-right"> 
                 <div> 돌려돌려LP판 </div>
                 <div className="flex space-x-3">
-                    <button className="bg-black text-white py-1 px-3 rounded-md
-                    hover:bg-pink-600 transition-colors text-sm"> 로그인 </button>
-                    <button  className="bg-black text-white py-1 px-3 rounded-md
-                    hover:bg-pink-600 transition-colors text-sm"> 회원가입 </button>
+                    <NavLink
+                        to="login"
+                        className="bg-black text-white py-1 px-3 rounded-md
+                        hover:bg-pink-600 transition-colors text-sm">
+                        로그인
+                    </NavLink>
+                    <NavLink
+                        to="signup"
+                        className="bg-black text-white py-1 px-3 rounded-md
+                        hover:bg-pink-600 transition-colors text-sm">
+                            회원가입
+                    </NavLink>
                 </div>
             </nav>
             <main className="flex-1"> 
                 <Outlet/> 
             </main>
-            {/* <footer> 푸터 </footer> */}
         </div>
     );
 };
