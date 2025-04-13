@@ -6,7 +6,10 @@ interface ApiResponse<T>{
     isPending: boolean;
     isError: boolean;
 }
-function useCustomFetch<T>(url: string): ApiResponse<T>{
+
+type Language = "ko-KR" | "en-US";
+
+function useCustomFetch<T>(url: string, language:Language): ApiResponse<T>{
     const [data, setData] = useState<T| null>(null);
     const [isPending, setIsPending] = useState(false);
     const [isError, setIsError] = useState(false);
@@ -19,6 +22,9 @@ function useCustomFetch<T>(url: string): ApiResponse<T>{
                 const {data} = await axios.get<T>(url, {
                     headers:{
                         Authorization: `Bearer ${import.meta.env.VITE_TMDB_KEY}`,
+                    },
+                    params:{
+                        language,
                     }
                 });
 

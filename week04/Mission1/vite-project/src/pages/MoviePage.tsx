@@ -12,10 +12,10 @@ export default function MoviePage(){
     const {category} = useParams<{
         category: string;
     }>();
-    const url = `https://api.themoviedb.org/3/movie/${category}?language=ko-KR&page=${page}`;
+    const url = `https://api.themoviedb.org/3/movie/${category}?&page=${page}`;
     
 
-    const {data:movies, isPending, isError} = useCustomFetch<MovieResponse>(url);
+    const {data:movies, isPending, isError} = useCustomFetch<MovieResponse>(url, 'ko-KR');
 
     
 
