@@ -1,47 +1,39 @@
-import {useForm} from "../hooks/useForm.ts";
 import {ChangeEvent, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {z} from "zod";
+import {FieldErrors, SubmitHandler, useForm, UseFormRegister, UseFormRegisterReturn} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
 
-type SignUpForm = {
-    email: string;
-    password: string;
-    passwordConfirm: string;
-    username: string;
-};
+type SignUpForm = z.infer<typeof signUpSchema>;
 
-const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-function validateSignUp(value: SignUpForm): Record<keyof SignUpForm, string> {
-    return {
-        email: emailRegex.test(value.email) ? '' : '올바른 이메일을 입력하세요.',
-        password: value.password.length > 0 && value.password.length < 5 ? '비밀번호는 5자 이상이어야 해요.' : '',
-        passwordConfirm: value.passwordConfirm.length > 0 && value.passwordConfirm != value.password ? '비밀번호가 같지 않아요.' : '',
-        username: '',
-    }
-}
+const signUpSchema = z.object({
+    email: z.string().email({ message: '올바른 이메일을 입력하세요.' }),
+    password: z.string().min(5, { message: '비밀번호는 5자 이상이어야 해요.' }),
+    passwordConfirm: z.string(),
+    username: z.string().min(1),
+}).refine(data => data.password === data.passwordConfirm, {
+    message: "비밀번호가 같지 않아요.",
+    path: ["passwordConfirm"],
+});
 
 enum SignUpStep {
     EMAIL, PASSWORD, PROFILE_IMAGE
 }
 
-const EmailInputField = ({getInputProps, placeholder}: {
-    getInputProps: (name: keyof SignUpForm) => {
-        value: string;
-        onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-        onBlur: (e: ChangeEvent<HTMLInputElement>) => void;
-    },
+const EmailInputField = ({register, placeholder}: {
+    register: UseFormRegister<SignUpForm>,
     placeholder: string
 }) => {
     const [isFocused, setIsFocused] = useState(false);
-    const { value, onChange, onBlur } = getInputProps('email');
+    const { onBlur, ...rest } = register('email');
 
     const handleFocus = () => {
         setIsFocused(true);
     };
 
-    const handleBlur = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleBlur = async (e: ChangeEvent<HTMLInputElement>) => {
         setIsFocused(false);
-        onBlur(e);
+        await onBlur(e);
     };
 
     return <div className={`mt-6 flex gap-x-2 items-center border border-white rounded-xl ${isFocused ? 'ring-2 ring-blue-500' : ''}`}>
@@ -50,30 +42,29 @@ const EmailInputField = ({getInputProps, placeholder}: {
             id="email"
             className="w-full p-2 rounded-xl focus:outline-none"
             placeholder={placeholder}
-            value={value}
-            onChange={onChange}
+            {...rest}
             onFocus={handleFocus}
             onBlur={handleBlur}
         />
     </div>
 }
 
-const PasswordInputField = ({placeholder, password, onPasswordChange, onBlur}: {
+const PasswordInputField = ({placeholder, register}: {
     placeholder: string,
-    password: string,
-    onPasswordChange: (e: ChangeEvent<HTMLInputElement>) => void,
-    onBlur: (e: ChangeEvent<HTMLInputElement>) => void
+    register: UseFormRegisterReturn,
 }) => {
     const [isFocused, setIsFocused] = useState(false);
     const [isHidden, setIsHidden] = useState(true);
+
+    const { onBlur, ...rest } = register;
 
     const handleFocus = () => {
         setIsFocused(true);
     };
 
-    const handleBlur = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleBlur = async (e: ChangeEvent<HTMLInputElement>) => {
         setIsFocused(false);
-        onBlur(e);
+        await onBlur(e);
     };
 
     return <div className={`mt-2 flex gap-x-2 px-2 items-center border border-white rounded-xl ${isFocused ? 'ring-2 ring-blue-500' : ''}`}>
@@ -81,10 +72,9 @@ const PasswordInputField = ({placeholder, password, onPasswordChange, onBlur}: {
             type={isHidden ? "password" : "text"}
             className="w-full p-2 rounded-xl focus:outline-none grow"
             placeholder={placeholder}
-            value={password}
-            onChange={onPasswordChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
+            {...rest}
         />
 
         {
@@ -95,14 +85,9 @@ const PasswordInputField = ({placeholder, password, onPasswordChange, onBlur}: {
     </div>
 }
 
-const SignUpEmail = ({values, errors, getInputProps, onClickNext}: {
-    values: SignUpForm,
-    errors: Record<keyof SignUpForm, string> | undefined,
-    getInputProps: (name: keyof SignUpForm) => {
-        value: string;
-        onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-        onBlur: () => void;
-    },
+const SignUpEmail = ({errors, register, onClickNext}: {
+    errors: FieldErrors<SignUpForm>,
+    register: UseFormRegister<SignUpForm>,
     onClickNext: () => void,
 }) => {
     return (
@@ -120,86 +105,73 @@ const SignUpEmail = ({values, errors, getInputProps, onClickNext}: {
             </div>
 
             <EmailInputField 
-                getInputProps={getInputProps}
+                register={register}
                 placeholder="이메일을 입력하세요"
             />
 
             {
-                values.email.length > 0 && errors?.email ?
-                    <p className="text-red-500">{errors.email}</p>
+                errors?.email ?
+                    <p className="text-red-500">{errors.email.message}</p>
                     : <></>
             }
 
             <button
                 onClick={onClickNext}
                 className="mt-4 w-full p-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors disabled:bg-blue-200"
-                disabled={values.email.length == 0 || errors?.email?.length != 0}
+                disabled={errors.email?.message !== undefined}
             >다음</button>
         </>
     )
 }
 
-const SignUpPassword = ({values, errors, getInputProps, onClickNext}: {
-    values: SignUpForm,
-    errors: Record<string, string> | undefined,
-    getInputProps: (name: keyof SignUpForm) => {
-        value: string;
-        onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-        onBlur: () => void;
-    },
+const SignUpPassword = ({email, errors, register, onClickNext}: {
+    email: string,
+    errors: FieldErrors<SignUpForm>,
+    register: UseFormRegister<SignUpForm>,
     onClickNext: () => void,
 }) => {
-    const {value: passwordValue, onChange: onPasswordChange, onBlur: onPasswordBlur} = getInputProps('password');
-    const {value: passwordConfirmValue, onChange: onPasswordConfirmChange, onBlur: onPasswordConfirmBlur} = getInputProps('passwordConfirm');
+    const passwordRegister = register('password');
+    const passwordConfirmRegister = register('passwordConfirm');
 
     return (
         <>
             <p
                 className="mt-8 font-bold">
-                이메일: {values.email}
+                이메일: {email}
             </p>
 
             <PasswordInputField
                 placeholder="비밀번호를 입력하세요"
-                password={passwordValue}
-                onPasswordChange={onPasswordChange}
-                onBlur={onPasswordBlur} />
+                register={passwordRegister} />
 
             {
-                values.password.length > 0 && errors?.password?.length ?
-                    <p className="text-red-500">{errors.password}</p>
+                errors.password !== undefined ?
+                    <p className="text-red-500">{errors.password.message}</p>
                     : <></>
             }
 
             <PasswordInputField
                 placeholder="비밀번호를 다시 입력하세요"
-                password={passwordConfirmValue}
-                onPasswordChange={onPasswordConfirmChange}
-                onBlur={onPasswordConfirmBlur} />
+                register={passwordConfirmRegister} />
 
             {
-                values.passwordConfirm.length > 0 && errors?.passwordConfirm ?
-                    <p className="text-red-500">{errors.passwordConfirm}</p>
+                errors.passwordConfirm !== undefined ?
+                    <p className="text-red-500">{errors.passwordConfirm.message}</p>
                     : <></>
             }
 
             <button
                 onClick={onClickNext}
                 className="mt-4 w-full p-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors disabled:bg-blue-200"
-                disabled={values.password.length == 0 || errors?.password?.length != 0 || values.passwordConfirm.length == 0 || errors?.passwordConfirm?.length != 0 }
+                disabled={errors?.password !== undefined || errors?.passwordConfirm !== undefined }
             >다음</button>
         </>
     )
 }
 
-const SignUpProfileImage = ({values, errors, getInputProps, onClickSubmit}: {
-    values: SignUpForm,
-    errors: Record<string, string> | undefined,
-    getInputProps: (name: keyof SignUpForm) => {
-        value: string;
-        onChange: (e: ChangeEvent<HTMLInputElement>) => void;
-        onBlur: () => void;
-    },
+const SignUpProfileImage = ({errors, register, onClickSubmit}: {
+    errors: FieldErrors<SignUpForm>,
+    register: UseFormRegister<SignUpForm>,
     onClickSubmit: () => void,
 }) => {
     return (
@@ -207,7 +179,7 @@ const SignUpProfileImage = ({values, errors, getInputProps, onClickSubmit}: {
             <img className="rounded-full size-32 bg-neutral-400 border-white" alt="profile" />
 
             <input
-                {...getInputProps('username')}
+                {...register('username')}
                 className="w-full p-2 border rounded-xl border-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type="text"
                 placeholder="이름을 입력하세요" />
@@ -215,7 +187,7 @@ const SignUpProfileImage = ({values, errors, getInputProps, onClickSubmit}: {
             <button
                 onClick={onClickSubmit}
                 className="mt-4 w-full p-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors disabled:bg-blue-200"
-                disabled={values.username.length == 0 || errors?.username?.length != 0}
+                disabled={errors.username !== undefined}
             >제출</button>
         </div>
     )
@@ -225,23 +197,24 @@ export const SignUpPage = () => {
     const navigate = useNavigate();
     const [type, setType] = useState(SignUpStep.EMAIL)
 
-    const { values, getInputProps, errors } = useForm<SignUpForm>({
-        initialValue: {
+    const { register, trigger, handleSubmit, formState: { errors } } = useForm<SignUpForm>({
+        defaultValues: {
             email: '',
             password: '',
             passwordConfirm: '',
             username: ''
         },
-        validate: validateSignUp
+        resolver: zodResolver(signUpSchema),
+        mode: 'onBlur'
     })
 
-    const handleSubmit = async () => {
+    const onSubmit: SubmitHandler<SignUpForm> = async (data) => {
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/v1/auth/signup`, {
             method: 'POST',
             body: JSON.stringify({
-                email: values.email,
-                password: values.password,
-                name: values.username,
+                email: data.email,
+                password: data.password,
+                name: data.username,
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -275,14 +248,17 @@ export const SignUpPage = () => {
             {
                 type == SignUpStep.EMAIL ?
                     <SignUpEmail
-                        values={values}
                         errors={errors}
-                        getInputProps={getInputProps}
-                        onClickNext={() => { setType(SignUpStep.PASSWORD) }} />
+                        register={register}
+                        onClickNext={async () => {
+                            if (await trigger('email')) {
+                                setType(SignUpStep.PASSWORD)
+                            }
+                        }} />
                     : (
                         type == SignUpStep.PASSWORD ?
-                            <SignUpPassword values={values} errors={errors} getInputProps={getInputProps} onClickNext={() => { setType(SignUpStep.PROFILE_IMAGE) }} />
-                            : <SignUpProfileImage values={values} errors={errors} getInputProps={getInputProps} onClickSubmit={handleSubmit} />
+                            <SignUpPassword email={""} errors={errors} register={register} onClickNext={() => { setType(SignUpStep.PROFILE_IMAGE) }} />
+                            : <SignUpProfileImage errors={errors} register={register} onClickSubmit={handleSubmit(onSubmit)} />
                     )
             }
         </div>

@@ -1,27 +1,43 @@
-import {useForm} from "../hooks/useForm.ts";
-import {SignInForm, validate} from "../validate.ts";
 import {useNavigate} from "react-router-dom";
 import useLocalStorage from "../hooks/useLocalStorage.ts";
+import {useForm} from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const signInSchema = z.object({
+    email: z.string().email({ message: '올바른 이메일을 입력하세요.' }),
+    password: z.string().min(6, { message: '비밀번호는 6자 이상이어야 합니다.' })
+});
+
+type SignInForm = z.infer<typeof signInSchema>;
 
 export const SignInPage = () => {
     const navigate = useNavigate();
     const [, setAccessToken] = useLocalStorage<string | undefined>('accessToken', undefined);
     const [, setRefreshToken] = useLocalStorage<string | undefined>('refreshToken', undefined);
 
-    const { values, getInputProps, errors } = useForm<SignInForm>({
-        initialValue: {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        watch
+    } = useForm<SignInForm>({
+        defaultValues: {
             email: '',
             password: ''
         },
-        validate: validate
+        resolver: zodResolver(signInSchema),
+        mode: 'onBlur'
     });
 
-    const handleSignIn = async () => {
+    const values = watch();
+
+    const onSubmit = handleSubmit(async (data) => {
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/v1/auth/signin`, {
             method: 'POST',
             body: JSON.stringify({
-                email: values.email,
-                password: values.password,
+                email: data.email,
+                password: data.password,
             }),
             headers: {
                 'Content-Type': 'application/json'
@@ -40,7 +56,7 @@ export const SignInPage = () => {
         } else {
             alert('로그인 실패');
         }
-    };
+    });
 
     return (
         <div className="mt-12 w-96 mx-auto bg-neutral-300 p-8 rounded-2xl">
@@ -64,41 +80,39 @@ export const SignInPage = () => {
                 <hr className="flex-grow my-4 border-gray-400"/>
             </div>
 
-            <input
-                {...getInputProps('email')}
-                type="email"
-                id="email"
-                className="mt-6 w-full p-2 border border-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="이메일을 입력하세요"
-            />
+            <form onSubmit={onSubmit}>
+                <input
+                    {...register('email')}
+                    type="email"
+                    id="email"
+                    className="mt-6 w-full p-2 border border-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="이메일을 입력하세요"
+                />
 
-            {
-                values.email.length > 0 && errors?.email ?
-                    <p className="text-red-500">{errors.email}</p>
-                    : <></>
-            }
+                {errors.email && (
+                    <p className="text-red-500">{errors.email.message}</p>
+                )}
 
-            <input
-                {...getInputProps('password')}
-                type="password"
-                id="password"
-                className="mt-4 w-full p-2 border border-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="비밀번호를 입력하세요"
-            />
+                <input
+                    {...register('password')}
+                    type="password"
+                    id="password"
+                    className="mt-4 w-full p-2 border border-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="비밀번호를 입력하세요"
+                />
 
-            {
-                values.password.length > 0 && errors?.password ?
-                    <p className="text-red-500">{errors.password}</p>
-                    : <></>
-            }
+                {errors.password && (
+                    <p className="text-red-500">{errors.password.message}</p>
+                )}
 
-            <button
-                className="mt-4 w-full p-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors disabled:bg-blue-200"
-                onClick={handleSignIn}
-                disabled={values.password.length == 0 || values.email.length == 0 || errors?.password?.length != 0 || errors?.email?.length != 0}
-            >
-                로그인
-            </button>
+                <button
+                    type="submit"
+                    className="mt-4 w-full p-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors disabled:bg-blue-200"
+                    disabled={!values.email || !values.password || !!errors.email || !!errors.password}
+                >
+                    로그인
+                </button>
+            </form>
         </div>
     )
 }
