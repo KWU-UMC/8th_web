@@ -3,7 +3,7 @@ import HomePage from './pages/HomePage';
 import MoviePage from './pages/MoviePage'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import NotFoundPage from './pages/NotFoundPage';
-import MovieDetailPage from './components/MovieDetailPage';
+import MovieDetailPage from './pages/MovieDetailPage';
 
 const router = createBrowserRouter([
   {

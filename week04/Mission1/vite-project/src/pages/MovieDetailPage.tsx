@@ -1,48 +1,23 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { CreditResponse, MovieDetail } from "../types/movie";
-import axios from "axios";
-import { LoadingSpinner } from "./LoadingSpinner";
+import { LoadingSpinner } from "../components/LoadingSpinner";
+import useCustomFetch from "../hooks/useCustomFetch";
 
 export default function MovieDetailPage (){
     const { movieId } = useParams<{ movieId : string }>();
-    const [movie, setMovie] = useState<MovieDetail | null>(null);
-    const [credits,  setCredits] = useState<CreditResponse |null> (null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [isError, setIsError] = useState(false);
+    // const [movie, setMovie] = useState<MovieDetail | null>(null);
+    // const [credits,  setCredits] = useState<CreditResponse |null> (null);
+    // const [isLoading, setIsLoading] = useState(false);
+    // const [isError, setIsError] = useState(false);
+    const movieUrl = `https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR`;
+    const creditsUrl = `https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR`;
 
-    useEffect(() => {
-        setIsLoading(true);
+    const {data: movie, isPending: isMovieLoading, isError: isMovieError} = useCustomFetch<MovieDetail>(movieUrl);
 
-        const fetchDetails = async () => {
-            try{
-                const [moviesRes, creditsRes] = await Promise.all([
-                    axios.get<MovieDetail>(
-                    `https://api.themoviedb.org/3/movie/${movieId}?language=ko-KR`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${import.meta.env.VITE_TMDB_KEY}`,
-                        }
-                    }),
-                    axios.get<CreditResponse>(
-                        `https://api.themoviedb.org/3/movie/${movieId}/credits?language=ko-KR`,
-                        {
-                            headers:{
-                                Authorization: `Bearer ${import.meta.env.VITE_TMDB_KEY}`,
-                            }
-                    }),
-                ]);
-                setMovie(moviesRes.data);
-                setCredits(creditsRes.data);
-            }catch {
-                setIsError(true);
-            }finally{
-                setIsLoading(false);
-            }
-        };
+    const {data: credits, isPending: isCreditsLoading, isError: isCreditsError} = useCustomFetch<CreditResponse>(creditsUrl);
 
-        fetchDetails();
-    }, [movieId]);
+    const isLoading = isCreditsLoading || isMovieLoading;
+    const isError = isMovieError || isCreditsError;
 
     if(isError){
         return(
