@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import useForm from "../hooks/useForm";
 import { UserSiginInformation, validateSignin } from "../utils/validate";
+import { postSignin } from "../apis/auth";
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -12,8 +13,14 @@ const LoginPage = () => {
         validate: validateSignin,
     });
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         console.log(values);
+        try{
+            const response = await postSignin(values);
+            localStorage.setItem("accessToken", response.data.accessToken);
+        }catch(error){
+            alert(error?.message);
+        }
     }
     const isDisabled =
     Object.values(errors || {}).some((error) => error.length > 0) ||
