@@ -5,6 +5,7 @@ type SignUpForm = {
     email: string;
     password: string;
     passwordConfirm: string;
+    username: string;
 };
 
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -13,7 +14,8 @@ function validateSignUp(value: SignUpForm): Record<keyof SignUpForm, string> {
     return {
         email: emailRegex.test(value.email) ? '' : '올바른 이메일을 입력하세요.',
         password: value.password.length > 0 && value.password.length < 5 ? '비밀번호는 5자 이상이어야 해요.' : '',
-        passwordConfirm: value.passwordConfirm.length > 0 && value.passwordConfirm != value.password ? '비밀번호가 같지 않아요.' : ''
+        passwordConfirm: value.passwordConfirm.length > 0 && value.passwordConfirm != value.password ? '비밀번호가 같지 않아요.' : '',
+        username: '',
     }
 }
 
@@ -21,18 +23,67 @@ enum SignUpStep {
     EMAIL, PASSWORD, PROFILE_IMAGE
 }
 
-const PasswordInputField = ({password, onPasswordChange}: {
-    password: string,
-    onPasswordChange: (password: string) => void
+const EmailInputField = ({getInputProps, placeholder}: {
+    getInputProps: (name: keyof SignUpForm) => {
+        value: string;
+        onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+        onBlur: (e: ChangeEvent<HTMLInputElement>) => void;
+    },
+    placeholder: string
 }) => {
-    return <div className="form-group">
+    const [isFocused, setIsFocused] = useState(false);
+    const { value, onChange, onBlur } = getInputProps('email');
+
+    const handleFocus = () => {
+        setIsFocused(true);
+    };
+
+    const handleBlur = (e: ChangeEvent<HTMLInputElement>) => {
+        setIsFocused(false);
+        onBlur(e);
+    };
+
+    return <div className={`mt-6 flex gap-x-2 items-center border border-white rounded-xl ${isFocused ? 'ring-2 ring-blue-500' : ''}`}>
+        <input
+            type="email"
+            id="email"
+            className="w-full p-2 rounded-xl focus:outline-none"
+            placeholder={placeholder}
+            value={value}
+            onChange={onChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+        />
+    </div>
+}
+
+const PasswordInputField = ({placeholder, password, onPasswordChange, onBlur}: {
+    placeholder: string,
+    password: string,
+    onPasswordChange: (e: ChangeEvent<HTMLInputElement>) => void,
+    onBlur: (e: ChangeEvent<HTMLInputElement>) => void
+}) => {
+    const [isFocused, setIsFocused] = useState(false);
+
+    const handleFocus = () => {
+        setIsFocused(true);
+    };
+
+    const handleBlur = (e: ChangeEvent<HTMLInputElement>) => {
+        setIsFocused(false);
+        onBlur(e);
+    };
+
+    return <div className={`mt-2 flex gap-x-2 items-center border-white rounded-xl ${isFocused ? 'ring-2 ring-blue-500' : ''}`}>
         <input
             type="password"
             id="password"
-            className="mt-2 w-full p-2 border border-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="비밀번호를 입력하세요"
+            className="w-full p-2 border rounded-xl focus:outline-none"
+            placeholder={placeholder}
             value={password}
-            onChange={(e) => onPasswordChange(e.target.value)}
+            onChange={onPasswordChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
         />
     </div>
 }
@@ -61,11 +112,8 @@ const SignUpEmail = ({values, errors, getInputProps, onClickNext}: {
                 <hr className="flex-grow my-4 border-gray-400"/>
             </div>
 
-            <input
-                {...getInputProps('email')}
-                type="email"
-                id="email"
-                className="mt-6 w-full p-2 border border-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <EmailInputField 
+                getInputProps={getInputProps}
                 placeholder="이메일을 입력하세요"
             />
 
@@ -84,28 +132,31 @@ const SignUpEmail = ({values, errors, getInputProps, onClickNext}: {
     )
 }
 
-const SignUpPassword = ({values, errors, getInputProps}: {
+const SignUpPassword = ({values, errors, getInputProps, onClickNext}: {
     values: SignUpForm,
     errors: Record<string, string> | undefined,
     getInputProps: (name: keyof SignUpForm) => {
         value: string;
         onChange: (e: ChangeEvent<HTMLInputElement>) => void;
         onBlur: () => void;
-    }
-})=> {
+    },
+    onClickNext: () => void,
+}) => {
+    const {value: passwordValue, onChange: onPasswordChange, onBlur: onPasswordBlur} = getInputProps('password');
+    const {value: passwordConfirmValue, onChange: onPasswordConfirmChange, onBlur: onPasswordConfirmBlur} = getInputProps('passwordConfirm');
+
     return (
         <>
             <p
                 className="mt-8 font-bold">
                 이메일: {values.email}
             </p>
-            <input
-                {...getInputProps('password')}
-                type="password"
-                id="password"
-                className="mt-2 w-full p-2 border border-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+
+            <PasswordInputField
                 placeholder="비밀번호를 입력하세요"
-            />
+                password={passwordValue}
+                onPasswordChange={onPasswordChange}
+                onBlur={onPasswordBlur} />
 
             {
                 values.password.length > 0 && errors?.password?.length ?
@@ -113,13 +164,11 @@ const SignUpPassword = ({values, errors, getInputProps}: {
                     : <></>
             }
 
-            <input
-                {...getInputProps('passwordConfirm')}
-                type="password"
-                id="passwordConfirm"
-                className="mt-6 w-full p-2 border border-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <PasswordInputField
                 placeholder="비밀번호를 다시 입력하세요"
-            />
+                password={passwordConfirmValue}
+                onPasswordChange={onPasswordConfirmChange}
+                onBlur={onPasswordConfirmBlur} />
 
             {
                 values.passwordConfirm.length > 0 && errors?.passwordConfirm ?
@@ -128,13 +177,42 @@ const SignUpPassword = ({values, errors, getInputProps}: {
             }
 
             <button
-                onClick={() => {}}
+                onClick={onClickNext}
                 className="mt-4 w-full p-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors disabled:bg-blue-200"
-                disabled={values.email.length == 0 || errors?.email?.length != 0}
+                disabled={values.password.length == 0 || errors?.password?.length != 0 || values.passwordConfirm.length == 0 || errors?.passwordConfirm?.length != 0 }
             >다음</button>
         </>
     )
 }
+
+const SignUpProfileImage = ({values, errors, getInputProps, onClickSubmit}: {
+    values: SignUpForm,
+    errors: Record<string, string> | undefined,
+    getInputProps: (name: keyof SignUpForm) => {
+        value: string;
+        onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+        onBlur: () => void;
+    },
+    onClickSubmit: () => void,
+}) => {
+    return (
+        <div className="flex flex-col items-center gap-y-4 mt-8">
+            <img className="rounded-full size-32 bg-neutral-400 border-white" alt="profile" />
+
+            <input
+                {...getInputProps('username')}
+                className="w-full p-2 border rounded-xl border-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="text"
+                placeholder="이름을 입력하세요" />
+
+            <button
+                onClick={onClickSubmit}
+                className="mt-4 w-full p-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors disabled:bg-blue-200"
+                disabled={values.username.length == 0 || errors?.username?.length != 0}
+            >제출</button>
+        </div>
+    )
+};
 
 export const SignUpPage = () => {
     const [type, setType] = useState(SignUpStep.EMAIL);
@@ -143,7 +221,8 @@ export const SignUpPage = () => {
         initialValue: {
             email: '',
             password: '',
-            passwordConfirm: ''
+            passwordConfirm: '',
+            username: ''
         },
         validate: validateSignUp
     })
@@ -156,6 +235,8 @@ export const SignUpPage = () => {
                     onClick={() => {
                         if (type == SignUpStep.PASSWORD) {
                             setType(SignUpStep.EMAIL)
+                        } else if (type == SignUpStep.PROFILE_IMAGE) {
+                            setType(SignUpStep.PASSWORD)
                         }
                     }}
                 >&lt;</button>
@@ -171,8 +252,8 @@ export const SignUpPage = () => {
                         onClickNext={() => { setType(SignUpStep.PASSWORD) }} />
                     : (
                         type == SignUpStep.PASSWORD ?
-                            <SignUpPassword values={values} errors={errors} getInputProps={getInputProps}/>
-                            : <></>
+                            <SignUpPassword values={values} errors={errors} getInputProps={getInputProps} onClickNext={() => { setType(SignUpStep.PROFILE_IMAGE) }} />
+                            : <SignUpProfileImage values={values} errors={errors} getInputProps={getInputProps} onClickSubmit={() => {}} />
                     )
             }
         </div>
