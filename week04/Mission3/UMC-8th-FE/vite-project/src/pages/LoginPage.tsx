@@ -2,8 +2,11 @@ import { useNavigate } from "react-router-dom";
 import useForm from "../hooks/useForm";
 import { UserSiginInformation, validateSignin } from "../utils/validate";
 import { postSignin } from "../apis/auth";
+import { useLocalStorage } from "../hooks/useLocalStorage";
+import { LOCAL_STORAGE_KEY } from "../constants/key";
 
 const LoginPage = () => {
+    const { setItem } = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
     const navigate = useNavigate();
     const {values, errors, touched, getInputProps} = useForm<UserSiginInformation>({
         initialValue: {
@@ -17,7 +20,7 @@ const LoginPage = () => {
         console.log(values);
         try{
             const response = await postSignin(values);
-            localStorage.setItem("accessToken", response.data.accessToken);
+            setItem(response.data.accessToken);
         }catch(error){
             alert(error?.message);
         }
