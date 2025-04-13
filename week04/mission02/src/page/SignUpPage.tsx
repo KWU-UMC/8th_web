@@ -64,6 +64,7 @@ const PasswordInputField = ({placeholder, password, onPasswordChange, onBlur}: {
     onBlur: (e: ChangeEvent<HTMLInputElement>) => void
 }) => {
     const [isFocused, setIsFocused] = useState(false);
+    const [isHidden, setIsHidden] = useState(true);
 
     const handleFocus = () => {
         setIsFocused(true);
@@ -74,17 +75,23 @@ const PasswordInputField = ({placeholder, password, onPasswordChange, onBlur}: {
         onBlur(e);
     };
 
-    return <div className={`mt-2 flex gap-x-2 items-center border-white rounded-xl ${isFocused ? 'ring-2 ring-blue-500' : ''}`}>
+    return <div className={`mt-2 flex gap-x-2 px-2 items-center border border-white rounded-xl ${isFocused ? 'ring-2 ring-blue-500' : ''}`}>
         <input
-            type="password"
+            type={isHidden ? "password" : "text"}
             id="password"
-            className="w-full p-2 border rounded-xl focus:outline-none"
+            className="w-full p-2 rounded-xl focus:outline-none grow"
             placeholder={placeholder}
             value={password}
             onChange={onPasswordChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
         />
+
+        {
+            isHidden ?
+                <button onClick={() => setIsHidden(false)}>N</button>
+                : <button onClick={() => setIsHidden(true)}>Y</button>
+        }
     </div>
 }
 
