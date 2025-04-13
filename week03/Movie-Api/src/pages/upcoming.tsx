@@ -79,8 +79,8 @@ const Upcoming = () => {
   const [totalPages, setTotalPages] = useState(1);
   const navigate = useNavigate();
 
-  const min_date = "2026-01-01";
-  const max_date = "2026-12-31";
+  const min_date = "2025-01-01";
+  const max_date = "2025-12-31";
   useEffect(() => {
     const fetchUpcoming = async () => {
       try {
