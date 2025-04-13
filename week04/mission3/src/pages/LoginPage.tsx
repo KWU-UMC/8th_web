@@ -1,16 +1,34 @@
-import { UserSigninInformation, validateSignin } from "../../utils/validate";
+import { UserSigninInformation, validateSignin } from "../utils/validate";
 import useForm from "../hooks/useForm";
+import { postSignin } from "../apis/auth";
+import {useLocalStorage} from "../hooks/useLocalStorage.ts"
+import { LOCAL_STORAGE_KEY } from "../constants/key.ts";
+import { AxiosError } from "axios";
 
 const LoginPage = () => {
-    const {values, errors, touched, getInputProps} = useForm<UserSigninInformation>( {
+    const {setItem} = useLocalStorage(LOCAL_STORAGE_KEY.accessToken)
+    const {values, errors, touched, getInputProps} =
+    useForm<UserSigninInformation>( {
         initialValue: {
             email: "",
             password: ""
         },
         validate: validateSignin,
-    })
+    });
 
-    const handleSubmit = () => {};
+    const handleSubmit = async () => {
+      console.log(values);
+      
+      try{
+        const response = await postSignin(values)
+        localStorage.setItem('accessToken', response.data.accessToken)
+        setItem(response.data.accessToken)
+      } catch(error) {
+        if(error instanceof AxiosError) {
+          alert(error?.message);
+        }
+      }
+    };
 
     const isDisabled = Object.values((errors || {})).some((error) => error.length > 0) || Object.values(values).some((value) => value === "");
 
