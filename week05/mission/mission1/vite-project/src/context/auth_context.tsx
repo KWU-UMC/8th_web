@@ -6,14 +6,11 @@ import React, {
   useState,
 } from "react";
 import { auth } from "../apis/auth";
-import { CheckAccessTokenValid } from "../types/auth_type";
 
 interface AuthContextI {
   isLoggedIn: boolean;
   setIsLoggedIn: React.Dispatch<SetStateAction<boolean>>;
-  isAccessTokenValid: (
-    accessToken: string
-  ) => Promise<CheckAccessTokenValid | undefined>;
+  isAccessTokenValid: () => Promise<boolean>;
   accessToken: string;
   setAccessToken: React.Dispatch<SetStateAction<string>>;
   refreshToken: string;
@@ -26,8 +23,10 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [accessToken, setAccessToken] = useState<string>("");
   const [refreshToken, setRefreshToken] = useState<string>("");
-  const isAccessTokenValid = async (accessToken: string) => {
-    return await auth.checkAccessTokenValid(accessToken);
+  const isAccessTokenValid = async () => {
+    const response = await auth.checkAccessTokenValid(accessToken);
+    if (response) return true;
+    return false;
   };
 
   return (

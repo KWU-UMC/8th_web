@@ -16,7 +16,6 @@ export const auth = {
         email,
         password,
       });
-      console.log(data);
 
       return data;
     } catch (error) {
