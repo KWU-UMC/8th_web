@@ -3,9 +3,11 @@ import React, {
   ReactNode,
   SetStateAction,
   useContext,
+  useEffect,
   useState,
 } from "react";
 import { auth } from "../apis/auth";
+import { setNewRefreshToken } from "../apis/token";
 
 interface AuthContextI {
   isLoggedIn: boolean;
@@ -23,9 +25,23 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [accessToken, setAccessToken] = useState<string>("");
   const [refreshToken, setRefreshToken] = useState<string>("");
+
+  useEffect(() => {
+    setNewRefreshToken(refreshToken);
+  }, [refreshToken]);
+
   const isAccessTokenValid = async () => {
-    const response = await auth.checkAccessTokenValid(accessToken);
-    if (response) return true;
+    try {
+      const response = await auth.checkAccessTokenValid(accessToken);
+      const newAccessToken =
+        response.config.headers.Authorization.split(" ")[1];
+      setAccessToken(newAccessToken);
+
+      if (response) return true;
+      return false;
+    } catch (error) {
+      console.error("api request error: ", error);
+    }
     return false;
   };
 

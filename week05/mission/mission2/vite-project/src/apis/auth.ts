@@ -1,5 +1,42 @@
 import axios from "axios";
-import { CheckAccessTokenValid, Login, LP } from "../types/auth_type";
+import { Login, LP } from "../types/auth_type";
+import { getRefreshToken, setNewRefreshToken } from "./token";
+
+const authAPI = axios.create({
+  baseURL: import.meta.env.VITE_BASE_URL,
+});
+authAPI.interceptors.response.use(
+  (response) => {
+    console.log("valid access token");
+    return response;
+  },
+  async (error) => {
+    console.log("invalid access token");
+    const originalRequest = error.config;
+
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        console.log("get a new access token");
+        const refreshToken = getRefreshToken();
+        const newAccessTokenResponse = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/auth/refresh`,
+          { refresh: refreshToken }
+        );
+        setNewRefreshToken(newAccessTokenResponse.data.data.refreshToken);
+        const newAccessToken = newAccessTokenResponse.data.data.accessToken;
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return authAPI(originalRequest);
+      } catch (refreshError) {
+        console.error("Failed to refresh AccessToken: ", refreshError);
+        return Promise.reject("refreshToken is invalid");
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export const auth = {
   login: async ({
@@ -25,14 +62,12 @@ export const auth = {
 
   checkAccessTokenValid: async (
     accessToken: string
-  ): Promise<CheckAccessTokenValid | undefined> => {
-    const url = `${import.meta.env.VITE_BASE_URL}/auth/protected`;
-
+  ): Promise<any | undefined> => {
     try {
-      const { data } = await axios.get(url, {
+      const response = await authAPI.get("/auth/protected", {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-      return data;
+      return response;
     } catch (error) {
       console.error("api request error: ", error);
     }
