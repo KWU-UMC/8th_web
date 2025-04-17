@@ -16,3 +16,19 @@ export type Login = {
     refreshToken: string;
   };
 };
+
+export type LP = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    id: number;
+    title: string;
+    content: string;
+    thumbnail: string;
+    published: boolean;
+    authorId: number;
+    createdAt: string;
+    updatedAt: string;
+  };
+};
