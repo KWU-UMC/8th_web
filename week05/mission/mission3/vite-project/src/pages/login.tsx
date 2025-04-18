@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../apis/auth";
 import { useState } from "react";
 import { useAuth } from "../context/auth_context";
+import { FcGoogle } from "react-icons/fc";
 
 export default function Login() {
   const { setIsLoggedIn, setAccessToken, setRefreshToken } = useAuth();
@@ -27,6 +28,9 @@ export default function Login() {
   const onPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
+  const onSocialClick = () => {
+    window.location.href = "http://localhost:8000/v1/auth/google/login";
+  };
 
   return (
     <div className="w-full h-full flex justify-center items-center mt-10">
@@ -42,9 +46,17 @@ export default function Login() {
           type="password"
           placeholder="비밀번호를 입력해주세요"
         />
-        <button className="cursor-pointer" type="submit">
-          로그인
-        </button>
+        <div className="w-full p-4 flex text-2xl">
+          <button
+            onClick={onSocialClick}
+            className="cursor-pointer flex-2 border-r border-r-amber-300"
+          >
+            <FcGoogle />
+          </button>
+          <button className="cursor-pointer flex-8" type="submit">
+            로그인
+          </button>
+        </div>
       </form>
     </div>
   );
