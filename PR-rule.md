@@ -18,7 +18,7 @@ http://localhost:8000/docs
 - 아래에 본인이 수정해서 작성하시면 됩니다. 없으면 안적어주셔도 됩니다 ~
 ```
 
-refreshToken을 이용해서 새로운 accessToken을 발급받는 과정에서 context에 저장되어 있는 refreshToken을 가져오는 과정에서 interceptor 내부에 hook을 사용하지 못하는 문제가 생겼습니다. token을 관리하는 파일을 따로 만들어서 해결하긴 했는데 먼가 마음에 들지는 않습니다.
+refreshToken을 이용해서 새로운 accessToken을 발급받는 과정에서 context에 저장되어 있는 refreshToken을 가져오는 과정에서 interceptor 내부에 hook을 사용하지 못하는 문제가 생겼습니다. token을 관리하는 파일을 따로 만들어서 해결하긴 했는데 먼가 마음에 들지는 않네요.
 
 ### 문제
 
