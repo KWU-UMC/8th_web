@@ -1,14 +1,23 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Outlet } from "react-router-dom";
+import Header from "./layouts/header";
+import Sidebar from "./layouts/sidebar";
+import { useSidebar } from "./contexts/sidebar";
 
 const queryClient = new QueryClient();
 
 function App() {
+  const { isOpen } = useSidebar();
+
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="animate-pulse">
-        <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
-        <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+      <Header />
+      <div className="mt-10 flex">
+        <Sidebar />
+        <div className={`w-full bg-red-300 ${isOpen ? "ml-50" : ""}`}>
+          <Outlet />
+        </div>
       </div>
       {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
