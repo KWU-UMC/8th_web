@@ -8,6 +8,7 @@ export default function Header() {
   const navigate = useNavigate();
   const { setIsOpen } = useSidebar();
   const { isLoggedIn } = useAuth();
+  const { data } = useAuth();
 
   const onMenuClick = () => {
     setIsOpen((prev) => !prev);
@@ -27,14 +28,24 @@ export default function Header() {
       <div className="flex gap-4 justify-around items-center">
         <IoSearchSharp className="font-bold" />
         {isLoggedIn ? (
-          <div>
-            <span></span>
+          <div className="flex gap-4">
+            <span>{data?.name}님 환영합니다</span>
             <button>로그아웃</button>
           </div>
         ) : (
           <div className="flex gap-4">
-            <button>로그인</button>
-            <button>회원가입</button>
+            <button
+              className="cursor-pointer"
+              onClick={() => navigate("/signin")}
+            >
+              로그인
+            </button>
+            <button
+              className="cursor-pointer"
+              onClick={() => navigate("/signup")}
+            >
+              회원가입
+            </button>
           </div>
         )}
       </div>
