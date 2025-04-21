@@ -13,7 +13,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Header />
-      <div className="mt-10 flex">
+      <div className="mt-15 flex">
         <Sidebar />
         <div className={`w-full bg-red-300 ${isOpen ? "ml-50" : ""}`}>
           <Outlet />
