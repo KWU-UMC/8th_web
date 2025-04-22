@@ -14,7 +14,7 @@ export const lps = async ({ cursor = 0, limit = 20, order = "asc" }) => {
   }
 };
 
-export const lp = async ({ id }: { id: number }) => {
+export const lp = async ({ id }: { id: string }) => {
   const url = `${import.meta.env.VITE_BASE_URL}/lps/${id}`;
 
   try {
