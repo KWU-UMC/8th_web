@@ -15,7 +15,7 @@ export default function Header() {
   };
 
   return (
-    <div className="w-full h-15 p-4 bg-amber-400 fixed top-0 flex justify-between items-center">
+    <div className="w-full h-15 p-4 bg-amber-400 fixed top-0 flex justify-between items-center z-10">
       <div className="flex gap-4 items-center">
         <IoMenu onClick={onMenuClick} className="cursor-pointer text-2xl" />
         <h2

@@ -1,24 +1,19 @@
 import { lps } from "../apis/lpapi";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import Item from "../components/item";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { LP } from "../types/lptype";
 
 export default function Home() {
   const [isASC, setIsASC] = useState<boolean>(true);
   const [data, setData] = useState<LP[]>([]);
 
-  // const { data, isLoading } = useQuery({
-  //   queryKey: ["lps", isASC],
-  //   queryFn: () => lps({ cursor: 0, order: isASC ? "asc" : "desc" }),
-  // });
-
   const {
     data: infiniteData,
     fetchNextPage,
     isLoading,
   } = useInfiniteQuery({
-    queryKey: ["lps", "infinite"],
+    queryKey: ["lps", isASC],
     queryFn: ({ pageParam = 0 }) =>
       lps({ cursor: pageParam, order: isASC ? "asc" : "desc" }),
     initialPageParam: 0,
@@ -28,9 +23,36 @@ export default function Home() {
   });
 
   useEffect(() => {
-    const merged = infiniteData?.pages.flatMap((page) => page?.data) as LP[];
+    const merged =
+      infiniteData?.pages.flatMap((page) => page?.data ?? []) ?? ([] as LP[]);
     setData(merged);
   }, [infiniteData]);
+
+  const observerRef = useRef<HTMLDivElement | null>(null);
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (target.isIntersecting) {
+        fetchNextPage();
+      }
+    },
+    [fetchNextPage]
+  );
+  useEffect(() => {
+    const option = {
+      root: null,
+      rootMargin: "100px",
+      threshold: 0,
+    };
+    const observer = new IntersectionObserver(handleObserver, option);
+    const current = observerRef.current;
+    if (current) observer.observe(current);
+
+    return () => {
+      if (current) observer.unobserve(current);
+      observer.disconnect();
+    };
+  }, [handleObserver]);
 
   if (isLoading) return null;
 
@@ -59,6 +81,7 @@ export default function Home() {
           <Item key={lp.id} item={lp} />
         ))}
       </div>
+      <div ref={observerRef} className="w-full h-2 bg-transparent" />
     </div>
   );
 }
