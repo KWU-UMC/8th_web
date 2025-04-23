@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { lpComments } from "../apis/lpapi";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../contexts/authcontext";
@@ -15,6 +15,7 @@ export default function Comments() {
     data: infiniteData,
     fetchNextPage,
     isLoading,
+    isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ["comments", isASC],
     queryFn: ({ pageParam = 0 }) =>
@@ -37,7 +38,31 @@ export default function Comments() {
     setData(merged);
   }, [infiniteData]);
 
-  console.log(infiniteData);
+  const observerRef = useRef<HTMLDivElement | null>(null);
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (target.isIntersecting) {
+        fetchNextPage();
+      }
+    },
+    [fetchNextPage]
+  );
+  useEffect(() => {
+    const option = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.5,
+    };
+    const observer = new IntersectionObserver(handleObserver, option);
+    const current = observerRef.current;
+    if (current) observer.observe(current);
+
+    return () => {
+      if (current) observer.unobserve(current);
+      observer.disconnect();
+    };
+  }, [handleObserver]);
 
   if (isLoading) return null;
 
@@ -96,6 +121,7 @@ export default function Comments() {
           </div>
         ))}
       </div>
+      <div ref={observerRef} className="w-full h-2 bg-transparent" />
     </div>
   );
 }

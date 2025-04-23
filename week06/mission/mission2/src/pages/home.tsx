@@ -12,6 +12,7 @@ export default function Home() {
     data: infiniteData,
     fetchNextPage,
     isLoading,
+    isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ["lps", isASC],
     queryFn: ({ pageParam = 0 }) =>

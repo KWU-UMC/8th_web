@@ -33,7 +33,9 @@ function App() {
         <Sidebar ref={sidebarRef} />
         <div
           onClick={handleCloseSidebar}
-          className={`w-full h-full bg-red-300 ${isOpen ? "ml-50" : ""}`}
+          className={`w-full min-h-screen h-full bg-red-300 ${
+            isOpen ? "ml-50" : ""
+          }`}
         >
           <Outlet />
         </div>
