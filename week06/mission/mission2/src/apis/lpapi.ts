@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LPResponse, LPSResponse } from "../types/lptype";
+import { LPComments, LPResponse, LPSResponse } from "../types/lptype";
 import { useAuth } from "../contexts/authcontext";
 
 export const lps = async ({ cursor = 0, limit = 20, order = "asc" }) => {
@@ -26,16 +26,27 @@ export const lp = async ({ id }: { id: string }) => {
   }
 };
 
-export const lpComments = async ({ id }: { id: string }) => {
-  const url = `${import.meta.env.VITE_BASE_URL}/lps/${id}/comments`;
+export const lpComments = async ({
+  id,
+  cursor = 0,
+  order = "asc",
+}: {
+  id: number;
+  cursor: number;
+  order: string;
+}) => {
+  const url = `${
+    import.meta.env.VITE_BASE_URL
+  }/lps/${id}/comments?cursor=${cursor}&limit=10&order=${order}`;
   const { accessToken } = useAuth();
 
   try {
-    const response = await axios.get(url, {
+    const response = await axios.get<LPComments>(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
+    console.log(response);
     return response;
   } catch (error) {
     console.error("comments request failed: ", error);

@@ -5,6 +5,7 @@ import { formatDate } from "../utils/date";
 import { FaPencilAlt } from "react-icons/fa";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa6";
+import Comments from "./comments";
 
 export default function Detail() {
   const params = useParams();
@@ -17,8 +18,8 @@ export default function Detail() {
   if (isLoading) return null;
 
   return (
-    <div className="flex justify-center items-center w-full h-full p-4">
-      <div className="w-4/5 min-h-4/5 bg-gray-500 flex flex-col gap-6 px-10 py-10 text-white">
+    <div className="flex flex-col gap-4 justify-center items-center w-full h-full p-4">
+      <div className="w-4/5 min-h-4/5 bg-gray-500 flex flex-col gap-6 px-10 py-10 text-white rounded-2xl">
         <div className="flex justify-between items-center">
           <div className="flex gap-4 justify-center items-center">
             {data?.data.author?.avatar && (
@@ -66,6 +67,7 @@ export default function Detail() {
           <span>{data?.data.likes.length}</span>
         </div>
       </div>
+      <Comments />
     </div>
   );
 }
