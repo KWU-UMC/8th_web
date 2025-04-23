@@ -3,6 +3,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import Item from "../components/item";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LP } from "../types/lptype";
+import SkeletonItem from "../components/skeletonitem";
 
 export default function Home() {
   const [isASC, setIsASC] = useState<boolean>(true);
@@ -12,7 +13,7 @@ export default function Home() {
     data: infiniteData,
     fetchNextPage,
     isLoading,
-    isFetchingNextPage,
+    hasNextPage,
   } = useInfiniteQuery({
     queryKey: ["lps", isASC],
     queryFn: ({ pageParam = 0 }) =>
@@ -81,6 +82,10 @@ export default function Home() {
         {data?.map((lp) => (
           <Item key={lp.id} item={lp} />
         ))}
+        {hasNextPage &&
+          Array.from({ length: 10 }).map((_, index) => (
+            <SkeletonItem key={index} />
+          ))}
       </div>
       <div ref={observerRef} className="w-full h-2 bg-transparent" />
     </div>

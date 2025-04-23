@@ -15,9 +15,9 @@ export default function Comments() {
     data: infiniteData,
     fetchNextPage,
     isLoading,
-    isFetchingNextPage,
+    hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ["comments", isASC],
+    queryKey: ["comments", isASC, params.lpID],
     queryFn: ({ pageParam = 0 }) =>
       lpComments({
         id: params.lpID as string,
@@ -120,6 +120,19 @@ export default function Comments() {
             </div>
           </div>
         ))}
+        {hasNextPage &&
+          Array.from({ length: 10 }).map((_, index) => (
+            <div
+              key={index}
+              className="flex gap-4 justify-start items-center animate-pulse"
+            >
+              <div className="w-10 h-10 rounded-full bg-gray-300"></div>
+              <div className="flex flex-col gap-2">
+                <div className="w-20 h-4 rounded-2xl bg-gray-300"></div>
+                <div className="w-100 h-4 rounded-2xl bg-gray-300"></div>
+              </div>
+            </div>
+          ))}
       </div>
       <div ref={observerRef} className="w-full h-2 bg-transparent" />
     </div>
