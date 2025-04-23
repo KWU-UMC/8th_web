@@ -1,15 +1,36 @@
 import { lps } from "../apis/lpapi";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import Item from "../components/item";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { LP } from "../types/lptype";
 
 export default function Home() {
   const [isASC, setIsASC] = useState<boolean>(true);
+  const [data, setData] = useState<LP[]>([]);
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["lps", isASC],
-    queryFn: () => lps({ cursor: 0, order: isASC ? "asc" : "desc" }),
+  // const { data, isLoading } = useQuery({
+  //   queryKey: ["lps", isASC],
+  //   queryFn: () => lps({ cursor: 0, order: isASC ? "asc" : "desc" }),
+  // });
+
+  const {
+    data: infiniteData,
+    fetchNextPage,
+    isLoading,
+  } = useInfiniteQuery({
+    queryKey: ["lps", "infinite"],
+    queryFn: ({ pageParam = 0 }) =>
+      lps({ cursor: pageParam, order: isASC ? "asc" : "desc" }),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
+      return lastPage?.hasNext ? lastPage.nextCursor : undefined;
+    },
   });
+
+  useEffect(() => {
+    const merged = infiniteData?.pages.flatMap((page) => page?.data) as LP[];
+    setData(merged);
+  }, [infiniteData]);
 
   if (isLoading) return null;
 

@@ -8,7 +8,7 @@ export const lps = async ({ cursor = 0, limit = 20, order = "asc" }) => {
 
   try {
     const { data } = await axios.get<LPSResponse>(url);
-    return data.data.data;
+    return data.data;
   } catch (error) {
     console.error("lps request failed: ", error);
   }

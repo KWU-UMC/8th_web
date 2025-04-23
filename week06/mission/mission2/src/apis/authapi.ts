@@ -8,7 +8,6 @@ export const signin = async ({ email, password }: SigninI) => {
   const url = `${import.meta.env.VITE_BASE_URL}/auth/signin`;
   try {
     const { data } = await axios.post(url, { email, password });
-    console.log(data);
     return data;
   } catch (error) {
     console.error("sign in api request error: ", error);
