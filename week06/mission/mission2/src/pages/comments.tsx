@@ -38,31 +38,26 @@ export default function Comments() {
     setData(merged);
   }, [infiniteData]);
 
-  const observerRef = useRef<HTMLDivElement | null>(null);
-  const handleObserver = useCallback(
-    (entries: IntersectionObserverEntry[]) => {
-      const target = entries[0];
-      if (target.isIntersecting) {
-        fetchNextPage();
-      }
-    },
-    [fetchNextPage]
-  );
-  useEffect(() => {
-    const option = {
-      root: null,
-      rootMargin: "0px",
-      threshold: 0.5,
-    };
-    const observer = new IntersectionObserver(handleObserver, option);
-    const current = observerRef.current;
-    if (current) observer.observe(current);
+  const observer = useRef<IntersectionObserver | null>(null);
+  const setObserverRef = useCallback((node: HTMLDivElement | null) => {
+    if (observer.current) observer.current.disconnect();
 
-    return () => {
-      if (current) observer.unobserve(current);
-      observer.disconnect();
-    };
-  }, [handleObserver]);
+    if (node) {
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            fetchNextPage();
+          }
+        },
+        {
+          root: null,
+          rootMargin: "100px",
+          threshold: 0,
+        }
+      );
+      observer.current.observe(node);
+    }
+  }, []);
 
   if (isLoading) return null;
 
@@ -134,7 +129,7 @@ export default function Comments() {
             </div>
           ))}
       </div>
-      <div ref={observerRef} className="w-full h-2 bg-transparent" />
+      <div ref={setObserverRef} className="w-full h-2 bg-transparent" />
     </div>
   );
 }
