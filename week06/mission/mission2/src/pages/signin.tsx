@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/authcontext";
 
 export default function Singin() {
   const navigate = useNavigate();
-  const { setIsLoggedIn, setData } = useAuth();
+  const { setAccessToken, setIsLoggedIn, setData } = useAuth();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -13,6 +13,7 @@ export default function Singin() {
     e.preventDefault();
     try {
       const response = await signin({ email, password });
+      setAccessToken(response.data.accessToken);
       setIsLoggedIn(true);
       setData(response.data);
     } catch (error) {

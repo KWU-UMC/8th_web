@@ -30,24 +30,24 @@ export const lpComments = async ({
   id,
   cursor = 0,
   order = "asc",
+  accessToken,
 }: {
-  id: number;
+  id: string;
   cursor: number;
   order: string;
+  accessToken: string;
 }) => {
   const url = `${
     import.meta.env.VITE_BASE_URL
   }/lps/${id}/comments?cursor=${cursor}&limit=10&order=${order}`;
-  const { accessToken } = useAuth();
 
   try {
-    const response = await axios.get<LPComments>(url, {
+    const { data } = await axios.get<LPComments>(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    console.log(response);
-    return response;
+    return data.data;
   } catch (error) {
     console.error("comments request failed: ", error);
   }
