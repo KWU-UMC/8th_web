@@ -1,23 +1,28 @@
 import {Dispatch, SetStateAction, useState} from "react";
 
-export function useLocalStorage<T>(key: string, defaultValue: T | (() => T)): [T, Dispatch<SetStateAction<T>>] {
+export default function useLocalStorage<T>(key: string, defaultValue: T | (() => T)): [T, Dispatch<SetStateAction<T | undefined>>] {
+    const unwrapDefaultValue = () => defaultValue instanceof Function ? defaultValue() : defaultValue
+
     const [value, setValue] = useState<T>(() => {
         const item = localStorage.getItem(key)
         if (item === null) {
-            return defaultValue instanceof Function ? defaultValue() : defaultValue
+            return unwrapDefaultValue()
         } else {
             return JSON.parse(item) as T
         }
     })
 
-    const setLocalStorage: Dispatch<SetStateAction<T>> = (valueOrFunction: SetStateAction<T>) => {
-        const newValue = valueOrFunction instanceof Function ?
-            valueOrFunction(value)
-            : valueOrFunction
+    const setLocalStorage: Dispatch<SetStateAction<T | undefined>> = (valueOrFunction: SetStateAction<T | undefined>) => {
+        const newValue = valueOrFunction instanceof Function ? valueOrFunction(value) : valueOrFunction
 
-        setValue(newValue)
-        localStorage.setItem(key, JSON.stringify(newValue))
+        if (newValue === undefined) {
+            localStorage.removeItem(key)
+            setValue(unwrapDefaultValue())
+        } else {
+            setValue(newValue)
+            localStorage.setItem(key, JSON.stringify(newValue))
+        }
     }
 
-    return [value, setLocalStorage]
+    return [value, setLocalStorage] as const
 }
