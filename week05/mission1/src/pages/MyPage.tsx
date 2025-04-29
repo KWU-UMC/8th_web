@@ -36,7 +36,7 @@ const MyPage = () => {
 
                 <button
                     onClick={handleSignout}
-                    className={`w-full py-2 rounded-md text-white bg-[#E91E63]`}
+                    className={`w-full py-2 rounded-md text-white bg-[#E91E63] hover:bg-pink-700 transition-colors duration-200`}
                 >
                 로그아웃
                 </button>
