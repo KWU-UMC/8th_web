@@ -1,4 +1,4 @@
-import { Children, createContext, PropsWithChildren, useState, useContext } from "react";
+import { createContext, PropsWithChildren, useState, useContext } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 import { TUserValues } from "../types/TUser";  //
@@ -59,7 +59,7 @@ export const AuthProvider = ({children}: PropsWithChildren) => {
                 setRefreshToken(newRefreshToken);
 
                 alert("로그인 완료");
-                window.location.href = "/";  // 로그인 성공 시 메인 페이지로 이동
+                window.location.href = "/my";  
             }
         } catch (error) {
             console.error("로그인 에러 발생", error);
@@ -77,6 +77,7 @@ export const AuthProvider = ({children}: PropsWithChildren) => {
             setRefreshToken(null);
 
             alert("로그아웃 성공");
+            window.location.href = "/";  
         } catch (error) {
             console.error("로그아웃웃 에러 발생", error);
             alert("로그아웃 실패");

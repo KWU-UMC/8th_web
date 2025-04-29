@@ -1,26 +1,41 @@
 import './App.css'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouteObject, RouterProvider } from 'react-router-dom';
 import RootLayout from './layouts/root-layout';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import ErrorPage from './pages/ErrorPage';
+import MyPage from './pages/MyPage';
 import { AuthProvider } from './context/AuthContext';
+import ProtectedLayout from './layouts/protectedLayout';
 
-const router = createBrowserRouter([
+//public
+const publicRoutes:RouteObject[] = [
   {
     path: '/',
     element: <RootLayout />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <HomePage /> },  
       { path: 'login', element: <LoginPage /> },  
-      {
-        path: 'signup', element: <SignupPage />
-      }
+      { path: 'signup', element: <SignupPage /> },
     ],
-    errorElement: <ErrorPage />,
   },
-]);
+];
+
+//protected
+const protectedRoutes:RouteObject[] = [
+  {
+    path: "/",
+    element: <ProtectedLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      { path: "my", element: <MyPage />},
+    ],
+  },
+];
+
+const router = createBrowserRouter([...publicRoutes, ...protectedRoutes]);
 
 function App() {
   return (

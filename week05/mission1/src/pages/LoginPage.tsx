@@ -1,17 +1,14 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Arrow from '../images/Arrow.svg';
 import GoogleLoginButton from "../components/GoogleLoginBtn";
 import InputField from "../components/InputField";
 import { validateLogin } from "../utils/validate";
 import { useForm } from "../hooks/useForm";
-import { postSignin } from "../apis/auth";
-import { useLocalStorage } from "../hooks/useLocalStorage";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 import { useAuth } from "../context/AuthContext";
 
 const LoginPage = () => {
     const {signIn} = useAuth();
-    const navigate = useNavigate();
 
     const login = useForm({
         initialValue: { email: "", password: "" },
@@ -19,14 +16,11 @@ const LoginPage = () => {
     });
 
     const isFormValid = !login.errors.email && !login.errors.password && login.values.email && login.values.password;
-    
-    const accessStorage = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
-    const refreshStorage = useLocalStorage(LOCAL_STORAGE_KEY.refreshToken);
 
-    // 확인용
     const handlePressLogin = async () => {
         await signIn(login.values);
-        console.log("로그인토큰", LOCAL_STORAGE_KEY.refreshToken);
+        console.log(LOCAL_STORAGE_KEY.refreshToken);  // 확인
+        
         // try {
         //   const response = await postSignin(login.values.email, login.values.password);
       
