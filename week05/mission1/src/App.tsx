@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import ErrorPage from './pages/ErrorPage';
+import { AuthProvider } from './context/AuthContext';
 
 const router = createBrowserRouter([
   {
@@ -24,7 +25,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <div className="min-h-screen bg-[#0C0C0C]">
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </div>
   );
 }

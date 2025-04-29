@@ -5,8 +5,12 @@ import InputField from "../components/InputField";
 import { validateLogin } from "../utils/validate";
 import { useForm } from "../hooks/useForm";
 import { postSignin } from "../apis/auth";
+import { useLocalStorage } from "../hooks/useLocalStorage";
+import { LOCAL_STORAGE_KEY } from "../constants/key";
+import { useAuth } from "../context/AuthContext";
 
 const LoginPage = () => {
+    const {signIn} = useAuth();
     const navigate = useNavigate();
 
     const login = useForm({
@@ -15,25 +19,34 @@ const LoginPage = () => {
     });
 
     const isFormValid = !login.errors.email && !login.errors.password && login.values.email && login.values.password;
+    
+    const accessStorage = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
+    const refreshStorage = useLocalStorage(LOCAL_STORAGE_KEY.refreshToken);
 
     // 확인용
     const handlePressLogin = async () => {
-        try {
-          const response = await postSignin(login.values.email, login.values.password);
+        await signIn(login.values);
+        console.log("로그인토큰", LOCAL_STORAGE_KEY.refreshToken);
+        // try {
+        //   const response = await postSignin(login.values.email, login.values.password);
       
-          if (response.status === 200 || response.status === 201) {
-            console.log("로그인 성공", response.data);
-            navigate("/");      // 로그인 성공 시 메인 페이지로 이동
-          } else {
-            console.warn("예상치 못한 응답", response.status);
-          }
-        } catch (error: any) {
-          if (error.response) {
-            console.error("로그인 실패", error.response.data.message || error.message);
-          } else {
-            console.error("서버 연결 실패", error.message);
-          }
-        }
+        //   if (response.status === 200 || response.status === 201) {
+        //     const { accessToken, refreshToken } = response.data;
+        //     accessStorage.setItem(accessToken);
+        //     refreshStorage.setItem(refreshToken);
+
+        //     console.log("로그인 성공", response.data);
+        //     navigate("/");      // 로그인 성공 시 메인 페이지로 이동
+        //   } else {
+        //     console.warn("예상치 못한 응답", response.status);
+        //   }
+        // } catch (error: any) {
+        //   if (error.response) {
+        //     console.error("로그인 실패", error.response.data.message || error.message);
+        //   } else {
+        //     console.error("서버 연결 실패", error.message);
+        //   }
+        // }
     };
 
     return (
