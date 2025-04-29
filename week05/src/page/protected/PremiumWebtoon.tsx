@@ -3,6 +3,7 @@ import {useCallback, useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import useProduceState from "../../hooks/useProduceState.ts";
 import delay from "../../util/delay.ts";
+import client from "../../util/client.ts";
 
 export const PremiumWebtoon = () => {
     const navigate = useNavigate()
@@ -26,6 +27,12 @@ export const PremiumWebtoon = () => {
         }
     }, []))
 
+    const protectedAuth = useProduceState<string | null>(null, useCallback(async (emit) => {
+        const res = await client.get('/v1/auth/protected')
+
+        emit(JSON.stringify(res.data))
+    }, []))
+
     if (isUnauthorized) {
         return <div className="px-36">
             Si tu veux vraiment passer le pont faut payer l'addition.<br/><br/>
@@ -33,5 +40,5 @@ export const PremiumWebtoon = () => {
         </div>
     }
 
-    return <></>
+    return <div className="px-36">/v1/auth/protected result: {protectedAuth}</div>
 }

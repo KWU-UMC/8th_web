@@ -51,6 +51,7 @@ export const SignInPage = () => {
 
             setAccessToken(accessToken);
             setRefreshToken(refreshToken);
+            console.log('refreshToken: ', refreshToken)
 
             alert('로그인 성공');
         } else {
