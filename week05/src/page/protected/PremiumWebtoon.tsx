@@ -17,6 +17,8 @@ export const PremiumWebtoon = () => {
     })
 
     const dots = useProduceState('', useCallback(async (emit) => {
+        if (!isUnauthorized) return
+
         let v = ''
 
         // noinspection InfiniteLoopJS
@@ -25,7 +27,7 @@ export const PremiumWebtoon = () => {
             v = v.length < 3 ? v + '.' : ''
             emit(v)
         }
-    }, []))
+    }, [isUnauthorized]))
 
     const protectedAuth = useProduceState<string | null>(null, useCallback(async (emit) => {
         const res = await client.get('/v1/auth/protected')

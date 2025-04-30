@@ -8,20 +8,20 @@ export class CancellationError extends Error {
 
 export default function useProduceState<T>(
     initialValue: T,
-    asyncFn: (emit: (value: T) => never | void, isActive: () => boolean) => Promise<void>
+    asyncFn: (emit: (value: T) => never | void, signal: AbortSignal) => Promise<void>
 ) {
     const [state, setState] = useState(initialValue)
 
     useEffect(() => {
-        let mounted = true
+        const controller = new AbortController()
 
         const setStateCancellable = (value: T) => {
-            if (!mounted) throw new CancellationError('useProduceState: asyncFn is cancelled')
+            if (controller.signal.aborted) throw new CancellationError('useProduceState: asyncFn is cancelled')
 
             setState(value)
         }
 
-        asyncFn(setStateCancellable, () => mounted)
+        asyncFn(setStateCancellable, controller.signal)
             .catch(e => {
                 if (!(e instanceof CancellationError)) {
                     throw e
@@ -29,7 +29,7 @@ export default function useProduceState<T>(
             })
 
         return () => {
-            mounted = false
+            controller.abort(new CancellationError('useProduceState: asyncFn is cancelled'))
         }
     }, [asyncFn])
 
