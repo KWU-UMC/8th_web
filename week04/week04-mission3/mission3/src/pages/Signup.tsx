@@ -38,8 +38,6 @@ const Signup = () => {
         email: data.email.trim(),
         password: data.password,
         name: data.name.trim(),
-        bio: "",
-        avatar: ""
       };
 
       console.log('Attempting signup with data:', {
@@ -51,7 +49,7 @@ const Signup = () => {
       
       if (response.status) {
         alert("회원가입이 완료되었습니다!");
-        navigate("/signin");
+        navigate("/Login");
       } else {
         alert(response.message || "회원가입에 실패했습니다.");
       }
@@ -79,19 +77,6 @@ const Signup = () => {
           <button onClick={() => navigate(-1)} className="text-2xl font-bold">&lt;</button>
           <div className="flex-1 text-center text-xl font-semibold">회원가입</div>
           <div className="w-[24px]"></div>
-        </div>
-    
-        {/*구글*/}
-        <button className="border border-white rounded-md py-2 w-full flex items-center justify-center gap-2">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="google" className="w-5 h-5" />
-          <span>구글 로그인</span>
-        </button>
-    
-        {/*OR*/}
-        <div className="flex items-center gap-2">
-          <div className="flex-1 h-px bg-white" />
-          <span className="text-sm text-white">OR</span>
-          <div className="flex-1 h-px bg-white" />
         </div>
     
         <input
