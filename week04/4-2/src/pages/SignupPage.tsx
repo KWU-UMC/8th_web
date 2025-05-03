@@ -3,6 +3,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useState } from "react";
 import { postSignup } from "../apis/auth";
+// import { postSignup } from "../apis/auth"; // API 호출은 테스트 끝나고 주석 해제
 
 const schema = z
   .object({
@@ -60,9 +61,14 @@ const SignupPage = () => {
   };
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
+    console.log("입력된 회원가입 데이터:", data);
     const { passwordCheck, ...rest } = data;
     const response = await postSignup(rest);
-    console.log(response);
+
+    // accessToken 저장
+    localStorage.setItem("accessToken", response.data.accessToken);
+
+    console.log("회원가입 응답:", response);
   };
 
   return (
@@ -76,6 +82,7 @@ const SignupPage = () => {
               {...register("email")}
               type="email"
               placeholder="이메일"
+              autoComplete="email"
               className="border p-2"
             />
             {errors.email && (
@@ -93,6 +100,7 @@ const SignupPage = () => {
               {...register("password")}
               type="password"
               placeholder="비밀번호"
+              autoComplete="new-password"
               className="border p-2"
             />
             {errors.password && (
@@ -102,6 +110,7 @@ const SignupPage = () => {
               {...register("passwordCheck")}
               type="password"
               placeholder="비밀번호 확인"
+              autoComplete="new-password"
               className="border p-2"
             />
             {errors.passwordCheck && (
@@ -124,6 +133,7 @@ const SignupPage = () => {
               {...register("name")}
               type="text"
               placeholder="이름"
+              autoComplete="name"
               className="border p-2"
             />
             {errors.name && (

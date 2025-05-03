@@ -2,9 +2,11 @@ import { UserSigninInformation, validateSignin } from "../utils/validate";
 import useForm from "../hooks/useForm";
 import { ResponseSigninDto } from "../types/auth";
 import { postSignin } from "../apis/auth";
+import { LOCAL_STORAGE_KEY } from "../constants/key";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 
-//zod 사용하지 않고 만든 폼
 const LoginPage = () => {
+  const { setItem } = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
   const { values, getInputProps, errors, touched } =
     useForm<UserSigninInformation>({
       initialValue: {
@@ -15,14 +17,31 @@ const LoginPage = () => {
     });
 
   const handleSubmit = async () => {
-    console.log(values);
-    const response = await postSignin(values);
-    console.log(response.data);
+    console.log("입력된 로그인 값:", values);
+
+    let response: ResponseSigninDto | undefined;
+
+    try {
+      response = await postSignin(values);
+
+      // ✅ accessToken 존재 확인
+      if (response?.data?.accessToken) {
+        setItem(response.data.accessToken);
+        console.log("로그인 성공:", response.data);
+      } else {
+        alert("accessToken이 응답에 없습니다.");
+      }
+    } catch (error: any) {
+      alert(error?.message || "로그인 중 오류가 발생했습니다.");
+      return;
+    }
+
+    // 이후 페이지 이동 등 추가 처리 가능
   };
 
   const isDisabled =
-    Object.values(errors || {}).some((error) => error.length > 0) || //오류가 있으면 true
-    Object.values(values).some((value) => value === ""); // 입력값이 비어있으면 True
+    Object.values(errors || {}).some((error) => error.length > 0) ||
+    Object.values(values).some((value) => value === "");
 
   return (
     <div className="flex flex-col items-center justify-center h-full gap-4">
@@ -36,8 +55,8 @@ const LoginPage = () => {
                 ? "border-red-500 bg-red-200"
                 : "border-gray-300"
             }`}
-          type={"email"}
-          placeholder={"이메일"}
+          type="email"
+          placeholder="이메일"
         />
         {errors?.email && touched?.email && (
           <div className="text-red-500 text-sm">{errors.email}</div>
@@ -50,8 +69,8 @@ const LoginPage = () => {
                 ? "border-red-500 bg-red-200"
                 : "border-gray-300"
             }`}
-          type={"password"}
-          placeholder={"비밀번호"}
+          type="password"
+          placeholder="비밀번호"
         />
         <button
           type="button"
@@ -65,4 +84,5 @@ const LoginPage = () => {
     </div>
   );
 };
+
 export default LoginPage;
