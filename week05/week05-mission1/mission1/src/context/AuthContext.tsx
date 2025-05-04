@@ -18,7 +18,7 @@ export const AuthContext = createContext<AuthContextType>({
     logout: async () => { },
 });
 
-export const AutoProvider = ({ children }: PropsWithChildren) => { 
+export const AuthProvider = ({ children }: PropsWithChildren) => { 
     const {getItem:getAccessTokenFromStorage,setItem:setAccessTokenToStorage,removeItem:removeAccessTokenFromStorage }=useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
     const {getItem:getRefreshTokenFromStorage,setItem:setRefreshTokenToStorage,removeItem:removeRefreshTokenFromStorage }=useLocalStorage(LOCAL_STORAGE_KEY.refreshToken);
  

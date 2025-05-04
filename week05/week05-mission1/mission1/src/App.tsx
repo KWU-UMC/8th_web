@@ -6,7 +6,7 @@ import Login from './pages/Login'
 import HomeLayout from './layouts/HomeLayout'
 import Signup from './pages/Signup'
 import MyPage from './pages/MyPage'
-import { AutoProvider } from './context/AuthContext'
+import { AuthProvider } from './context/AuthContext'
 import ProtectedLayout from './layouts/ProtectedLayout'
 
 const publicRoutes: RouteObject[] = [
@@ -37,9 +37,9 @@ const router = createBrowserRouter([...publicRoutes, ...protectedRoutes])
 
 function App() {
   return (
-    <AutoProvider>
+    <AuthProvider>
       <RouterProvider router={router} />
-    </AutoProvider>
+    </AuthProvider>
   )
 }
 
