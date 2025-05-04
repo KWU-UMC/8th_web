@@ -28,7 +28,7 @@ const LoginPage = () => {
     };
 
     const onGoogleLogin = () => {
-      console.log("구글 로그인 버튼 클릭됨");
+      window.location.href = import.meta.env.VITE_SERVER_API_URL + "v1/auth/google/login";
     };
   
 

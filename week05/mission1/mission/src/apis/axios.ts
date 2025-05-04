@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 
@@ -6,10 +6,11 @@ interface CustomInternalAxiosRequestConfig extends InternalAxiosRequestConfig {
     _retry?:boolean;
 }
 
-const refreshPromise:Promise<string>|null = null;
+let refreshPromise:Promise<string>|null = null;
 
 export const axiosInstance: AxiosInstance = axios.create({
     baseURL: import.meta.env.VITE_SERVER_API_URL,
+    withCredentials:true,
 });
 
 axiosInstance.interceptors.request.use((config) => {
