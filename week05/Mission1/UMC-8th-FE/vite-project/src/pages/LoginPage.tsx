@@ -28,6 +28,10 @@ const LoginPage = () => {
         await login(values);
         navigate("/my");
     };
+
+    const handleGoogleLogin = () =>{
+        window.location.href = import.meta.env.VITE_SERVER_API_URL + "/v1/auth/google/login";
+    }
     const isDisabled =
     Object.values(errors || {}).some((error) => error.length > 0) ||
     Object.values(values).some((value) => value === "");
@@ -52,6 +56,7 @@ const LoginPage = () => {
             </div>
             <div className="flex flex-col gap-3 mb-2">
                 <button
+                onClick={handleGoogleLogin}
                 className={`flex items-center justify-center border border-[#ccc] 
                     w-[300px] p-[10px] rounded-sm hover:border-pink-500 transition-colors`} >
                     <img
