@@ -30,6 +30,10 @@ const Login = () => {
         }
     }
 
+    const handleGoogleLogin = () => {
+        window.location.href=import.meta.env.VITE_SERVER_API_URL + "/v1/auth/google/login";
+    }
+
     const isDisabled = Object.values(errors || {}).some((error) => error.length > 0) || Object.values(values).some((value) => value === "");
 
     return (
@@ -42,7 +46,10 @@ const Login = () => {
                 </div>
     
                 {/*구글*/}
-                <button className="border border-white rounded-md py-2 w-full flex items-center justify-center gap-2">
+                <button className="border border-white rounded-md py-2 w-full flex items-center justify-center gap-2"
+                    type="button"
+                    onClick={handleGoogleLogin}
+                >
                     <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="google" className="w-5 h-5" />
                     <span>구글 로그인</span>
                 </button>
