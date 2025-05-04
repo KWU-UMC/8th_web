@@ -4,10 +4,14 @@ interface Props {
   onClick?: () => void;
 }
 
+const handleGoogleLogin = () => {
+  window.location.href = import.meta.env.VITE_API_BASE_URL + "/v1/auth/google/login";
+}
+
 const GoogleLoginButton = ({ onClick }: Props) => {
   return (
     <button
-      onClick={onClick}
+      onClick={handleGoogleLogin}
       className="relative w-full border border-white rounded-md py-2 mb-4 hover:bg-white hover:text-black transition text-center"
     >
       <img

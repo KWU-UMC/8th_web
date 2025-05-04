@@ -20,27 +20,6 @@ const LoginPage = () => {
     const handlePressLogin = async () => {
         await signIn(login.values);
         console.log(LOCAL_STORAGE_KEY.refreshToken);  // 확인
-        
-        // try {
-        //   const response = await postSignin(login.values.email, login.values.password);
-      
-        //   if (response.status === 200 || response.status === 201) {
-        //     const { accessToken, refreshToken } = response.data;
-        //     accessStorage.setItem(accessToken);
-        //     refreshStorage.setItem(refreshToken);
-
-        //     console.log("로그인 성공", response.data);
-        //     navigate("/");      // 로그인 성공 시 메인 페이지로 이동
-        //   } else {
-        //     console.warn("예상치 못한 응답", response.status);
-        //   }
-        // } catch (error: any) {
-        //   if (error.response) {
-        //     console.error("로그인 실패", error.response.data.message || error.message);
-        //   } else {
-        //     console.error("서버 연결 실패", error.message);
-        //   }
-        // }
     };
 
     return (

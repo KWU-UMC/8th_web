@@ -8,6 +8,7 @@ import ErrorPage from './pages/ErrorPage';
 import MyPage from './pages/MyPage';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedLayout from './layouts/protectedLayout';
+import GoogleLoginRedirectPage from './pages/GoogleLoginRedirectPage';
 
 //public
 const publicRoutes:RouteObject[] = [
@@ -19,6 +20,7 @@ const publicRoutes:RouteObject[] = [
       { index: true, element: <HomePage /> },  
       { path: 'login', element: <LoginPage /> },  
       { path: 'signup', element: <SignupPage /> },
+      { path: '/v1/auth/google/callback', element: <GoogleLoginRedirectPage /> },
     ],
   },
 ];
