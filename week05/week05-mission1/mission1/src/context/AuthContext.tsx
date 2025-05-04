@@ -21,9 +21,8 @@ export const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: PropsWithChildren) => { 
     const {getItem:getAccessTokenFromStorage,setItem:setAccessTokenToStorage,removeItem:removeAccessTokenFromStorage }=useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
     const {getItem:getRefreshTokenFromStorage,setItem:setRefreshTokenToStorage,removeItem:removeRefreshTokenFromStorage }=useLocalStorage(LOCAL_STORAGE_KEY.refreshToken);
- 
-    const [accessToken, setAccessToken] = useState<string | null>(getAccessTokenFromStorage());
-    const [refreshToken, setRefreshToken] = useState<string | null>(getRefreshTokenFromStorage());
+    const [accessToken, setAccessToken] = useState<string | null>(getAccessTokenFromStorage() ?? null);
+    const [refreshToken, setRefreshToken] = useState<string | null>(getRefreshTokenFromStorage() ?? null);
 
     const login = async (signinData: RequestSigninDto) => {
         try {
