@@ -79,7 +79,7 @@ export const AuthProvider = ({children}: PropsWithChildren) => {
             alert("로그아웃 성공");
             window.location.href = "/";  
         } catch (error) {
-            console.error("로그아웃웃 에러 발생", error);
+            console.error("로그아웃 에러 발생", error);
             alert("로그아웃 실패");
         }
     }
