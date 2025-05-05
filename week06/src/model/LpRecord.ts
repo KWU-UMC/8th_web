@@ -7,10 +7,17 @@ export type LpRecord = {
     authorId: number,
     createdAt: string,
     updatedAt: string,
-    tags: LpRecordTag[]
+    tags: LpRecordTag[],
+    likes: LpRecordLike[]
 }
 
 export type LpRecordTag = {
     id: number,
     name: string
+}
+
+export type LpRecordLike = {
+    id: number,
+    userId: number,
+    lpId: number
 }

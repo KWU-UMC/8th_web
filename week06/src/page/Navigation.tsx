@@ -6,7 +6,7 @@ export const Navigation = () => {
     const isSignedIn = accessToken !== null;
 
     return <nav className="w-full flex justify-between px-36 py-4 border-b border-neutral-500 items-center">
-        <span>돌려돌려 LP판</span>
+        <Link to="/"><span>돌려돌려 LP판</span></Link>
 
         <ul className="flex gap-4 items-center">
             {

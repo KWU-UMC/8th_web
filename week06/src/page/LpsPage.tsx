@@ -2,29 +2,34 @@ import '../index.css'
 import {LpRecord} from "../model/LpRecord.ts";
 import {useQuery} from "@tanstack/react-query";
 import {LpRecordResponse} from "../model/response/LpRecordResponse.ts";
+import { formatTime } from '../util/format.ts';
 
 const LpsSideBar = () => {
-    return <div className="flex flex-col bg-neutral-600 py-8 mx-8">
-        <ul className="flex flex-1 flex-col gap-4">
+    return <div className="h-full min-h-screen flex flex-col bg-neutral-800 py-8 mx-8">
+        <ul className="flex flex-1 flex-col gap-4 px-4 w-40">
             <li className="text-white text-lg">찾기</li>
             <li className="text-white text-lg">마이페이지</li>
         </ul>
 
-        <div><span className="text-white text-lg">탈퇴하기</span></div>
+        <div><span className="text-white text-lg px-4">탈퇴하기</span></div>
     </div>
 }
 
 const LpsGrid = ({lps}: {
     lps: LpRecord[],
 }) => {
-    return <div className="grid grid-cols-5">
+    return <div className="grid grid-cols-1 2xl:grid-cols-5 md:grid-cols-3 gap-x-4 gap-y-4 items-start">
         {
             lps.map(lp => {
-                return <div className="relative col-span-1 bg-neutral-300 m-4 rounded-xl size-60 hover:scale-150 hover:z-10 transition-transform duration-150 ease-in-out overflow-hidden group">
+                return <div className="relative bg-neutral-300 rounded-xl w-full aspect-square hover:scale-150 hover:z-10 transition-transform duration-150 ease-in-out overflow-hidden group">
                     <img src={lp.thumbnail} alt="thumbnail" className="size-full bg-neutral-300 object-center object-cover" />
 
                     <div className="flex flex-col absolute bottom-0 bg-gradient-to-b from-transparent to-neutral-800 size-full p-4 justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
                         <p className="text-white font-bold line-clamp-3">{lp.title}</p>
+                        <div className="flex justify-between">
+                            <span className="text-neutral-200 text-sm">{formatTime(lp.createdAt)}</span>
+                            <span className="text-neutral-200 text-sm">{lp.likes.length} Likes</span>
+                        </div>
                     </div>
                 </div>
             })
@@ -41,7 +46,7 @@ export const LpsPage = () => {
         }
     })
 
-    return <div className="flex h-full mx-28">
+    return <div className="flex mx-28">
         <LpsSideBar/>
 
         {
