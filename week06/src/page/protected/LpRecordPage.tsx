@@ -48,7 +48,7 @@ export const LpRecordPage = () => {
                 <div className="w-full rounded-xl px-[30%] mt-16">
                     <div className="bg-neutral-200 p-[20%]">
                         <div className="relative pb-[100%]">
-                            <img src={data?.data?.thumbnail ?? ''} className="absolute top-0 left-0 right-0 bottom-0 w-full border-4 border-black aspect-square rounded-full" alt="thumbnail" />
+                            <img src={data?.data?.thumbnail ?? ''} className="absolute top-0 left-0 right-0 bottom-0 w-full border-4 border-black aspect-square rounded-full object-cover object-center" alt="thumbnail" />
                             <div className="absolute rounded-full top-1/3 bottom-1/3 left-1/3 right-1/3 bg-white size-1/3 border-4 border-black" />
                         </div>
                     </div>
