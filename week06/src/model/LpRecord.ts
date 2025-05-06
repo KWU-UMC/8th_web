@@ -8,7 +8,8 @@ export type LpRecord = {
     createdAt: string,
     updatedAt: string,
     tags: LpRecordTag[],
-    likes: LpRecordLike[]
+    likes: LpRecordLike[],
+    author: LpRecordAuthor | null
 }
 
 export type LpRecordTag = {
@@ -20,4 +21,14 @@ export type LpRecordLike = {
     id: number,
     userId: number,
     lpId: number
+}
+
+export type LpRecordAuthor = {
+    id: number,
+    name: string,
+    email: string,
+    bio: string | null,
+    avatar: string | null,
+    createdAt: string,
+    updatedAt: string
 }

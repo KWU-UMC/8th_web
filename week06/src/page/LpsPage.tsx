@@ -1,16 +1,21 @@
 import '../index.css'
 import {LpRecord} from "../model/LpRecord.ts";
 import {useQuery} from "@tanstack/react-query";
-import {LpRecordResponse} from "../model/response/LpRecordResponse.ts";
-import { formatTime } from '../util/format.ts';
+import {LpRecordsResponse} from "../model/response/LpRecordsResponse.ts";
+import {formatTime} from '../util/format.ts';
+import {useNavigate} from "react-router-dom";
 
 const LpsGrid = ({lps}: {
     lps: LpRecord[],
 }) => {
+    const navigate = useNavigate();
+
     return <div className="grid grid-cols-1 2xl:grid-cols-5 md:grid-cols-3 gap-x-4 gap-y-4 items-start">
         {
             lps.map(lp => {
-                return <div className="relative bg-neutral-300 rounded-xl w-full aspect-square hover:scale-150 hover:z-10 transition-transform duration-150 ease-in-out overflow-hidden group">
+                return <div
+                    className="relative bg-neutral-300 rounded-xl w-full aspect-square hover:scale-150 hover:z-10 transition-transform duration-150 ease-in-out overflow-hidden group"
+                    onClick={() => navigate(`/lp/${lp.id}`)}>
                     <img src={lp.thumbnail} alt="thumbnail" className="size-full bg-neutral-300 object-center object-cover" />
 
                     <div className="flex flex-col absolute bottom-0 bg-gradient-to-b from-transparent to-neutral-800 size-full p-4 justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
@@ -27,7 +32,7 @@ const LpsGrid = ({lps}: {
 }
 
 export const LpsPage = () => {
-    const { data, error, isLoading } = useQuery<LpRecordResponse>({
+    const { data, error, isLoading } = useQuery<LpRecordsResponse>({
         queryKey: ['lps'],
         queryFn: async () => {
             const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/v1/lps`)

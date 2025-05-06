@@ -5,6 +5,8 @@ import {SignUpPage} from "./page/SignUpPage.tsx";
 import {LpsPage} from "./page/LpsPage.tsx";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import { RootLayout } from './page/RootLayout.tsx';
+import {ProtectedRoot} from "./page/protected/ProtectedRoot.tsx";
+import { LpRecordPage } from './page/protected/LpRecordPage.tsx';
 
 const router = createBrowserRouter([
     {
@@ -22,6 +24,16 @@ const router = createBrowserRouter([
             {
                 path: '/signup',
                 element: <SignUpPage/>
+            }
+        ]
+    },
+    {
+        path: '/',
+        element: <ProtectedRoot/>,
+        children: [
+            {
+                path: '/lp/:id',
+                element: <LpRecordPage />
             }
         ]
     }

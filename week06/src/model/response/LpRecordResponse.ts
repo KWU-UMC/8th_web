@@ -1,8 +1,4 @@
-import {LpRecord} from "../LpRecord.ts";
 import {Response} from "./Response.ts";
+import {LpRecord} from "../LpRecord.ts";
 
-export type LpRecordData = {
-    data: LpRecord[]
-}
-
-export type LpRecordResponse = Response<LpRecordData>
+export type LpRecordResponse = Response<LpRecord>
