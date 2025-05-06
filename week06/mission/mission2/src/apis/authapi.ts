@@ -21,7 +21,6 @@ interface SignupI {
 }
 export const signup = async ({ name, email, password }: SignupI) => {
   const url = `${import.meta.env.VITE_BASE_URL}/auth/signup`;
-
   try {
     await axios.post(url, {
       name,
