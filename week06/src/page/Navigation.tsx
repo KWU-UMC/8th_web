@@ -1,12 +1,17 @@
 import {Link} from "react-router-dom";
 import useLocalStorage from "../hooks/useLocalStorage";
 
-export const Navigation = () => {
+export const Navigation = ({onClickHamburger}: {
+    onClickHamburger: () => void,
+}) => {
     const [accessToken, setAccessToken] = useLocalStorage<string | null>('accessToken', null)
     const isSignedIn = accessToken !== null;
 
     return <nav className="w-full flex justify-between px-36 py-4 border-b border-neutral-500 items-center">
-        <Link to="/"><span>돌려돌려 LP판</span></Link>
+        <div className="flex gap-x-4">
+            <button className="font-bold text-xl" onClick={onClickHamburger}>=</button>
+            <Link to="/"><span>돌려돌려 LP판</span></Link>
+        </div>
 
         <ul className="flex gap-4 items-center">
             {

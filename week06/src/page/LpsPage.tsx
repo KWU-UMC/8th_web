@@ -4,17 +4,6 @@ import {useQuery} from "@tanstack/react-query";
 import {LpRecordResponse} from "../model/response/LpRecordResponse.ts";
 import { formatTime } from '../util/format.ts';
 
-const LpsSideBar = () => {
-    return <div className="h-full min-h-screen flex flex-col bg-neutral-800 py-8 mx-8">
-        <ul className="flex flex-1 flex-col gap-4 px-4 w-40">
-            <li className="text-white text-lg">찾기</li>
-            <li className="text-white text-lg">마이페이지</li>
-        </ul>
-
-        <div><span className="text-white text-lg px-4">탈퇴하기</span></div>
-    </div>
-}
-
 const LpsGrid = ({lps}: {
     lps: LpRecord[],
 }) => {
@@ -47,8 +36,6 @@ export const LpsPage = () => {
     })
 
     return <div className="flex mx-28">
-        <LpsSideBar/>
-
         {
             isLoading ?
                 <>Loading...</>

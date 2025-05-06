@@ -1,20 +1,10 @@
 import './index.css'
-import {createBrowserRouter, Outlet, RouterProvider} from "react-router-dom";
+import {createBrowserRouter, RouterProvider} from "react-router-dom";
 import {SignInPage} from "./page/SignInPage.tsx";
 import {SignUpPage} from "./page/SignUpPage.tsx";
-import {Navigation} from "./page/Navigation.tsx";
 import {LpsPage} from "./page/LpsPage.tsx";
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
-
-const RootLayout = () => {
-    return (
-        <>
-            <Navigation />
-
-            <Outlet />
-        </>
-    )
-}
+import { RootLayout } from './page/RootLayout.tsx';
 
 const router = createBrowserRouter([
     {
