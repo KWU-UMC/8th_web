@@ -54,7 +54,6 @@ export async function signin({
   email,
   password,
 }: SigninProp): Promise<AxiosResponse<SinginI> | undefined> {
-  console.log(email, password);
   try {
     const { data } = await axios.post(
       `${import.meta.env.VITE_BASE_URL}/signin`,
