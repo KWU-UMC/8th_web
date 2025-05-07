@@ -25,6 +25,41 @@ export const lp = async ({ id }: { id: string }) => {
   }
 };
 
+type CreateLpI = {
+  accessToken: string;
+  title: string;
+  content: string;
+  thumbnail: string;
+  tags: string[];
+  published?: boolean;
+};
+export const create_lp = async ({
+  accessToken,
+  title,
+  content,
+  thumbnail,
+  tags,
+  published = true,
+}: CreateLpI) => {
+  const url = `${import.meta.env.VITE_BASE_URL}/lps`;
+
+  try {
+    await axios.post(
+      url,
+      {
+        title,
+        content,
+        thumbnail,
+        tags,
+        published,
+      },
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const lpComments = async ({
   id,
   cursor = 0,

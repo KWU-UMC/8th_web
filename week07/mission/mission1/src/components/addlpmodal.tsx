@@ -1,6 +1,8 @@
 import { SetStateAction, useRef, useState } from "react";
 import { useAuth } from "../contexts/authcontext";
 import { upload_img } from "../apis/authapi";
+import { useMutation } from "@tanstack/react-query";
+import { create_lp } from "../apis/lpapi";
 
 interface AddlpmodalI {
   setIsModalOpen: React.Dispatch<SetStateAction<boolean>>;
@@ -9,7 +11,7 @@ interface AddlpmodalI {
 export default function Addlpmodal({ setIsModalOpen }: AddlpmodalI) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [imgUrl, setImgUrl] = useState<string>("");
-  const [name, setName] = useState<string>("");
+  const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [tag, setTag] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
@@ -27,8 +29,8 @@ export default function Addlpmodal({ setIsModalOpen }: AddlpmodalI) {
     const url = await upload_img({ file, accessToken });
     setImgUrl(url.imageUrl);
   };
-  const handleName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
+  const handleTitle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
   };
   const handleContent = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContent(e.target.value);
@@ -45,8 +47,25 @@ export default function Addlpmodal({ setIsModalOpen }: AddlpmodalI) {
   const handleDeleteTag = (index: number) => {
     setTags((prev) => prev.filter((_, i) => i !== index));
   };
+
+  const { mutate } = useMutation({
+    mutationFn: () =>
+      create_lp({ accessToken, title, content, thumbnail: imgUrl, tags }),
+    onSuccess: () => {
+      console.log("success");
+      setIsModalOpen(false);
+    },
+    onError: () => {
+      console.log("error");
+    },
+  });
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      mutate();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -58,9 +77,12 @@ export default function Addlpmodal({ setIsModalOpen }: AddlpmodalI) {
         ref={modalRef}
         className="bg-white p-[20px] rounded-md max-w-[400px] w-full shadow-[0 4px 6px rgba(0, 0, 0, 0.1)] flex justify-center items-center"
       >
-        <form className="flex flex-col gap-4 [&>input]:p-2">
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col gap-4 [&>input]:p-2"
+        >
           <input onChange={handleImg} type="file" accept="image/*" />
-          <input onChange={handleName} placeholder="LP Name" />
+          <input onChange={handleTitle} placeholder="LP Name" />
           <input onChange={handleContent} placeholder="LP Content" />
           <label>
             <input
@@ -90,11 +112,7 @@ export default function Addlpmodal({ setIsModalOpen }: AddlpmodalI) {
                 </button>
               ))}
           </div>
-          <button
-            onSubmit={handleSubmit}
-            className="cursor-pointer"
-            type="submit"
-          >
+          <button className="cursor-pointer" type="submit">
             Add LP
           </button>
         </form>
