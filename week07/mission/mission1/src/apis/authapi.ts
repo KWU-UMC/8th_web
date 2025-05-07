@@ -31,3 +31,24 @@ export const signup = async ({ name, email, password }: SignupI) => {
     console.error("sign up api request error: ", error);
   }
 };
+
+export const upload_img = async ({
+  file,
+  accessToken,
+}: {
+  file: File;
+  accessToken: string;
+}) => {
+  const url = `${import.meta.env.VITE_BASE_URL}/uploads`;
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const { data } = await axios.post(url, formData, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return data.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
