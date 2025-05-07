@@ -1,15 +1,43 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { lpComments } from "../apis/lpapi";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { use, useCallback, useEffect, useRef, useState } from "react";
+import { create_comment, lpComments } from "../apis/lpapi";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../contexts/authcontext";
 import { Comment } from "../types/lptype";
 
 export default function Comments() {
   const [isASC, setIsASC] = useState<boolean>(true);
+  const [content, setContent] = useState<string>("");
   const params = useParams();
   const [data, setData] = useState<Comment[]>([]);
   const { accessToken } = useAuth();
+  const queryClient = useQueryClient();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setContent(e.target.value);
+  };
+
+  const { mutate } = useMutation({
+    mutationFn: () =>
+      create_comment({ lpId: params.lpID as string, content, accessToken }),
+    onSuccess: () => {
+      setContent("");
+      queryClient.invalidateQueries({
+        queryKey: ["comments", isASC, params.lpID],
+      });
+    },
+    onError: () => console.log("mutate Error"),
+  });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (content.trim() !== "") {
+      mutate();
+    }
+  };
 
   const {
     data: infiniteData,
@@ -84,18 +112,20 @@ export default function Comments() {
           </button>
         </div>
       </div>
-      <form className="w-full flex gap-4">
+      <form onSubmit={handleSubmit} className="w-full flex gap-4">
         <input
+          onChange={handleChange}
           className="flex-10 p-2 border-1 rounded-md"
           placeholder="댓글을 입력해주세요"
+          value={content}
         />
         <button className="flex-1 bg-gray-400 rounded-xl" type="submit">
           작성
         </button>
       </form>
       <div className="flex flex-col gap-4">
-        {data?.map((comment) => (
-          <div className="flex gap-4 justify-start items-center">
+        {data?.map((comment, index) => (
+          <div key={index} className="flex gap-4 justify-start items-center">
             <div>
               {comment?.author.avatar ? (
                 <img

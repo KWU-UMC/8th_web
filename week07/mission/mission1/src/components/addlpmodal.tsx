@@ -52,12 +52,9 @@ export default function Addlpmodal({ setIsModalOpen }: AddlpmodalI) {
     mutationFn: () =>
       create_lp({ accessToken, title, content, thumbnail: imgUrl, tags }),
     onSuccess: () => {
-      console.log("success");
       setIsModalOpen(false);
     },
-    onError: () => {
-      console.log("error");
-    },
+    onError: () => {},
   });
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

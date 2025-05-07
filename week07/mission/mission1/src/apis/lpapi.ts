@@ -86,3 +86,24 @@ export const lpComments = async ({
     console.error("comments request failed: ", error);
   }
 };
+
+export const create_comment = async ({
+  lpId,
+  content,
+  accessToken,
+}: {
+  lpId: string;
+  content: string;
+  accessToken: string;
+}) => {
+  const url = `${import.meta.env.VITE_BASE_URL}/lps/${lpId}/comments`;
+  try {
+    await axios.post(
+      url,
+      { content },
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
