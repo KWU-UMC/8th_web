@@ -4,12 +4,15 @@ import { Outlet } from "react-router-dom";
 import Header from "./layouts/header";
 import Sidebar from "./layouts/sidebar";
 import { useSidebar } from "./contexts/sidebar";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import Addlp from "./components/addlp";
+import Addlpmodal from "./components/addlpmodal";
 
 const queryClient = new QueryClient();
 
 function App() {
   const { isOpen, setIsOpen } = useSidebar();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   const handleCloseSidebar = (e: React.MouseEvent) => {
@@ -40,6 +43,8 @@ function App() {
           <Outlet />
         </div>
       </div>
+      <Addlp setIsModalOpen={setIsModalOpen} />
+      {isModalOpen && <Addlpmodal setIsModalOpen={setIsModalOpen} />}
       {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   );
