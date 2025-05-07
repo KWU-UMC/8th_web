@@ -3,25 +3,29 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { use, useCallback, useEffect, useRef, useState } from "react";
-import { create_comment, lpComments } from "../apis/lpapi";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { create_comment, delete_comment, lpComments } from "../apis/lpapi";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../contexts/authcontext";
 import { Comment } from "../types/lptype";
+import { GoKebabHorizontal } from "react-icons/go";
+import { LuPencil } from "react-icons/lu";
+import { FaTrashAlt } from "react-icons/fa";
 
 export default function Comments() {
   const [isASC, setIsASC] = useState<boolean>(true);
   const [content, setContent] = useState<string>("");
   const params = useParams();
   const [data, setData] = useState<Comment[]>([]);
-  const { accessToken } = useAuth();
+  const { accessToken, data: userData } = useAuth();
   const queryClient = useQueryClient();
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContent(e.target.value);
   };
 
-  const { mutate } = useMutation({
+  const { mutate: createMutate } = useMutation({
     mutationFn: () =>
       create_comment({ lpId: params.lpID as string, content, accessToken }),
     onSuccess: () => {
@@ -35,8 +39,19 @@ export default function Comments() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (content.trim() !== "") {
-      mutate();
+      createMutate();
     }
+  };
+  const { mutate: deleteMutate } = useMutation({
+    mutationFn: delete_comment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["comments", isASC, params.lpID],
+      });
+    },
+  });
+  const handleDelete = ({ commentId }: { commentId: number }) => {
+    deleteMutate({ lpId: params.lpID as string, commentId, accessToken });
   };
 
   const {
@@ -125,24 +140,47 @@ export default function Comments() {
       </form>
       <div className="flex flex-col gap-4">
         {data?.map((comment, index) => (
-          <div key={index} className="flex gap-4 justify-start items-center">
-            <div>
-              {comment?.author.avatar ? (
-                <img
-                  className="object-cover w-10 h-10 rounded-full"
-                  src={comment?.author.avatar as string}
-                  alt="avatar"
+          <div
+            key={index}
+            className="flex justify-between items-center relative"
+          >
+            <div className="flex gap-4 justify-start items-center">
+              <div>
+                {comment?.author.avatar ? (
+                  <img
+                    className="object-cover w-10 h-10 rounded-full"
+                    src={comment?.author.avatar as string}
+                    alt="avatar"
+                  />
+                ) : (
+                  <div className="w-10 flex justify-center items-center">
+                    <span>No Image</span>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col">
+                <span>{comment?.author.name}</span>
+                <span>{comment?.content}</span>
+              </div>
+            </div>
+            {comment.authorId == userData?.id ? (
+              <GoKebabHorizontal
+                className="cursor-pointer"
+                onClick={() =>
+                  setOpenMenuId((prev) =>
+                    prev === comment.id ? null : comment.id
+                  )
+                }
+              />
+            ) : null}
+            {comment.authorId === userData?.id && openMenuId === comment.id && (
+              <div className="absolute -right-0.5 -bottom-4 flex gap-3 bg-black p-2 rounded-xl cursor-pointer">
+                <LuPencil />
+                <FaTrashAlt
+                  onClick={() => handleDelete({ commentId: comment.id })}
                 />
-              ) : (
-                <div className="w-10 flex justify-center items-center">
-                  <span>No Image</span>
-                </div>
-              )}
-            </div>
-            <div className="flex flex-col">
-              <span>{comment?.author.name}</span>
-              <span>{comment?.content}</span>
-            </div>
+              </div>
+            )}
           </div>
         ))}
         {hasNextPage &&

@@ -107,3 +107,25 @@ export const create_comment = async ({
     console.error(error);
   }
 };
+
+export const delete_comment = async ({
+  lpId,
+  commentId,
+  accessToken,
+}: {
+  lpId: string;
+  commentId: number;
+  accessToken: string;
+}) => {
+  const url = `${
+    import.meta.env.VITE_BASE_URL
+  }/lps/${lpId}/comments/${commentId}`;
+
+  try {
+    await axios.delete(url, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
