@@ -7,12 +7,14 @@ import { useSidebar } from "./contexts/sidebar";
 import { useRef, useState } from "react";
 import Addlp from "./components/addlp";
 import Addlpmodal from "./components/addlpmodal";
+import Deleteidmodal from "./components/deleteidmodal";
 
 const queryClient = new QueryClient();
 
 function App() {
   const { isOpen, setIsOpen } = useSidebar();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const { isDeleteModalOpen } = useSidebar();
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   const handleCloseSidebar = (e: React.MouseEvent) => {
@@ -45,6 +47,7 @@ function App() {
       </div>
       <Addlp setIsModalOpen={setIsModalOpen} />
       {isModalOpen && <Addlpmodal setIsModalOpen={setIsModalOpen} />}
+      {isDeleteModalOpen && <Deleteidmodal />}
       {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>
   );

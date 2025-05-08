@@ -13,6 +13,7 @@ export default function Header() {
   const onMenuClick = () => {
     setIsOpen((prev) => !prev);
   };
+  const handleSignOut = () => {};
 
   return (
     <div className="w-full h-15 p-4 bg-amber-400 fixed top-0 flex justify-between items-center z-10">
@@ -30,7 +31,7 @@ export default function Header() {
         {isLoggedIn ? (
           <div className="flex gap-4">
             <span>{data?.name}님 환영합니다</span>
-            <button>로그아웃</button>
+            <button onClick={handleSignOut}>로그아웃</button>
           </div>
         ) : (
           <div className="flex gap-4">

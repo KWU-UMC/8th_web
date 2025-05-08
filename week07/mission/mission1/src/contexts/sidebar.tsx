@@ -9,15 +9,20 @@ import {
 interface SidebarContextI {
   isOpen: boolean;
   setIsOpen: React.Dispatch<SetStateAction<boolean>>;
+  isDeleteModalOpen: boolean;
+  setIsDeleteModalOpen: React.Dispatch<SetStateAction<boolean>>;
 }
 
 const SidebarContext = createContext<SidebarContextI | undefined>(undefined);
 
 export const SidebarProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
 
   return (
-    <SidebarContext.Provider value={{ isOpen, setIsOpen }}>
+    <SidebarContext.Provider
+      value={{ isOpen, setIsOpen, isDeleteModalOpen, setIsDeleteModalOpen }}
+    >
       {children}
     </SidebarContext.Provider>
   );

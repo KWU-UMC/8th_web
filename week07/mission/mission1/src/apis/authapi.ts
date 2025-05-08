@@ -32,6 +32,19 @@ export const signup = async ({ name, email, password }: SignupI) => {
   }
 };
 
+export const signout = async (accessToken: string) => {
+  const url = `${import.meta.env.VITE_BASE_URL}/auth/signout`;
+  try {
+    await axios.post(
+      url,
+      {},
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const upload_img = async ({
   file,
   accessToken,
