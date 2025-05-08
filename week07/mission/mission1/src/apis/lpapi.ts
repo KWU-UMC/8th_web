@@ -60,6 +60,53 @@ export const create_lp = async ({
   }
 };
 
+type ModifyLpI = {
+  lpId: string;
+  accessToken: string;
+  title: string;
+  content: string;
+  thumbnail: string;
+  tags: string[];
+  published?: boolean;
+};
+export const modify_lp = async ({
+  lpId,
+  accessToken,
+  title,
+  content,
+  thumbnail,
+  tags,
+  published = true,
+}: ModifyLpI) => {
+  const url = `${import.meta.env.VITE_BASE_URL}/lps/${lpId}`;
+  try {
+    await axios.patch(
+      url,
+      { title, content, thumbnail, tags, published },
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const delete_lp = async ({
+  lpId,
+  accessToken,
+}: {
+  lpId: string;
+  accessToken: string;
+}) => {
+  const url = `${import.meta.env.VITE_BASE_URL}/lps/${lpId}`;
+  try {
+    await axios.delete(url, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const lpComments = async ({
   id,
   cursor = 0,
@@ -148,6 +195,26 @@ export const modify_comment = async ({
     await axios.patch(
       url,
       { content },
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const like = async ({
+  lpId,
+  accessToken,
+}: {
+  lpId: string;
+  accessToken: string;
+}) => {
+  const url = `${import.meta.env.VITE_BASE_URL}/lps/${lpId}/likes`;
+
+  try {
+    await axios.post(
+      url,
+      {},
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
   } catch (error) {

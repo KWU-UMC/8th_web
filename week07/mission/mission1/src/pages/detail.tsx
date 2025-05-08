@@ -1,19 +1,47 @@
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
-import { lp } from "../apis/lpapi";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useParams } from "react-router-dom";
+import { delete_lp, like, lp } from "../apis/lpapi";
 import { formatDate } from "../utils/date";
 import { FaPencilAlt } from "react-icons/fa";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa6";
 import Comments from "./comments";
+import { useState } from "react";
+import Modifylpmodal from "../components/modifylpmodal";
+import { useAuth } from "../contexts/authcontext";
 
 export default function Detail() {
   const params = useParams();
+  const [isModifyModalOpen, setIsModifyModalOpen] = useState<boolean>(false);
+  const { data: userData, accessToken } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ["lp", params.lpID],
     queryFn: () => lp({ id: params.lpID as string }),
   });
+
+  const { mutate: deleteMutate } = useMutation({
+    mutationFn: delete_lp,
+    onSuccess: () => {
+      alert("lp를 삭제했습니다.");
+      navigate("/");
+    },
+  });
+  const handleDeleteLp = () => {
+    deleteMutate({ lpId: params.lpID as string, accessToken });
+  };
+
+  const { mutate: likeMutate } = useMutation({
+    mutationFn: like,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lp", params.lpID] });
+    },
+  });
+  const handleLike = () => {
+    likeMutate({ lpId: params.lpID as string, accessToken });
+  };
 
   if (isLoading) return null;
 
@@ -36,8 +64,18 @@ export default function Detail() {
         <div className="flex justify-between items-center">
           <h3>{data?.data.title}</h3>
           <div className="flex gap-4">
-            <FaPencilAlt className="cursor-pointer" />
-            <FaRegTrashAlt className="cursor-pointer" />
+            {data?.data.authorId == userData?.id && (
+              <>
+                <FaPencilAlt
+                  onClick={() => setIsModifyModalOpen(true)}
+                  className="cursor-pointer"
+                />
+                <FaRegTrashAlt
+                  onClick={handleDeleteLp}
+                  className="cursor-pointer"
+                />
+              </>
+            )}
           </div>
         </div>
         <div className="w-full h-full flex justify-center items-center">
@@ -63,11 +101,14 @@ export default function Detail() {
           ))}
         </div>
         <div className="flex justify-center items-center gap-4">
-          <FaHeart />
+          <FaHeart onClick={handleLike} className="cursor-pointer" />
           <span>{data?.data.likes.length}</span>
         </div>
       </div>
       <Comments />
+      {isModifyModalOpen && (
+        <Modifylpmodal setIsModifyModalOpen={setIsModifyModalOpen} />
+      )}
     </div>
   );
 }
