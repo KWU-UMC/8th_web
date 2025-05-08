@@ -3,17 +3,23 @@ import { useSidebar } from "../contexts/sidebar";
 import { IoMenu } from "react-icons/io5";
 import { IoSearchSharp } from "react-icons/io5";
 import { useAuth } from "../contexts/authcontext";
+import { useMutation } from "@tanstack/react-query";
+import { signout } from "../apis/authapi";
 
 export default function Header() {
   const navigate = useNavigate();
   const { setIsOpen } = useSidebar();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, setIsLoggedIn, accessToken } = useAuth();
   const { data } = useAuth();
 
   const onMenuClick = () => {
     setIsOpen((prev) => !prev);
   };
-  const handleSignOut = () => {};
+  const { mutate } = useMutation({ mutationFn: signout });
+  const handleSignOut = () => {
+    mutate(accessToken);
+    setIsLoggedIn(false);
+  };
 
   return (
     <div className="w-full h-15 p-4 bg-amber-400 fixed top-0 flex justify-between items-center z-10">
@@ -31,7 +37,9 @@ export default function Header() {
         {isLoggedIn ? (
           <div className="flex gap-4">
             <span>{data?.name}님 환영합니다</span>
-            <button onClick={handleSignOut}>로그아웃</button>
+            <button className="cursor-pointer" onClick={handleSignOut}>
+              로그아웃
+            </button>
           </div>
         ) : (
           <div className="flex gap-4">
