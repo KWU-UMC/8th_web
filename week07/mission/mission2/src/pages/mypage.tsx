@@ -4,9 +4,10 @@ import { modify_user, user } from "../apis/userapi";
 import { useAuth } from "../contexts/authcontext";
 import { upload_img } from "../apis/authapi";
 import { useNavigate } from "react-router-dom";
+import { FaCheck } from "react-icons/fa";
 
 export default function Mypage() {
-  const { data, accessToken } = useAuth();
+  const { data, setData, accessToken } = useAuth();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [name, setName] = useState<string>("");
   const [bio, setBio] = useState<string>("");
@@ -58,6 +59,12 @@ export default function Mypage() {
       alert("닉네임은 빈칸일 수 없습니다.");
     }
   };
+  const handleCheckClick = () => {
+    setData((prev) => {
+      if (!prev) return prev;
+      return { ...prev, name };
+    });
+  };
 
   return (
     <div className="flex justify-center items-center mt-10">
@@ -76,9 +83,20 @@ export default function Mypage() {
             className="hidden"
           />
         </div>
-        <div className="flex flex-col gap-1 justify-between [&>input]:p-1 [&>input]:border [&>input]:rounded-xl">
-          <input onChange={handleNameChange} value={name} />
+        <div className="flex flex-col gap-1 justify-between">
+          <div className="relative">
+            <input
+              className="p-1 border rounded-xl"
+              onChange={handleNameChange}
+              value={name}
+            />
+            <FaCheck
+              onClick={handleCheckClick}
+              className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
+            />
+          </div>
           <input
+            className="p-1 border rounded-xl"
             onChange={handleBioChange}
             value={bio}
             placeholder="자신을 소개해보세요!"
