@@ -4,7 +4,12 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { create_comment, delete_comment, lpComments } from "../apis/lpapi";
+import {
+  create_comment,
+  delete_comment,
+  lpComments,
+  modify_comment,
+} from "../apis/lpapi";
 import { useParams } from "react-router-dom";
 import { useAuth } from "../contexts/authcontext";
 import { Comment } from "../types/lptype";
@@ -20,6 +25,8 @@ export default function Comments() {
   const { accessToken, data: userData } = useAuth();
   const queryClient = useQueryClient();
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const [modifyCommentId, setModifyCommentId] = useState<number | null>(null);
+  const [modifyContent, setModifyContent] = useState<string>("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContent(e.target.value);
@@ -52,6 +59,29 @@ export default function Comments() {
   });
   const handleDelete = ({ commentId }: { commentId: number }) => {
     deleteMutate({ lpId: params.lpID as string, commentId, accessToken });
+  };
+  const { mutate: modifyMutate } = useMutation({
+    mutationFn: modify_comment,
+    onSuccess: () => {
+      setModifyCommentId(null);
+      queryClient.invalidateQueries({
+        queryKey: ["comments", isASC, params.lpID],
+      });
+    },
+  });
+  const handleModifySubmit = (e: React.FormEvent, commentId: number) => {
+    e.preventDefault();
+    if (modifyContent.trim() !== "") {
+      modifyMutate({
+        lpId: params.lpID as string,
+        commentId,
+        content: modifyContent,
+        accessToken,
+      });
+    }
+  };
+  const handleModifyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setModifyContent(e.target.value);
   };
 
   const {
@@ -160,7 +190,17 @@ export default function Comments() {
               </div>
               <div className="flex flex-col">
                 <span>{comment?.author.name}</span>
-                <span>{comment?.content}</span>
+                {modifyCommentId == comment.id ? (
+                  <form onSubmit={(e) => handleModifySubmit(e, comment.id)}>
+                    <input
+                      onChange={handleModifyChange}
+                      value={modifyContent}
+                      className="w-full border-1 border-white rounded-sm"
+                    />
+                  </form>
+                ) : (
+                  <span>{comment?.content}</span>
+                )}
               </div>
             </div>
             {comment.authorId == userData?.id ? (
@@ -175,7 +215,13 @@ export default function Comments() {
             ) : null}
             {comment.authorId === userData?.id && openMenuId === comment.id && (
               <div className="absolute -right-0.5 -bottom-4 flex gap-3 bg-black p-2 rounded-xl cursor-pointer">
-                <LuPencil />
+                <LuPencil
+                  onClick={() =>
+                    setModifyCommentId((prev) =>
+                      prev === comment.id ? null : comment.id
+                    )
+                  }
+                />
                 <FaTrashAlt
                   onClick={() => handleDelete({ commentId: comment.id })}
                 />

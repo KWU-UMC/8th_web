@@ -129,3 +129,28 @@ export const delete_comment = async ({
     console.error(error);
   }
 };
+
+export const modify_comment = async ({
+  lpId,
+  commentId,
+  content,
+  accessToken,
+}: {
+  lpId: string;
+  commentId: number;
+  content: string;
+  accessToken: string;
+}) => {
+  const url = `${
+    import.meta.env.VITE_BASE_URL
+  }/lps/${lpId}/comments/${commentId}`;
+  try {
+    await axios.patch(
+      url,
+      { content },
+      { headers: { Authorization: `Bearer ${accessToken}` } }
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
