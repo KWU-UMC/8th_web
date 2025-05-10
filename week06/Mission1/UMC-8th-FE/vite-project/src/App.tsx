@@ -9,6 +9,8 @@ import MyPage from './pages/MyPage';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedLayout from './layouts/ProtectedLayout';
 import GoogleLoginRedirectPage from './pages/GoogleLoginRedirectPage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 //publicRoutes: 인증 업시 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -52,13 +54,19 @@ const protectedRoutes: RouteObject[] = [
 
 const router = createBrowserRouter([...publicRoutes, ...protectedRoutes])
 
+export const queryClient = new QueryClient();
+
 function App() {
   // 모든 상태를 공유하고 싶기 때문에
   return (
-    <AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
       <RouterProvider router={router} />
     </AuthProvider>
+    {import.meta.env.DEV && (<ReactQueryDevtools initialIsOpen={false} />)}
+    </QueryClientProvider>
   );
 }
+//배포한경에서는 안 켜지게 할려고 위에 import.meta 하는거임
 
 export default App
