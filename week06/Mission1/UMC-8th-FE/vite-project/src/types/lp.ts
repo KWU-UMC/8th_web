@@ -1,4 +1,4 @@
-import { CursorBasdResponse } from "./common";
+import { CursorBasedResponse } from "./common";
 export type Tag = {
     id: number;
     name: string;
@@ -10,7 +10,7 @@ export type Likes = {
     lpId: number;
 };
 
-export type ResponseLPListDto = CursorBasdResponse<{
+export type ResponseLPListDto = CursorBasedResponse<{
     data:{
         id:number;
         title: string;
@@ -22,5 +22,5 @@ export type ResponseLPListDto = CursorBasdResponse<{
         updatedAt: Date;
         tags: Tag[];
         likes: Likes[];
-    };
+    }[];
 }>
