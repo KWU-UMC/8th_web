@@ -29,7 +29,24 @@ const Navbar = () => {
                             </NavLink>
                         </>
                     )}
+                    {accessToken&&(
+                        <>
+                            <NavLink
+                            to="my"
+                            className="bg-black text-white py-1 px-3 rounded-md
+                            hover:bg-pink-600 transition-colors text-sm">
+                            마이페이지
+                            </NavLink>
+                            <NavLink
+                            to="search"
+                            className="bg-black text-white py-1 px-3 rounded-md
+                            hover:bg-pink-600 transition-colors text-sm">
+                            검색
+                            </NavLink>
+                        </>
+                    )}
                 </div>
+                
             </nav>;
 };
 
