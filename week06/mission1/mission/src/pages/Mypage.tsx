@@ -6,36 +6,44 @@ import { useNavigate } from "react-router-dom";
 
 const Mypage = () => {
   const navigate = useNavigate();
-  const {logout} = useAuth();
+  const { logout } = useAuth();
   const [data, setData] = useState<ResponseMyInfoDto>();
 
-  useEffect( () => {
+  useEffect(() => {
     const getData = async () => {
-        const response = await getMyInfo();
-        console.log(response);
-        
-        setData(response);
+      const response = await getMyInfo();
+      console.log(response);
+      setData(response);
     };
 
     getData();
-  }, [] );
+  }, []);
 
-  const handleLogout = async() => {
+  const handleLogout = async () => {
     await logout();
     navigate("/");
-  }
-  
-  return <div>
-    <h1>{data?.data?.name}님 환영합니다.</h1>
-    <img src={data?.data?.avatar as string}alt={"구글 로고"}/>
-    <h1>{data?.data?.email}</h1>
+  };
 
-    <button
-    className='cursor-pointer bg-blue-300 rounded-sm pd-5 hoverscale-90'
-    onClick={handleLogout}>
-      로그아웃
-    </button>
-  </div>
-}
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 px-4">
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md text-center">
+        <h1 className="text-2xl font-semibold mb-4">
+          {data?.data?.name}님 환영합니다
+        </h1>
+        <img
+          src={data?.data?.avatar as string}
+          className="w-24 h-24 rounded-full mx-auto mb-4 shadow"
+        />
+        <h2 className="text-lg text-gray-700 mb-6">{data?.data?.email}</h2>
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded-lg transition duration-200 transform hover:scale-105"
+        >
+          로그아웃
+        </button>
+      </div>
+    </div>
+  );
+};
 
-export default Mypage
+export default Mypage;
