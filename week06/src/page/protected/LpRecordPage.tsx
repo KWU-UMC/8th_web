@@ -1,9 +1,52 @@
 import {useParams} from "react-router-dom";
-import {useQuery} from "@tanstack/react-query";
+import {useInfiniteQuery, useQuery} from "@tanstack/react-query";
 import {LpRecordResponse} from "../../model/response/LpRecordResponse.ts";
 import client from "../../util/client.ts";
 import {formatTime} from "../../util/format.ts";
 import {LpRecordTag} from "../../model/LpRecord.ts";
+import {CommentsResponse} from "../../model/response/CommentsResponse.ts";
+import {SortSelector} from "../../ui/SortSelector.tsx";
+import {useState} from "react";
+
+const CommentList = ({id}: {
+    id: number
+}) => {
+    const [isSortAscending, setIsSortAscending] = useState(true)
+
+    const {data, hasNextPage, fetchNextPage} = useInfiniteQuery<CommentsResponse>({
+        queryKey: ['comments', id, isSortAscending],
+        queryFn: async ({pageParam = 0}) => {
+            const response = await client.get<CommentsResponse>(`/v1/lps/${id}/comments?cursor=${pageParam}&order=${isSortAscending ? 'asc' : 'desc'}`)
+            return response.data
+        },
+        getNextPageParam: lastPage => lastPage.data.hasNext ? lastPage.data.nextCursor : undefined,
+        initialPageParam: 0
+    })
+
+    return <div className="flex flex-col gap-y-4 rounded-xl bg-neutral-300 w-full p-4">
+        <div className="flex justify-between items-center">
+            <span className="font-bold text-lg">댓글</span>
+
+            <SortSelector sortAscending={isSortAscending} onSortChange={setIsSortAscending}/>
+        </div>
+
+        {data?.pages.map(page => page.data.data).flat().map(comment => {
+            return <div key={comment.id} className="flex gap-4 items-center">
+                <img src={comment.author.avatar ?? ''} className="size-8 rounded-full" alt="author profile image"/>
+                <div className="flex flex-col gap-2">
+                    <span className="font-bold">{comment.author.name}</span>
+                    <span>{comment.content}</span>
+                </div>
+            </div>
+        })}
+
+        {hasNextPage ?
+            <button className="p-4 border-2 self-center mt-4 rounded-lg" onClick={() => fetchNextPage()}>
+                Load Next
+            </button> : <></>}
+
+    </div>
+}
 
 const LpRecordTagUi = ({tag}: {
     tag: LpRecordTag
@@ -24,7 +67,9 @@ export const LpRecordPage = () => {
         },
     })
 
-    return <div className="flex flex-col w-full p-4">
+    const idInt = parseInt(id ?? '-1');
+
+    return <div className="flex flex-col w-full p-4 gap-y-8">
         <div className="bg-neutral-300 w-full p-4 rounded-xl">
             <div className="flex flex-col gap-4 px-48 justify-center">
                 <div className="flex justify-between items-center">
@@ -68,5 +113,7 @@ export const LpRecordPage = () => {
                 </div>
             </div>
         </div>
+
+        <CommentList id={idInt} />
     </div>
 }
