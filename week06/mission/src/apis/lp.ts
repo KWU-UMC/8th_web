@@ -1,5 +1,10 @@
-import type { TPagination, TResponseLpList } from "../types/TLp";
+import type {
+  TPagination,
+  TResponseLpDetail,
+  TResponseLpList,
+} from "../types/TLp";
 import { axiosInstance } from "./axiosInstance";
+import type { ApiResponse } from "../types/TLp";
 
 export const getLpList = async (
   Tpagination: TPagination
@@ -9,4 +14,11 @@ export const getLpList = async (
   });
 
   return data;
+};
+
+export const getLpDetail = async (
+  id: string
+): Promise<ApiResponse<ApiResponse<TResponseLpDetail>>> => {
+  const response = await axiosInstance.get(`/v1/lps/${id}`);
+  return { data: response.data };
 };

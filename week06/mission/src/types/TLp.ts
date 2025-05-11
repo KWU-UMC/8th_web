@@ -41,3 +41,29 @@ export type TResponseLpList = TCursorBasedResponse<{
     likes: Likes[];
   }[];
 }>;
+
+export type TResponseLpDetail = {
+  id: number;
+  title: string;
+  content: string;
+  thumbnail: string;
+  published: boolean;
+  authorId: number;
+  createdAt: Date;
+  updatedAt: Date;
+  tags: Tag[];
+  likes: Likes[];
+  author: {
+    id: number;
+    name: string;
+    email: string;
+    bio: string | null;
+    avatar: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+};
+
+export type ApiResponse<T> = {
+  data: T;
+};
