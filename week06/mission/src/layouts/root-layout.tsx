@@ -27,7 +27,7 @@ const RootLayout = () => {
   }, [isSidebarOpen]);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col">
       <div className="h-16 z-40">
         <Navbar onToggleSidebar={toggleSidebar} />
       </div>

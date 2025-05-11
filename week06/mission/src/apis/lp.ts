@@ -10,7 +10,12 @@ export const getLpList = async (
   Tpagination: TPagination
 ): Promise<TResponseLpList> => {
   const { data } = await axiosInstance.get("/v1/lps", {
-    params: Tpagination,
+    params: {
+      cursor: Tpagination.cursor,
+      limit: Tpagination.limit,
+      order: Tpagination.order,
+      search: Tpagination.search,
+    },
   });
 
   return data;

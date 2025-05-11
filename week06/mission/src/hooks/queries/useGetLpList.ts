@@ -1,24 +1,27 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import type { TPagination } from "../../types/TLp";
 import type { TResponseLpList } from "../../types/TLp";
 import { getLpList } from "../../apis/lp";
 import { QUERY_KEY } from "../../constants/key";
 
-function useGetLpList({ cursor, search, order, limit }: TPagination) {
-  return useQuery({
-    queryKey: [QUERY_KEY.lps, cursor, search, order, limit],
-    queryFn: () =>
-      getLpList({
-        cursor,
+function useGetLpList({ search, order, limit }: Omit<TPagination, "cursor">) {
+  return useInfiniteQuery<TResponseLpList, Error>({
+    queryKey: [QUERY_KEY.lps, search, order, limit],
+    queryFn: async ({ pageParam = 0 }) => {
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // 1초 지연
+      return getLpList({
+        cursor: pageParam as number,
         search,
         order,
         limit,
-      }),
-    staleTime: 1000 * 60 * 5, // 5분
-    gcTime: 100 * 60 * 10, // 10분
+      });
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) =>
+      lastPage.hasNext ? lastPage.nextCursor : undefined,
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
     retry: 3,
-    select: (data: TResponseLpList) => data.data.data,
-    // enabled: Boolean(search), // 조건에 따라 쿼리 실행 여부 제어
   });
 }
 
