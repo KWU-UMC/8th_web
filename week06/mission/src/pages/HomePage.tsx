@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useGetLpList from "../hooks/queries/useGetLpList";
+import LpCard from "../components/LpCard";
 
 const HomePage = () => {
   const [isASC, setIsASC] = useState(true);
@@ -33,13 +34,7 @@ const HomePage = () => {
 
       <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 p-2 m-2 gap-4">
         {data?.map((lp) => (
-          <div key={lp.id} className="aspect-square w-full overflow-hidden">
-            <img
-              src={lp.thumbnail}
-              alt={`썸네일 ${lp.id}`}
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <LpCard key={lp.id} lp={lp} />
         ))}
       </div>
     </div>
