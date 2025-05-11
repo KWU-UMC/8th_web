@@ -11,12 +11,7 @@ export type Likes ={
     lpId:number;
 }
 
-export type ResponseLpListDto = CursorBasedResponse<{
-  data: LpSummary[];
-}>;
-
-// LP 요약 정보 (목록에서만 쓰이는 구조)
-export type LpSummary = {
+export type Lp = {
   id: number;
   title: string;
   content: string;
@@ -29,7 +24,11 @@ export type LpSummary = {
   likes: Likes[];
 };
 
-export type LpDetail = LpSummary & {
+export type ResponseLpListDto = CursorBasedResponse<{
+  data: Lp[];
+}>;
+
+export type LpDetail = Lp & {
   author: {
     id: number;
     name: string;

@@ -1,24 +1,35 @@
-import { useState } from "react";
-import useGetLpList from "../hooks/queries/useGetLpList";
-import { PaginationDto } from "../types/common";
-import { PAGINATION_ORDER } from "../enums/common.ts"
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useInView } from "react-intersection-observer";
+import { PAGINATION_ORDER } from "../enums/common";
+import useGetInfiniteList from "../hooks/queries/useGetInfinite";
 import { useAuth } from "../context/AuthContext";
+import LpSkeletonCard from "../components/LpSkeletonCard";
 
 const HomePage = () => {
   const [order, setOrder] = useState<PAGINATION_ORDER>(PAGINATION_ORDER.asc);
-
-  const queryParams: PaginationDto = {
-    cursor: undefined,
-    order,
-    limit: 50,
-  };
-
- 
-  const { data, isPending, isError } = useGetLpList(queryParams);
-  const lpList = data?.data?.data || [];
-  const navigate = useNavigate();
+  const [search, setSearch] = useState("");
   const { accessToken } = useAuth();
+  const navigate = useNavigate();
+
+  const {
+    data,
+    isFetching,
+    isPending,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+  } = useGetInfiniteList(20, search, order);
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView && hasNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage]);
+
+  const lpList = data?.pages.flatMap((page) => page.data.data) ?? [];
 
   const handleCardClick = (id: number) => {
     if (!accessToken) {
@@ -27,7 +38,6 @@ const HomePage = () => {
       }
       return;
     }
-
     navigate(`/lp/${id}`);
   };
 
@@ -35,7 +45,7 @@ const HomePage = () => {
     <div className="flex">
       <div className="flex-1">
         <div className="mt-10 px-6">
-          <div className="flex justify-end items-center mb-6">
+          <div className="flex justify-between items-center mb-6">
             <div className="space-x-2">
               <button
                 onClick={() => setOrder(PAGINATION_ORDER.asc)}
@@ -56,10 +66,15 @@ const HomePage = () => {
             </div>
           </div>
 
-          {isPending && <p>로딩 중...</p>}
           {isError && <p>데이터를 불러오지 못했습니다.</p>}
-          
-          <div>
+
+          {(isPending || (isFetching && !lpList.length)) ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+              {Array.from({ length: 12 }).map((_, idx) => (
+                <LpSkeletonCard key={idx} />
+              ))}
+            </div>
+          ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
               {lpList.map((lp) => (
                 <div
@@ -72,9 +87,8 @@ const HomePage = () => {
                     alt={lp.title}
                     className="w-full aspect-square object-cover"
                   />
-
                   <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100
-                  transition-opacity duration-300 flex flex-col justify-end items-start p-4 space-y-1">
+                    transition-opacity duration-300 flex flex-col justify-end items-start p-4 space-y-1">
                     <h3 className="text-lg font-bold">{lp.title}</h3>
                     <p className="text-sm mt-1">
                       [업로드 날짜] {new Date(lp.createdAt).toLocaleDateString()}
@@ -84,12 +98,14 @@ const HomePage = () => {
                 </div>
               ))}
             </div>
-          </div>
+          )}
+
+          <div ref={ref} className="h-10" />
+          {isFetching && <p className="text-center mt-4">불러오는 중...</p>}
         </div>
       </div>
     </div>
   );
 };
-
 
 export default HomePage;
