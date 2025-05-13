@@ -1,7 +1,7 @@
 import {Link} from "react-router-dom";
 import useLocalStorage from "../hooks/useLocalStorage";
 import {useQuery} from "@tanstack/react-query";
-import {UserResponse} from "../model/response/UserResponse.ts";
+import {type UserResponse} from "../model/response/UserResponse.ts";
 import client from "../util/client.ts";
 
 export const Navigation = ({onClickHamburger}: {

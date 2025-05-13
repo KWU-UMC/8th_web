@@ -1,7 +1,7 @@
-import {ChangeEvent, useState} from "react";
+import {type ChangeEvent, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {z} from "zod";
-import {FieldErrors, SubmitHandler, useForm, UseFormRegister, UseFormRegisterReturn} from "react-hook-form";
+import {type FieldErrors, type SubmitHandler, useForm, type UseFormRegister, type UseFormRegisterReturn} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 
 type SignUpForm = z.infer<typeof signUpSchema>;
@@ -16,9 +16,13 @@ const signUpSchema = z.object({
     path: ["passwordConfirm"],
 });
 
-enum SignUpStep {
-    EMAIL, PASSWORD, PROFILE_IMAGE
-}
+const SignUpStep = {
+    EMAIL: 0,
+    PASSWORD: 1,
+    PROFILE_IMAGE: 2,
+} as const
+
+type SignUpStepType = typeof SignUpStep[keyof typeof SignUpStep]
 
 const EmailInputField = ({register, placeholder}: {
     register: UseFormRegister<SignUpForm>,
@@ -195,7 +199,7 @@ const SignUpProfileImage = ({errors, register, onClickSubmit}: {
 
 export const SignUpPage = () => {
     const navigate = useNavigate();
-    const [type, setType] = useState(SignUpStep.EMAIL)
+    const [type, setType] = useState<SignUpStepType>(SignUpStep.EMAIL)
 
     const { register, trigger, handleSubmit, formState: { errors } } = useForm<SignUpForm>({
         defaultValues: {
@@ -233,9 +237,9 @@ export const SignUpPage = () => {
                 <button
                     className="absolute left-0 hover:bg-neutral-400 p-4 rounded-xl"
                     onClick={() => {
-                        if (type == SignUpStep.PASSWORD) {
+                        if (type === SignUpStep.PASSWORD) {
                             setType(SignUpStep.EMAIL)
-                        } else if (type == SignUpStep.PROFILE_IMAGE) {
+                        } else if (type === SignUpStep.PROFILE_IMAGE) {
                             setType(SignUpStep.PASSWORD)
                         } else {
                             navigate(-1)
@@ -246,7 +250,7 @@ export const SignUpPage = () => {
             </div>
 
             {
-                type == SignUpStep.EMAIL ?
+                type === SignUpStep.EMAIL ?
                     <SignUpEmail
                         errors={errors}
                         register={register}
@@ -256,7 +260,7 @@ export const SignUpPage = () => {
                             }
                         }} />
                     : (
-                        type == SignUpStep.PASSWORD ?
+                        type === SignUpStep.PASSWORD ?
                             <SignUpPassword email={""} errors={errors} register={register} onClickNext={() => { setType(SignUpStep.PROFILE_IMAGE) }} />
                             : <SignUpProfileImage errors={errors} register={register} onClickSubmit={handleSubmit(onSubmit)} />
                     )

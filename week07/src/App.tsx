@@ -7,6 +7,7 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import { RootLayout } from './page/RootLayout.tsx';
 import {ProtectedRoot} from "./page/protected/ProtectedRoot.tsx";
 import { LpRecordPage } from './page/protected/LpRecordPage.tsx';
+import {MyPage} from "./page/protected/MyPage.tsx";
 
 const router = createBrowserRouter([
     {
@@ -34,12 +35,16 @@ const router = createBrowserRouter([
             {
                 path: '/lp/:id',
                 element: <LpRecordPage />
+            },
+            {
+                path: '/my',
+                element: <MyPage />
             }
         ]
     }
 ])
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient()
 
 function App() {
     return (

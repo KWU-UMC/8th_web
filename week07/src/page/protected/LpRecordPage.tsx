@@ -1,10 +1,10 @@
 import {useParams} from "react-router-dom";
 import {useInfiniteQuery, useQuery} from "@tanstack/react-query";
-import {LpRecordResponse} from "../../model/response/LpRecordResponse.ts";
+import type {LpRecordResponse} from "../../model/response/LpRecordResponse.ts";
 import client from "../../util/client.ts";
 import {formatTime} from "../../util/format.ts";
-import {LpRecordTag} from "../../model/LpRecord.ts";
-import {CommentsResponse} from "../../model/response/CommentsResponse.ts";
+import type {LpRecordTag} from "../../model/LpRecord.ts";
+import type {CommentsResponse} from "../../model/response/CommentsResponse.ts";
 import {SortSelector} from "../../ui/SortSelector.tsx";
 import {useState} from "react";
 
@@ -57,7 +57,7 @@ const LpRecordTagUi = ({tag}: {
 }
 
 export const LpRecordPage = () => {
-    const {id} = useParams();
+    const {id} = useParams()
 
     const { data } = useQuery<LpRecordResponse>({
         queryKey: ['lpRecord', id],
@@ -67,7 +67,7 @@ export const LpRecordPage = () => {
         },
     })
 
-    const idInt = parseInt(id ?? '-1');
+    const idInt = parseInt(id ?? '-1')
 
     return <div className="flex flex-col w-full p-4 gap-y-8">
         <div className="bg-neutral-300 w-full p-4 rounded-xl">

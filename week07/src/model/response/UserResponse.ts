@@ -1,4 +1,4 @@
-import {Response} from "./Response.ts";
+import {type Response} from "./Response.ts";
 
 export type UserResponse = Response<UserData>
 
