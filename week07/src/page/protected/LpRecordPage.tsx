@@ -3,10 +3,10 @@ import {useInfiniteQuery, useQuery} from "@tanstack/react-query";
 import type {LpRecordResponse} from "../../model/response/LpRecordResponse.ts";
 import client from "../../util/client.ts";
 import {formatTime} from "../../util/format.ts";
-import type {LpRecordTag} from "../../model/LpRecord.ts";
 import type {CommentsResponse} from "../../model/response/CommentsResponse.ts";
 import {SortSelector} from "../../ui/SortSelector.tsx";
 import {useState} from "react";
+import {LpRecordTagUi} from "../../ui/LpRecordTag.tsx";
 
 const CommentList = ({id}: {
     id: number
@@ -46,14 +46,6 @@ const CommentList = ({id}: {
             </button> : <></>}
 
     </div>
-}
-
-const LpRecordTagUi = ({tag}: {
-    tag: LpRecordTag
-}) => {
-    return <span className="rounded-xl bg-neutral-500 text-white px-4 py-1">
-        {tag.name}
-    </span>
 }
 
 export const LpRecordPage = () => {
@@ -103,7 +95,7 @@ export const LpRecordPage = () => {
 
                 <div className="mt-16">
                     {data?.data?.tags?.map(tag => {
-                        return <LpRecordTagUi key={tag.id} tag={tag}/>
+                        return <LpRecordTagUi key={tag.id} tagName={tag.name}/>
                     })}
                 </div>
 

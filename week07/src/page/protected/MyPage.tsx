@@ -1,11 +1,20 @@
 import type {UserData, UserResponse} from "../../model/response/UserResponse.ts";
-import {useInfiniteQuery, useQuery} from "@tanstack/react-query";
+import {useInfiniteQuery, useMutation, useQuery} from "@tanstack/react-query";
 import client from "../../util/client.ts";
 import {LpsGrid} from "../../ui/LpsGrid.tsx";
 import type {LpRecordsResponse} from "../../model/response/LpRecordsResponse.ts";
 import {useState} from "react";
 import {SortSelector} from "../../ui/SortSelector.tsx";
 import {FloatingButton} from "../../ui/FloatingButton.tsx";
+import CloseableDialog from "../../ui/CloseableDialog.tsx";
+import {useForm} from "react-hook-form";
+import {LpRecordTagUi} from "../../ui/LpRecordTag.tsx";
+
+type FormData = {
+    title: string
+    content: string
+    tags: string[]
+}
 
 const ProfileCard = ({profile}: {
     profile: UserData
@@ -30,7 +39,21 @@ export const MyPage = () => {
         }
     })
 
+    const mutation = useMutation({
+        mutationFn: async (formData: FormData) => {
+            const response = await client.post('/v1/lps', {
+                title: formData.title,
+                content: formData.content,
+                tags: formData.tags,
+                published: true,
+                thumbnail: null // TODO
+            })
+            return response.data
+        }
+    })
+
     const [isAscending, setIsAscending] = useState(true)
+    const [showAddLpDDialog, setShowAddLpDialog] = useState(false)
 
     const {data: lps, hasNextPage, fetchNextPage} = useInfiniteQuery<LpRecordsResponse>({
         queryKey: ['lps', isAscending],
@@ -41,6 +64,18 @@ export const MyPage = () => {
         getNextPageParam: lastPage => lastPage.data.hasNext ? lastPage.data.nextCursor : undefined,
         initialPageParam: 0
     })
+
+    const { register, watch, setValue, handleSubmit } = useForm<FormData>({
+        defaultValues: {
+            title: '',
+            content: '',
+            tags: []
+        }
+    })
+
+    const tags = watch('tags')
+
+    const [tagInput, setTagInput] = useState('')
 
     return <div className="flex flex-col m-8">
         {data ? <ProfileCard profile={data.data} /> : <></>}
@@ -53,8 +88,44 @@ export const MyPage = () => {
 
         {hasNextPage ? <button className="p-4 border-2 self-center mt-4 rounded-lg" onClick={() => fetchNextPage()}>Load Next</button> : <></>}
 
-        <FloatingButton>
+        <FloatingButton onClick={() => setShowAddLpDialog(true)}>
             <span className="font-bold text-white text-4xl">+</span>
         </FloatingButton>
+
+        {
+            showAddLpDDialog ? <CloseableDialog onClickClose={() => setShowAddLpDialog(false)}>
+                <form
+                    onSubmit={handleSubmit(data => mutation.mutate(data))}
+                    className="flex flex-col w-80 gap-y-8 text-white"
+                >
+                    <input placeholder="LP Title" {...register('title')} />
+                    <input placeholder="LP Content" {...register('content')} />
+                    <div className="flex justify-between items-center gap-4">
+                        <input className="grow" type="text" placeholder="Tag..." value={tagInput} onChange={v => setTagInput(v.target.value) }/>
+                        <button className="bg-pink-600 px-4 py-2 rounded-lg" onClick={() => {
+                            setTagInput('')
+                            setValue('tags', [...tags, tagInput])
+                        }}>Add</button>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                        {
+                            tags.map((tag, index) =>
+                                <LpRecordTagUi
+                                    key={index}
+                                    onClickClose={() => setValue('tags', tags.filter((_, i) => i !== index))}
+                                    tagName={tag} />
+                            )
+                        }
+                    </div>
+
+                    <button
+                        type="submit"
+                        disabled={mutation.isPending}
+                        className="bg-pink-600 w-full px-4 py-2 rounded-lg"
+                    >Add LP</button>
+                </form>
+            </CloseableDialog> : <></>
+        }
     </div>
 }
