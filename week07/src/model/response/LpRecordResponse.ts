@@ -1,4 +1,4 @@
-import {Response} from "./Response.ts";
-import {LpRecord} from "../LpRecord.ts";
+import {type Response} from "./Response.ts";
+import {type LpRecord} from "../LpRecord.ts";
 
 export type LpRecordResponse = Response<LpRecord>

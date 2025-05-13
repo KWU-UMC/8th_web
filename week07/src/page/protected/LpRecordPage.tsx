@@ -1,5 +1,5 @@
 import {useParams} from "react-router-dom";
-import {useInfiniteQuery, useQuery} from "@tanstack/react-query";
+import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import type {LpRecordResponse} from "../../model/response/LpRecordResponse.ts";
 import client from "../../util/client.ts";
 import {formatTime} from "../../util/format.ts";
@@ -7,11 +7,99 @@ import type {CommentsResponse} from "../../model/response/CommentsResponse.ts";
 import {SortSelector} from "../../ui/SortSelector.tsx";
 import {useState} from "react";
 import {LpRecordTagUi} from "../../ui/LpRecordTag.tsx";
+import type {UserResponse} from "../../model/response/UserResponse.ts";
+import type {Comment} from "../../model/Comment.ts";
 
-const CommentList = ({id}: {
-    id: number
+const CommentItem = ({comment, isAuthor, onChange}: {
+    comment: Comment,
+    isAuthor: boolean,
+    onChange: () => Promise<void>
 }) => {
+    const editMut = useMutation({
+        mutationFn: async (formData: {content: string}) => {
+            const response = await client.patch(`/v1/lps/${comment.lpId}/comments/${comment.id}`, {
+                content: formData.content
+            })
+            return response.data
+        }
+    })
+
+    const deleteMut = useMutation({
+        mutationFn: async () => {
+            const response = await client.delete(`/v1/lps/${comment.lpId}/comments/${comment.id}`)
+            return response.data
+        },
+        onSuccess: async () => {
+            await onChange()
+        }
+    })
+
+    const [commentInput, setCommentInput] = useState(comment.content)
+    const [isEditing, setIsEditing] = useState(false)
+
+    return <div className="flex items-center justify-between w-full">
+        <div className="flex gap-4 items-center w-full">
+            <img src={comment.author.avatar ?? ''} className="size-8 rounded-full" alt="author profile image"/>
+            <div className="flex flex-col gap-2 w-full">
+                <span className="font-bold">{comment.author.name}</span>
+                {
+                    isEditing ?
+                        <div className="flex gap-2 items-center w-full">
+                            <input
+                                className="grow px-4 py-2"
+                                value={commentInput}
+                                onChange={e => setCommentInput(e.target.value)}
+                                type="text"
+                                placeholder="Edit comment..." />
+
+                            <button
+                                disabled={commentInput === ''}
+                                className="p-2 bg-pink-500 text-white rounded-lg"
+                                onClick={async () => {
+                                    editMut.mutate({
+                                        content: commentInput
+                                    })
+                                    setIsEditing(false)
+                                }}>Submit</button>
+                        </div>
+                        : <span>{commentInput}</span>
+                }
+            </div>
+        </div>
+
+        {
+            isAuthor && !isEditing ? <div className="flex gap-2">
+                <button onClick={() => setIsEditing(true)}>EDIT</button>
+                <button onClick={() => {
+                    deleteMut.mutate()
+                    onChange()
+                }}>DEL</button>
+            </div>: <></>
+        }
+    </div>
+}
+
+const CommentList = ({id, authorId}: {
+    id: number,
+    authorId: number
+}) => {
+    const queryClient = useQueryClient()
+
     const [isSortAscending, setIsSortAscending] = useState(true)
+
+    const mutation = useMutation({
+        mutationFn: async (formData: {content: string}) => {
+            const response = await client.post(`/v1/lps/${id}/comments`, {
+                content: formData.content
+            })
+            return response.data
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: ['comments', id, isSortAscending]
+            })
+        }
+    })
 
     const {data, hasNextPage, fetchNextPage} = useInfiniteQuery<CommentsResponse>({
         queryKey: ['comments', id, isSortAscending],
@@ -23,22 +111,46 @@ const CommentList = ({id}: {
         initialPageParam: 0
     })
 
+    const [commentInput, setCommentInput] = useState('')
+
     return <div className="flex flex-col gap-y-4 rounded-xl bg-neutral-300 w-full p-4">
         <div className="flex justify-between items-center">
             <span className="font-bold text-lg">댓글</span>
 
-            <SortSelector sortAscending={isSortAscending} onSortChange={setIsSortAscending}/>
+            <SortSelector sortAscending={isSortAscending} onSortChange={setIsSortAscending} />
         </div>
 
-        {data?.pages.map(page => page.data.data).flat().map(comment => {
-            return <div key={comment.id} className="flex gap-4 items-center">
-                <img src={comment.author.avatar ?? ''} className="size-8 rounded-full" alt="author profile image"/>
-                <div className="flex flex-col gap-2">
-                    <span className="font-bold">{comment.author.name}</span>
-                    <span>{comment.content}</span>
-                </div>
-            </div>
-        })}
+        <div className="flex gap-2">
+            <input
+                className="grow px-4 py-2"
+                value={commentInput}
+                onChange={e => setCommentInput(e.target.value)}
+                type="text"
+                placeholder="댓글을 입력하세요" />
+
+            <button
+                disabled={commentInput === '' || mutation.isPending}
+                className="p-2 bg-pink-500 text-white rounded-lg"
+                onClick={() => {
+                    mutation.mutate({
+                        content: commentInput
+                    })
+
+                    setCommentInput('')
+                }}
+            >Submit</button>
+        </div>
+
+        {data?.pages.map(page => page.data.data).flat().map(comment =>
+            <CommentItem
+                onChange={async () => {
+                    await queryClient.invalidateQueries({
+                        queryKey: ['comments', id, isSortAscending]
+                    })
+                }}
+                comment={comment}
+                isAuthor={comment.authorId === authorId} />
+        )}
 
         {hasNextPage ?
             <button className="p-4 border-2 self-center mt-4 rounded-lg" onClick={() => fetchNextPage()}>
@@ -50,6 +162,14 @@ const CommentList = ({id}: {
 
 export const LpRecordPage = () => {
     const {id} = useParams()
+
+    const {data: authorData} = useQuery<UserResponse>({
+        queryKey: ['user'],
+        queryFn: async () => {
+            const {data} = await client.get<UserResponse>('/v1/users/me')
+            return data
+        }
+    })
 
     const { data } = useQuery<LpRecordResponse>({
         queryKey: ['lpRecord', id],
@@ -106,6 +226,6 @@ export const LpRecordPage = () => {
             </div>
         </div>
 
-        <CommentList id={idInt} />
+        <CommentList id={idInt} authorId={authorData?.data?.id ?? -1} />
     </div>
 }
