@@ -88,12 +88,13 @@ const HomePage = () => {
                     className="w-full aspect-square object-cover"
                   />
                   <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100
-                    transition-opacity duration-300 flex flex-col justify-end items-start p-4 space-y-1 text-[1.5vw]">
-                    <h3 className="font-bold">{lp.title}</h3>
-                    <p className="mt-1">[업로드 날짜] {new Date(lp.createdAt).toLocaleDateString()}</p>
-                    <p>[Likes] {lp.likes?.length || 0}개</p>
-                  </div>
-                </div>
+                    transition-opacity duration-300 flex flex-col justify-end items-start p-4 space-y-1">
+                    <h3 className="text-sm font-bold">{lp.title}</h3>
+                    <p className="text-sm mt-1">
+                      [업로드 날짜] {new Date(lp.createdAt).toLocaleDateString()}
+                    </p>
+                    <p className="text-sm">[Likes] {lp.likes?.length || 0}개</p>
+                  </div>                </div>
               ))}
             </div>
           )}
