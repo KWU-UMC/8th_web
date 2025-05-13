@@ -42,17 +42,17 @@ const LoginPage = () => {
     }
 
     return(
-        <div className="flex flex-col items-center justify-center h-full gap-4
-        bg-black text-white">
-            <div className="flex justify-center items-center w-full px-4 py-4">
+        <div className="flex flex-col items-center justify-centerbg-black text-white">
+            <div className="w-[300px] flex items-center justify-between">
                 <button
                     onClick={handleGoBack}
                     className="text-white hover:text-pink-500 transition-colors 
-                    text-3xl w-[205px]
+                    text-3xl mb-7 
                     ">
                     {`<`}
                 </button>
-                <span className="text-white text-2xl w-[270px]"> 로그인 </span>
+                <div className="text-white text-2xl text-center flex-1 mb-7 -ml"> 로그인 </div>
+                
             </div>
             <div className="flex flex-col gap-3 mb-2">
                 <button

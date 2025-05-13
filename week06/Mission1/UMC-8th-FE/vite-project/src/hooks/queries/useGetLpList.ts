@@ -2,10 +2,23 @@ import { useQuery } from "@tanstack/react-query";
 import { PaginationDto } from "../../types/common";
 import { getLPList } from "../../apis/lp";
 import { QUERY_KEY } from "../../constants/key";
+//import { ResponseLPListDto } from "../../types/lp";
+
+// const initialLPListData: ResponseLPListDto = {
+//     status:true,
+//     statusCode:200,
+//     message:"",
+//     data: {
+//         data:[],
+
+//     },
+//     nextCursor:0,
+//     hasNext: false,
+// };
 
 function useGetLpList({cursor, search, order, limit}:PaginationDto){
     return useQuery({
-        queryKey:[QUERY_KEY.lps], //사람들마다 key가 다름
+        queryKey:[QUERY_KEY.lps,search,order], //사람들마다 key가 다름
         queryFn:() => 
             getLPList({
             cursor,
@@ -29,7 +42,27 @@ function useGetLpList({cursor, search, order, limit}:PaginationDto){
         //false면 전혀 lps 가 동작하지 않음,
         //true면 동작하는거임
         //search가 있는 경우 true, 없는 경우 false
-        enabled:Boolean(search),
+        //enabled:Boolean(search),
+
+        //ex. 주식 데이터 -> 변동이 큼
+        //10초마다 업데이트 됐으면 좋겠다.라는 의미
+        //refetchInterval: 100*60,
+
+        //retry : query 요청이 실패했을 때 자동으로 재시도할 횟수를 지정함
+        //기본값 3회정도, 네트워크 오류도 임시적인 문제를 보완가능
+        //여기에 처리도 좋지만 app.tsx 에 가서 default 옵션 넣는것도 좋음(app.tsx에 가보면 코드 있음)
+
+        //initialData: 쿼리 실행 전 미리 제공할 초기 데이터를 설정함
+        //component가 랜더링될 때 패딩 중이라 빈 데이터가 들어오는데
+        //이때 빈 데이터를 미리 초기값으로 해줘서 빈 데이터가 들어오더라도 로딩 전에 안전하게 UI를 구성할 수 있게 하는 애임
+        //initialData:initialLPListData,
+
+        //파라미터가 변경될 때 이전 데이터를 유지하여 UI 깜빡임(Flikcking)을 줄여줌
+        //ex) 페지네이션 시 페이지 전환 사이에 이전 데이터를 보여주어 사용자 경험을 향상시킴.
+        //keepPreviousData: 
+
+        //이러면 data.data.map 하던걸 data.map으로 줄일 수 있게됨
+        //select: (data) => data.data.data //로 안의 내용까지 가져올 수 있게 됨
     });
 }
 

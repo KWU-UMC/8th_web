@@ -11,6 +11,8 @@ import ProtectedLayout from './layouts/ProtectedLayout';
 import GoogleLoginRedirectPage from './pages/GoogleLoginRedirectPage';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import LpDetailPage from './pages/LpDetailPage';
+
 
 //publicRoutes: 인증 업시 접근 가능한 라우트
 const publicRoutes: RouteObject[] = [
@@ -19,11 +21,6 @@ const publicRoutes: RouteObject[] = [
     element: <HomeLayout/>,
     errorElement: <NotFoundPage/>,
     children:[
-      {
-        index: true,
-        //path: "/",
-        element: <HomePage/>
-      },
       {
         path: "login",
         element: <LoginPage/>
@@ -45,16 +42,32 @@ const protectedRoutes: RouteObject[] = [
     path: "/",
     element: <ProtectedLayout/>,
     errorElement: <NotFoundPage/>,
-    children:[{
+    children:[
+      {
+        index: true,
+        element: <HomePage/>
+      },
+      {
       path:"/my",
       element: <MyPage/>,
-    }]
+    },
+    { path: "lps/:lpId", 
+      element: <LpDetailPage /> 
+    },
+  ]
   }
 ]
 
 const router = createBrowserRouter([...publicRoutes, ...protectedRoutes])
 
-export const queryClient = new QueryClient();
+//retry 부분 파라미터에 추가하는게 useGetLpList에서 말한거임
+//이건 무조건 해라. 이 느낌임
+export const queryClient = new QueryClient({
+  defaultOptions:{
+    queries:{
+      retry: 3,
+  }}
+});
 
 function App() {
   // 모든 상태를 공유하고 싶기 때문에

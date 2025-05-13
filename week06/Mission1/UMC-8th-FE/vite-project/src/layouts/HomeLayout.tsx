@@ -1,17 +1,23 @@
 import {Outlet } from "react-router-dom";
 import Navbar from "../components/Narbar";
-import Footer from "../components/Footer";
 
-const HomeLayout = () =>{
-    return(
+
+//비회원
+const HomeLayout = () => {
+    
+
+    return (
         <div className="h-dvh flex flex-col bg-black">
-            <Navbar/>
-            <main className="flex-1 mt-3"> 
-                <Outlet/> 
+        <Navbar/>
+            
+            <main className="flex-1 flex items-center justify-center bg-black">
+                <div className="w-full max-w-sm px-4">
+                    <Outlet />
+                </div>
             </main>
-            <Footer/>
         </div>
     );
 };
+
 
 export default HomeLayout;
