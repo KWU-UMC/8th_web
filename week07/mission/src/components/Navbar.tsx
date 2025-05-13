@@ -3,13 +3,13 @@ import { useAuth } from "../context/AuthContext";
 import { ResponseMyInfoDto } from "../types/auth";
 import { useEffect, useState } from "react";
 import { getMyInfo } from "../apis/auth";
-import { useSidebar } from "../context/SidebarContext"; // ✅ 추가
+import { useSidebar } from "../context/SidebarContext";
 
 export const Navbar = () => {
   const { accessToken, logout } = useAuth();
   const navigate = useNavigate();
   const [data, setData] = useState<ResponseMyInfoDto>();
-  const { toggleSidebar } = useSidebar(); // ✅ 사이드바 토글 함수
+  const { toggleSidebar } = useSidebar();
 
   useEffect(() => {
     const getData = async () => {
@@ -27,7 +27,6 @@ export const Navbar = () => {
   return (
     <nav className="bg-white dark:bg-gray-900 shadow-md fixed w-full z-30">
       <div className="flex items-center justify-between p-4">
-        {/* 사이드바 토글 버튼 */}
         <div className="flex items-center space-x-4">
           <button
             onClick={toggleSidebar}
@@ -44,7 +43,6 @@ export const Navbar = () => {
           </Link>
         </div>
 
-        {/* 우측 유저 상태 */}
         <div className="space-x-6">
           {!accessToken ? (
             <>
