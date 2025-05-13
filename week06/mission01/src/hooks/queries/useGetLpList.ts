@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
-import { PaginationDto } from "../types/common";
-import { getLpList } from "../apis/lp";
-import { QUERY_KEY } from "../constants/key";
+import { PaginationDto } from "../../types/common";
+import { getLpList } from "../../apis/lp";
+import { QUERY_KEY } from "../../constants/key";
 
 // const initialLpData: ResponseLpListDto = {
 //   status: true,

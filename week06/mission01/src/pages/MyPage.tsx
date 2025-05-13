@@ -30,16 +30,20 @@ const MyPage = () => {
   // logout 함수를 호출하고, 완료되면, 홈페이지로 이동한다.
   // 비동기 처리를 하는 이유는 로그아웃이 완료된 후에 페이지를 이동하기 위해서이다.
   return (
-    <div>
+    <div className="flex flex-col items-center justify-center h-full gap-4">
       {/* 🔥 아바타 이미지 출력 */}
       <img
-        src={"/images/google.svg"}
+        className="rounded-full"
+        src={
+          "https://api.dicebear.com/6.x/identicon/svg?seed=css240205@gmail.com"
+        }
         alt="구글 아바타"
         width={80}
         height={80}
         style={{ borderRadius: "50%" }}
       />
       <h1>{data?.data.name}님 환영합니다.</h1>
+      <p>{data?.data.email}</p>
       <button
         className="cursor-pointer bg-blue-300 rounded-sm p-5 hover:scale-90"
         onClick={handleLogout}

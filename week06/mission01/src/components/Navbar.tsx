@@ -1,49 +1,61 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { getMyInfo } from "../apis/auth";
+import { ResponseMyInfoDto } from "../types/auth";
+import { FaBars } from "react-icons/fa";
 
-const Navbar = () => {
-  const { accessToken } = useAuth();
+interface NavbarProps {
+  toggleSidebar: () => void;
+}
+
+const Navbar = ({ toggleSidebar }: NavbarProps) => {
+  const { accessToken, logout } = useAuth();
+  const [user, setUser] = useState<ResponseMyInfoDto["data"] | null>(null);
+
+  useEffect(() => {
+    if (accessToken) {
+      getMyInfo()
+        .then((res) => setUser(res.data))
+        .catch(console.error);
+    }
+  }, [accessToken]);
+
   return (
-    <nav className="bg-white dark:bg-gray-900 shadow-md fixed w-full z-10">
-      <div className="flex items-center justify-between p-4">
-        <Link
-          to="/"
-          className="text-xl font-bold text-gray-900 dark:text-white"
-        >
-          Spinning Spinning Dolimpan
-        </Link>
-        <div className="space-x-6">
-          {!accessToken && (
+    <nav className="bg-gray-900 text-white shadow-md fixed w-full z-10">
+      <div className="flex items-center justify-between px-6 py-4">
+        <div className="flex items-center gap-4">
+          <FaBars onClick={toggleSidebar} className="text-xl cursor-pointer" />
+          <Link to="/" className="text-2xl font-bold text-pink-500">
+            돌려돌려LP판
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-4">
+          {accessToken ? (
             <>
-              <Link
-                to={"/login"}
-                className="text-xl font-bold text-gray-700 dark:text-gray-300 hover:text-blue-500"
-              >
-                Login
+              <span>{user?.name}님 반갑습니다.</span>
+              <Link to="/my" className="hover:text-pink-400">
+                마이페이지
+              </Link>
+              <button onClick={logout} className="hover:text-pink-400">
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="hover:text-pink-400">
+                로그인
               </Link>
               <Link
-                to={"/signup"}
-                className="text-xl font-bold text-gray-700 dark:text-gray-300 hover:text-blue-500"
+                to="/signup"
+                className="bg-pink-500 hover:bg-pink-600 text-white px-3 py-1 rounded"
               >
-                SignUp
+                회원가입
               </Link>
             </>
           )}
         </div>
-        {accessToken && (
-          <Link
-            to={"/my"}
-            className="text-xl font-bold text-gray-900 dark:text-white"
-          >
-            MyPage
-          </Link>
-        )}
-        <Link
-          to={"/search"}
-          className="text-xl font-bold text-gray-900 dark:text-white"
-        >
-          Search
-        </Link>
       </div>
     </nav>
   );

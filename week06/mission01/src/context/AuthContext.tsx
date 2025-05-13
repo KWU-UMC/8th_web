@@ -38,7 +38,6 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [refreshToken, setRefreshToken] = useState<string | null>(
     getRefreshTokenFromStorage()
   );
-  //useState 훅을 사용하여 refreshToken을 state에 저장한다.
 
   const login = async (signinData: RequestSigninDto) => {
     try {

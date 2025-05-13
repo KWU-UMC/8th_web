@@ -13,18 +13,18 @@ export type Likes = {
   lpId: number;
 };
 
+export type Lp = {
+  id: number;
+  title: string;
+  content: string;
+  thumbnail: string;
+  published: boolean;
+  authorId: number;
+  createdAt: Date;
+  updatedAt: Date;
+  tags: Tag[];
+  likes: Likes[];
+};
+
 // LP 리스트 응답 타입
-export type ResponseLpListDto = CursorBasedResponse<{
-  data: {
-    id: number;
-    title: string;
-    content: string;
-    thumbnail: string;
-    published: boolean;
-    authorId: number;
-    createdAt: Date;
-    updatedAt: Date;
-    tags: Tag[];
-    likes: Likes[];
-  }[];
-}>;
+export type ResponseLpListDto = CursorBasedResponse<Lp[]>;

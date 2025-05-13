@@ -21,9 +21,7 @@ const schema = z
       .min(8, "비밀번호는 8자 이상이어야 합니다.")
       .max(20, "비밀번호는 20자 이하이어야 합니다."),
     name: z.string().min(1, "이름을 입력해주세요."),
-    //string이고 최소 8자 이상이어야 함
-    //zod는 최소 길이를 검사하는 메서드 제공
-    //zod는 최소 길이가 아닌 경우 에러메세지를 반환함
+    avatar: z.string().url("URL 형식이어야 합니다.").optional(),
   })
   .refine((data) => data.password === data.passwordCheck, {
     message: "비밀번호가 일치하지 않습니다.",
@@ -45,6 +43,7 @@ const SignupPage = () => {
       password: "",
       passwordCheck: "",
       name: "",
+      avatar: "",
     },
     resolver: zodResolver(schema),
   });
@@ -110,6 +109,17 @@ const SignupPage = () => {
         />
         {errors.name && (
           <div className={"text-red-500 text-sm"}>{errors.name.message}</div>
+        )}
+        <input
+          {...register("avatar")}
+          type="text"
+          className={`border w-[300px] p-[10px] focus:border-[#807bff] rounded-sm ${
+            errors?.avatar ? "border-red-500 bg-red-200" : "border-gray-300"
+          }`}
+          placeholder={"아바타 이미지 URL (선택)"}
+        />
+        {errors.avatar && (
+          <div className={"text-red-500 text-sm"}>{errors.avatar.message}</div>
         )}
 
         <button
