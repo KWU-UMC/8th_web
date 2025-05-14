@@ -18,7 +18,7 @@ export const RootLayout = () => {
 
     return (
         <div className="flex flex-col w-screen h-screen">
-            <Navigation onClickHamburger={() => {setVisible(!isVisible)}} />
+            <Navigation onClickHamburger={() => setVisible(v => !v)} />
 
             <div className="relative block md:hidden">
                 <div className="absolute top-0 left-0 my-4">
@@ -29,7 +29,7 @@ export const RootLayout = () => {
                     className={`${isVisible ? 'block' : 'hidden'} fixed inset-0 bg-black/50 z-5 transition-opacity`}
                     onClick={() => setVisible(false)} />
 
-                <div className={`absolute top-0 left-0 ${isVisible ? 'opacity-100' : 'opacity-0'} ${isVisible ? 'w-70' : 'w-0'} z-10 transition-width duration-150 ease-in-out`}>
+                <div className={`fixed h-screen top-0 left-0 ${isVisible ? 'visible opacity-100 w-70' : 'invisible opacity-0 w-0'} z-10 transition-width duration-150 ease-in-out`}>
                     <SideBar/>
                 </div>
             </div>

@@ -19,8 +19,8 @@ export const Navigation = ({onClickHamburger}: {
     })
 
     return <nav className="w-full flex justify-between px-36 py-4 border-b border-neutral-500 items-center">
-        <div className="flex gap-x-4">
-            <button className="font-bold text-xl" onClick={onClickHamburger}>=</button>
+        <div className="flex items-center">
+            <button className="font-bold text-2xl p-4" onClick={onClickHamburger}>=</button>
             <Link to="/"><span>돌려돌려 LP판</span></Link>
         </div>
 
