@@ -39,3 +39,11 @@ export type LpDetail = Lp & {
     updatedAt: string;
   };
 };
+
+export type CreateLpsDto = {
+  title: string;
+  content: string;
+  thumbnail: string|null;
+  tags: string[];
+  published: boolean;
+}

@@ -25,19 +25,18 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white dark:bg-gray-900 shadow-md fixed w-full z-30">
+    <nav className="bg-gray-900 text-white  shadow-md fixed w-full z-30">
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center space-x-4">
           <button
             onClick={toggleSidebar}
-            className="text-gray-800 dark:text-white text-2xl font-bold mr-2 mx-3"
-            aria-label="사이드바 토글"
+            className="text-white text-2xl font-bold mr-2 mx-3"
           >
             ≡
           </button>
           <Link
             to="/"
-            className="text-xl font-bold text-gray-900 dark:text-white mx-3"
+            className="text-xl font-bold text-white dark:text-white mx-3"
           >
             SpinningSpinning Dolimpan
           </Link>
@@ -48,13 +47,13 @@ export const Navbar = () => {
             <>
               <Link
                 to="/login"
-                className="text-gray-700 dark:text-gray-300 hover:text-blue-500"
+                className="text-white hover:text-blue-300"
               >
                 로그인
               </Link>
               <Link
                 to="/signup"
-                className="text-gray-700 dark:text-gray-300 hover:text-blue-500"
+                className="text-white hover:text-blue-300"
               >
                 회원가입
               </Link>

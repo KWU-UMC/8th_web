@@ -1,23 +1,23 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { axiosInstance } from "../apis/axios";
 import { getCommentsByLpId } from "../apis/comments";
 import { LpDetail } from "../types/lp";
 import { LpComment } from "../types/comment";
-import { postLike, postUnlike } from "../apis/lp";
+import { postLike, postUnlike, deleteLp } from "../apis/lp";
 import { FaHeart } from "react-icons/fa";
 import { getMyInfo } from "../apis/auth";
 import { ResponseMyInfoDto } from "../types/auth";
 
-const getLpDetail = async (lpId: string): Promise<LpDetail> => {
-  const { data } = await axiosInstance.get(`/v1/lps/${lpId}`);
-  return data.data;
-};
-
 const LpDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
 
-  // LP 상세 정보
+  const getLpDetail = async (lpId: string): Promise<LpDetail> => {
+    const { data } = await axiosInstance.get(`/v1/lps/${lpId}`);
+    return data.data;
+  };
+
   const {
     data: lp,
     isPending,
@@ -29,7 +29,6 @@ const LpDetailPage = () => {
     enabled: !!id,
   });
 
-  // 댓글 정보
   const {
     data: comments = [],
     isPending: isCommentsLoading,
@@ -40,34 +39,43 @@ const LpDetailPage = () => {
     enabled: !!id,
   });
 
-const { data: myInfo } = useQuery<ResponseMyInfoDto>({
-  queryKey: ["myInfo"],
-  queryFn: getMyInfo,
-});
+  const { data: myInfo } = useQuery<ResponseMyInfoDto>({
+    queryKey: ["myInfo"],
+    queryFn: getMyInfo,
+  });
 
-const isLiked = lp?.likes.some((like) => like.userId === myInfo?.data.id);
+  const isLiked = lp?.likes?.some((like) => like.userId === myInfo?.data.id);
 
-const handleLikeLp = async () => {
-  try {
-    if (isLiked) {
-      await postUnlike(Number(id)); // 좋아요 취소
-    } else {
-      await postLike(Number(id)); // 좋아요 등록
+  const handleLikeLp = async () => {
+    try {
+      if (!id) return;
+      if (isLiked) {
+        await postUnlike(Number(id));
+      } else {
+        await postLike(Number(id));
+      }
+      await refetch();
+    } catch (error) {
+      console.error("좋아요 처리 실패", error);
+      alert("좋아요 요청 중 오류 발생");
     }
-    await refetch();
-  } catch (error) {
-    console.error("좋아요 처리 실패", error);
-    alert("좋아요 요청 중 오류 발생");
-  }
-};
+  };
 
-  if (isPending) {
-    return <div className="mt-24 text-white text-center">로딩 중...</div>;
-  }
+  const handleDelete = async () => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+    try {
+      if (!lp) return;
+      await deleteLp(lp.id);
+      alert("삭제되었습니다");
+      navigate("/");
+    } catch (e) {
+      alert("삭제 실패");
+      console.log(e);
+    }
+  };
 
-  if (isError || !lp) {
-    return <div className="mt-24 text-red-400 text-center">LP 정보를 불러올 수 없습니다.</div>;
-  }
+  if (isPending) return <div className="mt-24 text-white text-center">로딩 중...</div>;
+  if (isError || !lp) return <div className="mt-24 text-red-400 text-center">LP 정보를 불러올 수 없습니다.</div>;
 
   return (
     <>
@@ -91,22 +99,32 @@ const handleLikeLp = async () => {
 
             <div className="flex flex-wrap gap-2 mb-6">
               {lp.tags.map((tag) => (
-                <span key={tag.id} className="bg-blue-600 px-2 py-1 rounded text-xs">
-                  #{tag.name}
+                <span key={tag.id} className="bg-gray-200 px-2 py-1 rounded text-xs">
+                  # {tag.name}
                 </span>
               ))}
             </div>
 
             <div className="flex space-x-4">
-              <button className="bg-blue-400 hover:bg-blue-600 text-white px-4 py-2 rounded">
-                수정
-              </button>
-              <button className="bg-red-400 hover:bg-red-600 text-white px-4 py-2 rounded">
-                삭제
-              </button>
+              {myInfo?.data.id === lp.author.id && (
+                <>
+                  <button
+                    className="bg-blue-400 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                    onClick={() => navigate(`/lp/${lp.id}/edit`)}
+                  >
+                    수정
+                  </button>
+                  <button
+                    onClick={handleDelete}
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                  >
+                    삭제
+                  </button>
+                </>
+              )}
               <button
                 onClick={handleLikeLp}
-                className={`px-4 py-2 rounded flex border-2 border-gray-300 items-center gap-2}`}
+                className={`px-4 py-2 rounded flex border-2 border-gray-300 items-center gap-2`}
               >
                 <FaHeart color={isLiked ? "red" : "gray"} />
                 {lp.likes.length}
@@ -115,7 +133,6 @@ const handleLikeLp = async () => {
           </div>
         </div>
       </div>
-
 
       <div className="mx-10">
         <hr className="my-12 border-t border-gray-300" />
