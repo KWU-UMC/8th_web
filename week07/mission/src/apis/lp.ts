@@ -9,3 +9,13 @@ export const getLpList = async ({cursor, limit, order,}: PaginationDto): Promise
   
   return data;
 };
+
+export const postLike = async (lpId: number) => {
+  const { data } = await axiosInstance.post(`/v1/lps/${lpId}/likes`);
+  return data;
+};
+
+export const postUnlike = async (lpId: number) => {
+  const { data } = await axiosInstance.delete(`/v1/lps/${lpId}/likes`);
+  return data;
+};
