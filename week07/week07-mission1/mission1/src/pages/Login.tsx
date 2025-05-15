@@ -1,26 +1,28 @@
 import { UserSigninInformation, validateSignin } from "../utils/validate";
 import useForm from "../hooks/useForm";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 import { useMutation } from "@tanstack/react-query";
+import { useAuth } from "../context/AuthContext";
 
 const Login = () => {
-    const { login } = useAuth();
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const mutation = useMutation({
-        mutationFn: (body: { email: string; password: string }) =>
-            login({ email: body.email.trim(), password: body.password }),
+        mutationFn: (body: { email: string; password: string }) => {
+            console.log("로그인 시도:", body);
+            return login(body);
+        },
         onSuccess: (response) => {
+            console.log("로그인 성공 응답:", response);
             if (!response) {
-                alert("로그인에 실패했습니다");
+                alert("이메일 또는 비밀번호가 올바르지 않습니다");
                 return;
             }
             navigate("/my");
         },
-        onError: (error) => {
-            console.error("로그인 실패:", error);
-            alert("로그인에 실패했습니다");
+        onError: () => {
+            alert("이메일 또는 비밀번호가 올바르지 않습니다");
         }
     });
 
@@ -95,7 +97,7 @@ const Login = () => {
                     onClick={handleSubmit}
                     disabled={isDisabled || mutation.isPending}
                     className="w-full bg-[#ff3399] text-white py-3 rounded-md font-medium hover:bg-[#FFC0CB] transition-colors disabled:bg-gray-600">
-                    {mutation.isPending ? "이메일 또는 비밀번호가 올바르지 않습니다." : "로그인"}
+                    {mutation.isPending ? "로그인 중..." : "로그인"}
                 </button>
             </div>
         </div>

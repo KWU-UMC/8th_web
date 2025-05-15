@@ -38,8 +38,8 @@ export type ResponseLpDetailDto = {
         content: string;
         thumbnail: string;
         published: boolean;
-        authorld: number;
-        ceatedAt: Date;
+        authorId: number;
+        createdAt: Date;
         updatedAt: Date;
         tags: Tag[];
         likes: Likes[];
@@ -56,3 +56,20 @@ export type ResponseCommentDto = {
       hasNext: boolean;
     };
   }
+
+export type UpdateLpResponseDto = {
+    status: boolean;
+    statusCode: number;
+    message: string;
+    data: {
+        id: number;
+        title: string;
+        content: string;
+        thumbnail: string;
+        published: boolean;
+        authorId: number;
+        createdAt: string;
+        updatedAt: string;
+        tags: Tag[];
+    };
+};

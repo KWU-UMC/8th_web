@@ -22,9 +22,12 @@ export const getCommentsByLpId = async (
   limit: number = 10,
   order: string = "desc"
 ): Promise<GetCommentsResponse> => {
+  console.log("댓글")
   const { data } = await axiosInstance.get(`/v1/lps/${lpId}/comments`, {
     params: { cursor, limit, order },
+    headers: {Authorization: `Bearer ${localStorage.getItem("accessToken")}`}
   });
+  console.log("성공");
   return data;
 };
 
@@ -41,8 +44,39 @@ export const createLp = async (data: CreateLpDto) => {
   return response.data;
 };
 
+export const deleteLp = async (lpId: number) => {
+  const { data } = await axiosInstance.delete(`/v1/lps/${lpId}`);
+  return data;
+};
+
+export const editLp = async (lpId: number, data: CreateLpDto) => {
+  const response = await axiosInstance.patch(`/v1/lps/${lpId}`, data);
+  return response.data;
+};
+
 export const postComment = async (lpId: number, content: string) => {
   const { data } = await axiosInstance.post(`/v1/lps/${lpId}/comments`, { content });
+  return data;
+};
+
+export const deleteComment = async (lpId: number, commentId: number) => {
+  const { data } = await axiosInstance.delete(`/v1/lps/${lpId}/comments/${commentId}`);
+  return data;
+};
+
+
+export const editComment = async (lpId: number, commentId: number, content: string) => {
+  const { data } = await axiosInstance.patch(`/v1/lps/${lpId}/comments/${commentId}`, { content });
+  return data;
+};
+
+export const postLpLike = async (lpId: number) => {
+  const { data } = await axiosInstance.post(`/v1/lps/${lpId}/likes`);
+  return data;
+};
+
+export const deleteLpLike = async (lpId: number) => {
+  const { data } = await axiosInstance.delete(`/v1/lps/${lpId}/likes`);
   return data;
 };
 
