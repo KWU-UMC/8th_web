@@ -84,20 +84,41 @@ const LpDetailPage = () => {
 
   const isLiked = lp?.likes?.some((like) => like.userId === myInfo?.data.id);
 
-  const handleLikeLp = async () => {
-    try {
+  const likeMutation = useMutation({
+    mutationFn: async () => {
       if (!id) return;
       if (isLiked) {
         await postUnlike(Number(id));
       } else {
         await postLike(Number(id));
       }
-      await refetch();
-    } catch (error) {
-      console.error("좋아요 처리 실패", error);
-      alert("좋아요 요청 중 오류 발생");
-    }
-  };
+    },
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["lpDetail", id] });
+
+      const previous = queryClient.getQueryData(["lpDetail", id]);
+
+      queryClient.setQueryData(["lpDetail", id], (old: any) => {
+        if (!old) return old;
+        const updatedLikes = isLiked
+          ? old.likes.filter((like: any) => like.userId !== myInfo?.data.id)
+          : [...old.likes, { userId: myInfo?.data.id }];
+        return { ...old, likes: updatedLikes };
+      });
+
+      return { previous };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["lpDetail", id], context.previous);
+      }
+      alert("좋아요 처리 실패");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["lpDetail", id] });
+    },
+  });
+
 
   const handleDelete = async () => {
     if (!window.confirm("정말 삭제하시겠습니까?")) return;
@@ -229,7 +250,7 @@ const LpDetailPage = () => {
                 </>
               )}
               <button
-                onClick={handleLikeLp}
+                onClick={() => likeMutation.mutate()}
                 className="px-4 py-2 rounded flex border-2 border-gray-300 items-center gap-2"
               >
                 <FaHeart color={isLiked ? "red" : "gray"} />

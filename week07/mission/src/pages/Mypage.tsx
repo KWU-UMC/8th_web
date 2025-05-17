@@ -3,10 +3,11 @@ import { getMyInfo, updateMyInfo } from "../apis/auth";
 import { ResponseMyInfoDto } from "../types/auth";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const Mypage = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { logout } = useAuth();
   const [data, setData] = useState<ResponseMyInfoDto>();
   const [editMode, setEditMode] = useState(false);
@@ -28,12 +29,34 @@ const Mypage = () => {
   const updateMutation = useMutation({
     mutationFn: ({ name, bio, avatar }: { name: string; bio: string; avatar: string }) =>
       updateMyInfo({ name, bio, avatar }),
-    onSuccess: (updatedData) => {
-      setData((prev) => ({ ...prev!, data: updatedData.data }));
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries({ queryKey: ["myInfo"] });
+      const previous = queryClient.getQueryData<ResponseMyInfoDto>(["myInfo"]);
+
+      queryClient.setQueryData(["myInfo"], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          data: { ...old.data, ...newData },
+        };
+      });
+
+      return { previous };
+    },
+    onSuccess: async () => {
+      const response = await getMyInfo();
+      setData(response);
       setEditMode(false);
     },
-    onError: () => {
+    onError: (_err, _new, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["myInfo"], context.previous);
+        setData(context.previous);
+      }
       alert("업데이트 실패");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["myInfo"] });
     },
   });
 
@@ -57,7 +80,7 @@ const Mypage = () => {
           {data?.data?.name}님 환영합니다
         </h1>
         <img
-          src={avatar}
+          src={data?.data?.avatar || avatar}
           className="w-24 h-24 rounded-full mx-auto mb-4 shadow"
         />
 
