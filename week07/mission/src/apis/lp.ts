@@ -1,5 +1,5 @@
 import { PaginationDto } from "../types/common";
-import { ResponseLpListDto } from "../types/lp";
+import { ResponseLpListDto, UpdateLpsDto } from "../types/lp";
 import { axiosInstance } from "./axios";
 import { CreateLpsDto } from "../types/lp";
 
@@ -31,6 +31,17 @@ export const createLp = async (data: CreateLpsDto) => {
     },
   });
 };
+
+export const updateLp = async (lpId: number, data: UpdateLpsDto) => {
+  const token = localStorage.getItem("accessToken");
+
+  return axiosInstance.patch(`/v1/lps/${lpId}`, data, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
 
 export const deleteLp = async (lpId: number) => {
   const { data } = await axiosInstance.delete(`/v1/lps/${lpId}`);

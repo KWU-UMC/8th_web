@@ -45,3 +45,11 @@ export type CreateLpsDto = {
   tags: string[];
   published: boolean;
 }
+
+export type UpdateLpsDto = {
+  title: string;
+  content: string;
+  thumbnail: string;
+  tags: string[];
+  published: boolean;
+}

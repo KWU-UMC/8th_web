@@ -8,6 +8,7 @@ import { postLike, postUnlike, deleteLp } from "../apis/lp";
 import { LpDetail } from "../types/lp";
 import { ResponseMyInfoDto } from "../types/auth";
 import { FaHeart } from "react-icons/fa";
+import { updateLp } from "../apis/lp";
 
 const LpDetailPage = () => {
   const { id } = useParams();
@@ -18,6 +19,10 @@ const LpDetailPage = () => {
   const [editInput, setEditInput] = useState("");
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
   const observerRef = useRef<HTMLDivElement | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editThumbnail, setEditThumbnail] = useState("");
+  const [editContent, setEditContent] = useState("");
+  const [isEditingLp, setIsEditingLp] = useState(false);
 
   const getLpDetail = async (lpId: string): Promise<LpDetail> => {
     const { data } = await axiosInstance.get(`/v1/lps/${lpId}`);
@@ -34,6 +39,15 @@ const LpDetailPage = () => {
     queryFn: () => getLpDetail(id!),
     enabled: !!id,
   });
+
+  const updateLpMutation = useMutation({
+  mutationFn: ({ lpId, title, content }: { lpId: number; title: string; content: string }) =>
+    updateLp(lpId, { title, content }),
+  onSuccess: () => {
+    setIsEditingLp(false);
+    queryClient.invalidateQueries({ queryKey: ["lpDetail", id] });
+  },
+});
 
   const {
     data: commentPages,
@@ -135,28 +149,89 @@ const LpDetailPage = () => {
         {/* LP 상세 내용 */}
         <div className="flex flex-col md:flex-row items-start gap-8">
           <div className="w-full md:w-1/2 flex justify-center">
-            <img src={lp.thumbnail} alt={lp.title} className="w-full max-w-sm aspect-square object-cover rounded-xl" />
+            <img
+              src={lp.thumbnail || undefined}
+              alt={lp.title}
+              className="w-full max-w-sm aspect-square object-cover rounded-xl"
+            />
           </div>
           <div className="w-full md:w-1/2">
-            <h1 className="text-3xl font-bold mb-2">{lp.title}</h1>
-            <p className="text-sm">작성자: {lp.author.name}</p>
-            <p className="text-sm mb-4">업로드 날짜: {new Date(lp.createdAt).toLocaleDateString()}</p>
-            <p className="mb-6">{lp.content}</p>
-            <div className="flex flex-wrap gap-2 mb-6">
-              {lp.tags.map((tag) => (
-                <span key={tag.id} className="bg-gray-200 px-2 py-1 rounded text-xs">
-                  # {tag.name}
-                </span>
-              ))}
-            </div>
+            {isEditingLp ? (
+              <>
+                <input
+                  type="text"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  className="w-full border rounded p-2 mb-2"
+                  placeholder="제목"
+                />
+                <input
+                  type="text"
+                  value={editThumbnail}
+                  onChange={(e) => setEditThumbnail(e.target.value)}
+                  className="w-full border rounded p-2 mb-2"
+                  placeholder="썸네일 이미지 URL"
+                />
+                <textarea
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  className="w-full border rounded p-2 mb-4 h-40"
+                  placeholder="내용"
+                />
+                <div className="flex gap-2 mb-6">
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                    onClick={() => updateLpMutation.mutate({
+                      lpId: lp.id,
+                      title: editTitle,
+                      content: editContent,
+                      thumbnail: editThumbnail,
+                    })}
+                  >저장</button>
+                  <button
+                    className="bg-gray-300 px-4 py-2 rounded"
+                    onClick={() => setIsEditingLp(false)}
+                  >취소</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h1 className="text-3xl font-bold mb-2">{lp.title}</h1>
+                <p className="text-sm">작성자: {lp.author.name}</p>
+                <p className="text-sm mb-4">업로드 날짜: {new Date(lp.createdAt).toLocaleDateString()}</p>
+                <p className="mb-6">{lp.content}</p>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {lp.tags.map((tag) => (
+                    <span key={tag.id} className="bg-gray-200 px-2 py-1 rounded text-xs">
+                      # {tag.name}
+                    </span>
+                  ))}
+                </div>
+              </>
+            )}
+
             <div className="flex space-x-4">
-              {myInfo?.id === lp.author.id && (
+              {myInfo?.data.id === lp.author.id && !isEditingLp && (
                 <>
-                  <button onClick={() => navigate(`/lp/${lp.id}/edit`)} className="bg-blue-400 hover:bg-blue-600 text-white px-4 py-2 rounded">수정</button>
-                  <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">삭제</button>
+                  <button
+                    onClick={() => {
+                      setEditTitle(lp.title);
+                      setEditContent(lp.content);
+                      setEditThumbnail(lp.thumbnail);
+                      setIsEditingLp(true);
+                    }}
+                    className="bg-blue-400 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                  >수정</button>
+                  <button
+                    onClick={handleDelete}
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                  >삭제</button>
                 </>
               )}
-              <button onClick={handleLikeLp} className="px-4 py-2 rounded flex border-2 border-gray-300 items-center gap-2">
+              <button
+                onClick={handleLikeLp}
+                className="px-4 py-2 rounded flex border-2 border-gray-300 items-center gap-2"
+              >
                 <FaHeart color={isLiked ? "red" : "gray"} />
                 {lp.likes.length}
               </button>

@@ -37,3 +37,9 @@ export type ResponseMyInfoDto = {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export type UpdateUserDto = {
+    name: string;
+    bio: string;
+    avatar: string;
+}
