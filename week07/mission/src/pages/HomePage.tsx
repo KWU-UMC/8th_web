@@ -110,7 +110,7 @@ const HomePage = () => {
 
     <button
       onClick={() => setIsModalOpen(true)}
-      className="fixed bottom-6 right-6 w-14 h-14 bg-gray-700 text-white text-3xl rounded-full shadow-lg z-40"
+      className="fixed bottom-6 right-6 w-18 h-18 bg-gray-700 text-white text-4xl rounded-full shadow-lg z-40"
     >
       +
     </button>
