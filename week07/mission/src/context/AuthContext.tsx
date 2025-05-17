@@ -10,6 +10,7 @@ interface AuthContextType {
     refreshToken: string|null;
     login: (signinData:RequestSigninDto) => Promise<void>;
     logout: () => Promise<void>;
+    withdraw?: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType> ({
