@@ -26,3 +26,14 @@ export type CommentListResponseDto = {
 export type CreateCommentDto = {
   content: string;
 }
+
+export type UpdateCommentDto = {
+  content: string;
+}
+
+export type CommentResponse = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: CommentResponseDto;
+}
