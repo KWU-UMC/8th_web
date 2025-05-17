@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { uploadImage } from "../apis/upload";
 import { createLp } from "../apis/lp";
 
 interface AddLpModalProps {
@@ -12,9 +13,9 @@ const AddLpModal = ({ onClose }: AddLpModalProps) => {
   const [content, setContent] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-  const [imageUrl, setImageUrl] = useState("");
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
 
-  
   const mutation = useMutation({
     mutationFn: createLp,
     onSuccess: () => {
@@ -27,24 +28,7 @@ const AddLpModal = ({ onClose }: AddLpModalProps) => {
     },
   });
 
-const handleSubmit = () => {
-  if (!title.trim() || !content.trim() || tags.length === 0) {
-    alert("모든 항목을 입력해주세요");
-    return;
-  }
-
-  const data = {
-    title,
-    content,
-    thumbnail: imageUrl,
-    tags,
-    published: true,
-  };
-
-  mutation.mutate(data);
-};
-
-  const addTag = () => {
+  const handleAddTag = () => {
     const tag = tagInput.trim();
     if (tag && !tags.includes(tag)) {
       setTags([...tags, tag]);
@@ -54,6 +38,45 @@ const handleSubmit = () => {
 
   const removeTag = (tagToRemove: string) => {
     setTags(tags.filter(tag => tag !== tagToRemove));
+  };
+
+  const handleThumbnailChange = (file: File | null) => {
+    setThumbnailFile(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setPreviewUrl(reader.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setPreviewUrl("");
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!title.trim() || !content.trim() || !thumbnailFile || tags.length === 0) {
+      alert("모든 항목을 입력해주세요");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", thumbnailFile);
+
+    try {
+      const response = await uploadImage(formData);
+      const imageUrl = response.data.imageUrl;
+
+      const data = {
+        title,
+        content,
+        thumbnail: imageUrl,
+        tags,
+        published: true,
+      };
+
+      mutation.mutate(data);
+    } catch (err) {
+      alert("이미지 업로드에 실패했습니다.");
+      console.error(err);
+    }
   };
 
   return (
@@ -68,13 +91,22 @@ const handleSubmit = () => {
         <h2 className="text-lg font-bold mb-4">LP 추가</h2>
 
         <div className="mb-4">
+          <label className="block text-sm font-medium mb-1">썸네일 이미지 선택</label>
           <input
-            type="text"
-            placeholder="썸네일 이미지 URL"
+            type="file"
+            accept="image/*"
+            onChange={(e) => handleThumbnailChange(e.target.files?.[0] || null)}
             className="w-full border p-2 rounded mb-2"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            />
+          />
+          {previewUrl && (
+            <div className="flex justify-center">
+              <img
+                src={previewUrl}
+                alt="미리보기"
+                className="w-24 h-24 rounded-full object-cover border"
+              />
+            </div>
+          )}
         </div>
 
         <input
@@ -102,7 +134,7 @@ const handleSubmit = () => {
             <button
               type="button"
               className="bg-gray-300 px-4 rounded"
-              onClick={addTag}
+              onClick={handleAddTag}
             >
               Add
             </button>
@@ -125,7 +157,7 @@ const handleSubmit = () => {
             ))}
           </div>
         </div>
-        
+
         <button
           onClick={handleSubmit}
           disabled={mutation.isPending}
