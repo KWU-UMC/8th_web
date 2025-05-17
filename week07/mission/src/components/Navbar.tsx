@@ -4,6 +4,7 @@ import { ResponseMyInfoDto } from "../types/auth";
 import { useEffect, useState } from "react";
 import { getMyInfo } from "../apis/auth";
 import { useSidebar } from "../context/SidebarContext";
+import { useMutation } from "@tanstack/react-query";
 
 export const Navbar = () => {
   const { accessToken, logout } = useAuth();
@@ -19,10 +20,19 @@ export const Navbar = () => {
     getData();
   }, []);
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/");
+  const handleLogout = () => {
+    logoutMutation.mutate();
   };
+
+  const logoutMutation = useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      navigate("/");
+    },
+    onError: (error) => {
+      alert("로그아웃 실패: " + (error as Error).message);
+    },
+  });
 
   return (
     <nav className="bg-gray-900 text-white  shadow-md fixed w-full z-30">
