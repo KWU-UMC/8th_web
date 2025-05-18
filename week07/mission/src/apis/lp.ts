@@ -27,3 +27,16 @@ export const getLpDetail = async (
   const response = await axiosInstance.get(`/v1/lps/${id}`);
   return { data: response.data };
 };
+
+export const patchLpDetail = async (
+  id: string,
+  updatedData: Partial<TResponseLpDetail>
+) => {
+  const { data } = await axiosInstance.patch(`/v1/lps/${id}`, updatedData);
+  return data;
+};
+
+export const deleteLpDetail = async (id: string) => {
+  const { data } = await axiosInstance.delete(`/v1/lps/${id}`);
+  return data;
+};

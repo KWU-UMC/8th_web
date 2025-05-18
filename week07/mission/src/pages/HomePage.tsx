@@ -18,7 +18,7 @@ const HomePage = () => {
   });
 
   if (isError) return <div>에러 발생</div>;
-  console.log("hasNextPage:", hasNextPage);
+
   return (
     <div>
       <div className="flex justify-end pr-10 pt-4">

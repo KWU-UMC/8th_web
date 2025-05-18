@@ -2,7 +2,7 @@ import { axiosInstance } from "./axiosInstance";
 import { type TSignupPayload } from "../types/TSignup";
 
 export const postSignin = async (email: string, password: string) => {
-    const response = await axiosInstance.post("/v1/auth/signin", {
+  const response = await axiosInstance.post("/v1/auth/signin", {
     email,
     password,
   });
@@ -15,9 +15,9 @@ export const postSignup = async (data: TSignupPayload) => {
 };
 
 export const postLogout = async () => {
-  const {data} = await axiosInstance.post("/v1/auth/signout");
+  const { data } = await axiosInstance.post("/v1/auth/signout");
   return data;
-}
+};
 
 export const getMyinfo = async () => {
   try {
@@ -28,4 +28,13 @@ export const getMyinfo = async () => {
     console.error(error);
     throw error;
   }
-}
+};
+
+export const patchMyInfo = async (userInfo: {
+  name: string;
+  bio: string;
+  avatar: string;
+}) => {
+  const response = await axiosInstance.patch("/v1/users", userInfo);
+  return response.data;
+};

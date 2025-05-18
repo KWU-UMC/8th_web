@@ -1,48 +1,131 @@
-import { useAuth } from "../context/AuthContext";
-import { useEffect, useState } from "react";
-import { getMyinfo } from "../apis/auth";
+import { useEffect, useState, useRef } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { getMyinfo, patchMyInfo } from "../apis/auth";
 import type { TUserInfo } from "../types/TUser";
-import { useNavigate } from "react-router-dom";
-import GoogleLoginButton from "../components/GoogleLoginBtn";
+import HomePage from "./HomePage";
+import { FiSettings } from "react-icons/fi";
 
 const MyPage = () => {
-    const navigate = useNavigate();
-    const {signOut} = useAuth();
-    const [data, setData] = useState<TUserInfo>();
+  const [data, setData] = useState<TUserInfo>();
+  const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
+  const [avatar, setAvatar] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-    useEffect(() => {
-        const getData = async () => {
-            const response = await getMyinfo();
-            console.log(response);
-            setData(response);
-        };
-        getData();
-    }, []);
+  useEffect(() => {
+    const getData = async () => {
+      const response = await getMyinfo();
+      setData(response);
+      setName(response?.data?.name || "");
+      setBio(response?.data?.bio || "");
+      setAvatar(response?.data?.avatar || "");
+    };
+    getData();
+  }, []);
 
-    const handleSignout = async () => {
-        await signOut();
-        navigate("/");  // 로그아웃 성공 시 메인 페이지로 이동
+  const { mutate: updateUserInfo } = useMutation({
+    mutationFn: () => patchMyInfo({ name, bio, avatar }),
+    onSuccess: () => {
+      if (!data?.data) return;
+      setIsEditMode(false);
+      setData({
+        ...data,
+        data: {
+          ...data.data,
+          name,
+          avatar,
+          bio,
+        },
+      });
+    },
+    onError: (err) => {
+      console.error("업데이트 실패", err);
+    },
+  });
+
+  const handleAvatarClick = () => {
+    if (isEditMode && fileInputRef.current) {
+      fileInputRef.current.click();
     }
-    
-    return(
-        <div className="h-[700px] bg-black text-white flex justify-center items-start pt-20">
-            <div className="w-full max-w-sm p-4">
-                <div className="relative mb-4">
-                    <h2 className="text-center text-2xl font-bold mb-2">마이페이지</h2>
-                    <div className="text-center text-l">{data?.data?.name}님 환영합니다.</div>
-                </div>
+  };
 
-                <GoogleLoginButton />
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-                <button
-                    onClick={handleSignout}
-                    className={`w-full py-2 rounded-md text-white bg-[#E91E63] hover:bg-pink-700 transition-colors duration-200`}
-                >
-                로그아웃
-                </button>
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setAvatar(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <>
+      <div className="text-white flex flex-col items-center pt-20">
+        <div className="flex items-start gap-6 mb-6">
+          <div className="relative">
+            <img
+              src={avatar}
+              alt="profile"
+              className="w-28 h-28 rounded-full object-cover cursor-pointer"
+              onClick={handleAvatarClick}
+            />
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              onChange={handleAvatarChange}
+            />
+          </div>
+
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              {isEditMode ? (
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="bg-transparent border border-white rounded px-4 py-2 text-white focus:outline-none"
+                />
+              ) : (
+                <div className="text-xl font-bold">{data?.data?.name}</div>
+              )}
+
+              <button
+                onClick={() => {
+                  if (isEditMode) {
+                    updateUserInfo();
+                  } else {
+                    setIsEditMode(true);
+                  }
+                }}
+                className="text-white hover:text-gray-300 transition text-xl"
+              >
+                <FiSettings />
+              </button>
             </div>
+
+            {isEditMode ? (
+              <input
+                type="text"
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                className="bg-transparent border border-white rounded px-4 py-2 text-white focus:outline-none"
+              />
+            ) : (
+              <div className="text-sm">{data?.data?.bio}</div>
+            )}
+
+            <p className="text-white text-sm mb-6">{data?.data?.email}</p>
+          </div>
         </div>
-    );
-}
+      </div>
+      <HomePage />
+    </>
+  );
+};
 
 export default MyPage;
