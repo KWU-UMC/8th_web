@@ -45,3 +45,13 @@ export const addLp = async (lpData: TAddLpData): Promise<TResponseLpDetail> => {
   const { data } = await axiosInstance.post("/v1/lps", lpData);
   return data;
 };
+
+export const postLike = async (id: number) => {
+  const { data } = await axiosInstance.post(`/v1/lps/${id}/likes`);
+  return data;
+};
+
+export const postUnlike = async (id: number) => {
+  const { data } = await axiosInstance.delete(`/v1/lps/${id}/likes`);
+  return data;
+};

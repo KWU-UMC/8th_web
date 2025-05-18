@@ -6,6 +6,7 @@ import { Heart, Pencil, Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { patchLpDetail, deleteLpDetail } from "../apis/lp";
 import type { TResponseLpDetail } from "../types/TLp";
+import { postLike, postUnlike } from "../apis/lp";
 
 const LpDetailPage = () => {
   const navigate = useNavigate();
@@ -14,9 +15,25 @@ const LpDetailPage = () => {
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
   const [newThumbnail, setNewThumbnail] = useState<string>("");
+  const [isLiked, setIsLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data, error, isLoading } = useGetLpDetail(LPid!);
+  const likeMutation = useMutation({
+    mutationFn: () => postLike(Number(LPid)),
+    onSuccess: () => {
+      setIsLiked(true);
+      setLikeCount((prev) => prev + 1);
+    },
+  });
+  const unlikeMutation = useMutation({
+    mutationFn: () => postUnlike(Number(LPid)),
+    onSuccess: () => {
+      setIsLiked(false);
+      setLikeCount((prev) => Math.max(0, prev - 1));
+    },
+  });
   const patchMutation = useMutation({
     mutationFn: (updatedData: Partial<TResponseLpDetail>) =>
       patchLpDetail(LPid!, updatedData),
@@ -41,6 +58,12 @@ const LpDetailPage = () => {
       setNewTitle(lpDetail.title);
       setNewContent(lpDetail.content);
       setNewThumbnail(lpDetail.thumbnail);
+      setLikeCount(lpDetail.likes.length);
+      const userId = Number(localStorage.getItem("userId"));
+      const likedByUser = lpDetail.likes.some((like) => like.userId === userId);
+
+      setIsLiked(likedByUser);
+      setLikeCount(lpDetail.likes.length);
     }
   }, [data]);
 
@@ -78,6 +101,13 @@ const LpDetailPage = () => {
       thumbnail: newThumbnail,
     });
     setIsEditing(false);
+  };
+  const handleLikeClick = () => {
+    if (isLiked) {
+      unlikeMutation.mutate();
+    } else {
+      likeMutation.mutate();
+    }
   };
 
   return (
@@ -231,9 +261,18 @@ const LpDetailPage = () => {
           </div>
         )}
 
-        <div className="flex items-center justify-center gap-1">
-          <Heart className="w-5 h-5 text-pink-500" />
-          <span className="text-sm">{lpDetail.likes.length}</span>
+        <div
+          className="flex items-center justify-center gap-1 cursor-pointer"
+          onClick={handleLikeClick}
+          role="button"
+          aria-label={isLiked ? "좋아요 취소" : "좋아요"}
+        >
+          <Heart
+            className={`w-5 h-5 transition-all ${
+              isLiked ? "text-pink-500 fill-pink-500" : "text-gray-400"
+            }`}
+          />
+          <span className="text-sm">{likeCount}</span>
         </div>
       </div>
     </div>
