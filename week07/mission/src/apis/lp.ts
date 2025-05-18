@@ -4,7 +4,7 @@ import type {
   TResponseLpList,
 } from "../types/TLp";
 import { axiosInstance } from "./axiosInstance";
-import type { ApiResponse } from "../types/TLp";
+import type { ApiResponse, TAddLpData } from "../types/TLp";
 
 export const getLpList = async (
   Tpagination: TPagination
@@ -38,5 +38,10 @@ export const patchLpDetail = async (
 
 export const deleteLpDetail = async (id: string) => {
   const { data } = await axiosInstance.delete(`/v1/lps/${id}`);
+  return data;
+};
+
+export const addLp = async (lpData: TAddLpData): Promise<TResponseLpDetail> => {
+  const { data } = await axiosInstance.post("/v1/lps", lpData);
   return data;
 };

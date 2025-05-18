@@ -67,3 +67,11 @@ export type TResponseLpDetail = {
 export type ApiResponse<T> = {
   data: T;
 };
+
+export type TAddLpData = {
+  title: string;
+  content: string;
+  thumbnail?: string;
+  tags: string[];
+  published?: boolean;
+};
