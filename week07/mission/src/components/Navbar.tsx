@@ -11,7 +11,7 @@ type NavbarProps = {
 
 const Navbar = ({ onToggleSidebar }: NavbarProps) => {
   const [data, setData] = useState<TUserInfo | null>(null);
-  const { accessToken, signOut } = useAuth();
+  const { accessToken, signOut, userName } = useAuth();
 
   // 로그인 여부 판단
   const isLoggedIn = !!accessToken;
@@ -66,7 +66,7 @@ const Navbar = ({ onToggleSidebar }: NavbarProps) => {
         {data ? (
           <>
             <span className="text-white mr-2">
-              {data?.data?.name}님 반갑습니다.
+              {userName ?? data?.data?.name}님 반갑습니다.
             </span>
             <button onClick={handleSignout} className="text-white mr-2">
               로그아웃

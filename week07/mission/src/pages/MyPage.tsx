@@ -4,6 +4,7 @@ import { getMyinfo, patchMyInfo } from "../apis/auth";
 import type { TUserInfo } from "../types/TUser";
 import HomePage from "./HomePage";
 import { FiSettings } from "react-icons/fi";
+import { useAuth } from "../context/AuthContext";
 
 const MyPage = () => {
   const [data, setData] = useState<TUserInfo>();
@@ -12,6 +13,7 @@ const MyPage = () => {
   const [avatar, setAvatar] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const { setUserName } = useAuth();
 
   useEffect(() => {
     const getData = async () => {
@@ -38,6 +40,7 @@ const MyPage = () => {
           bio,
         },
       });
+      setUserName(name);
     },
     onError: (err) => {
       console.error("업데이트 실패", err);
