@@ -3,6 +3,8 @@ import useLocalStorage from "../hooks/useLocalStorage.ts";
 import {useForm} from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {useMutation} from "@tanstack/react-query";
+import client from "../util/client.ts"; // Assuming you have a similar client setup
 
 const signInSchema = z.object({
     email: z.string().email({ message: '올바른 이메일을 입력하세요.' }),
@@ -19,8 +21,7 @@ export const SignInPage = () => {
     const {
         register,
         handleSubmit,
-        formState: { errors },
-        watch
+        formState: { errors }
     } = useForm<SignInForm>({
         defaultValues: {
             email: '',
@@ -30,34 +31,34 @@ export const SignInPage = () => {
         mode: 'onBlur'
     });
 
-    const values = watch();
-
-    const onSubmit = handleSubmit(async (data) => {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/v1/auth/signin`, {
-            method: 'POST',
-            body: JSON.stringify({
+    const signInMutation = useMutation({
+        mutationFn: async (data: SignInForm) => {
+            const response = await client.post('/v1/auth/signin', { // Using client helper
                 email: data.email,
                 password: data.password,
-            }),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.ok) {
-            const json = await response.json();
-            const accessToken = json.data.accessToken;
-            const refreshToken = json.data.refreshToken;
+            });
+            return response.data; // Assuming client handles response.json() and data structure
+        },
+        onSuccess: (responseData) => {
+            // Assuming responseData has { data: { accessToken: string, refreshToken: string } } structure
+            const accessToken = responseData.data.accessToken;
+            const refreshToken = responseData.data.refreshToken;
 
             setAccessToken(accessToken);
             setRefreshToken(refreshToken);
             console.log('refreshToken: ', refreshToken)
 
             alert('로그인 성공');
-        } else {
+            navigate('/'); // Optional: navigate to home or dashboard on success
+        },
+        onError: () => {
             alert('로그인 실패');
         }
     });
+
+    const onSubmit = (data: SignInForm) => {
+        signInMutation.mutate(data);
+    };
 
     return (
         <div className="mt-12 w-96 mx-auto bg-neutral-300 p-8 rounded-2xl">
@@ -81,7 +82,7 @@ export const SignInPage = () => {
                 <hr className="flex-grow my-4 border-gray-400"/>
             </div>
 
-            <form onSubmit={onSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <input
                     {...register('email')}
                     type="email"
@@ -109,9 +110,9 @@ export const SignInPage = () => {
                 <button
                     type="submit"
                     className="mt-4 w-full p-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors disabled:bg-blue-200"
-                    disabled={!values.email || !values.password || !!errors.email || !!errors.password}
+                    disabled={signInMutation.isPending || !!errors.email || !!errors.password}
                 >
-                    로그인
+                    {signInMutation.isPending ? '로그인 중...' : '로그인'}
                 </button>
             </form>
         </div>

@@ -1,5 +1,5 @@
 import type {UserData, UserResponse} from "../../model/response/UserResponse.ts";
-import {useInfiniteQuery, useMutation, useQuery} from "@tanstack/react-query";
+import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import client from "../../util/client.ts";
 import {LpsGrid} from "../../ui/LpsGrid.tsx";
 import type {LpRecordsResponse} from "../../model/response/LpRecordsResponse.ts";
@@ -16,17 +16,81 @@ type FormData = {
     tags: string[]
 }
 
+type ProfileFormData = {
+    name: string
+    bio: string
+    avatar?: string
+}
+
 const ProfileCard = ({profile}: {
     profile: UserData
 }) => {
-    return <div className="flex gap-4 rounded-xl bg-neutral-300 w-full p-4 items-center justify-center">
-        <img src={profile.avatar ?? undefined} className="size-24 rounded-full bg-neutral-500" alt="author profile image"/>
+    const [isEditing, setIsEditing] = useState(false)
+    const queryClient = useQueryClient()
+    const {register, handleSubmit, reset, watch} = useForm<ProfileFormData>({
+        defaultValues: {
+            name: profile.name,
+            bio: profile.bio ?? '',
+            avatar: profile.avatar ?? ''
+        }
+    })
 
-        <div className="flex flex-col gap-2 justify-evenly">
+    const profileUpdateMutation = useMutation({
+        mutationFn: async (formData: ProfileFormData) => {
+            const response = await client.patch('/v1/users/me', {
+                name: formData.name,
+                bio: formData.bio,
+                avatarUrl: formData.avatar // Assuming the API expects avatarUrl
+            })
+            return response.data
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['user']})
+            setIsEditing(false)
+        }
+    })
+
+    const onSubmit = (data: ProfileFormData) => {
+        profileUpdateMutation.mutate(data)
+    }
+
+    if (isEditing) {
+        return <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 rounded-xl bg-neutral-300 w-full p-4">
+            <div className="flex gap-4 items-start">
+                <div className="flex flex-col items-center gap-2">
+                    <img src={watch('avatar') || profile.avatar || undefined} className="size-24 rounded-full bg-neutral-500 object-cover" alt="author profile image"/>
+                    <input {...register('avatar')} placeholder="Avatar URL" className="w-full p-1 rounded text-sm"/>
+                </div>
+                <div className="flex flex-col gap-2 grow">
+                    <input {...register('name')} placeholder="Name" className="w-full p-2 rounded font-bold text-2xl bg-transparent border-b-2 border-neutral-400 focus:outline-none focus:border-blue-500"/>
+                    <textarea {...register('bio')} placeholder="Bio" className="w-full p-2 rounded bg-transparent border-b-2 border-neutral-400 focus:outline-none focus:border-blue-500" rows={3}/>
+                </div>
+            </div>
+            <div className="flex gap-2 self-end">
+                <button type="submit" disabled={profileUpdateMutation.isPending} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Save
+                </button>
+                <button type="button" onClick={() => {
+                    setIsEditing(false)
+                    reset({name: profile.name, bio: profile.bio ?? '', avatar: profile.avatar ?? ''})
+                }} className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    }
+
+    return <div className="flex gap-4 rounded-xl bg-neutral-300 w-full p-4 items-center">
+        <img src={profile.avatar ?? undefined} className="size-24 rounded-full bg-neutral-500 object-cover" alt="author profile image"/>
+
+        <div className="flex flex-col gap-2 justify-evenly grow">
             <span className="font-bold text-2xl">{profile.name}</span>
             <span>{profile.bio}</span>
             <span>{profile.email}</span>
         </div>
+        <button onClick={() => setIsEditing(true)} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded self-start">
+            Edit
+        </button>
     </div>
 }
 

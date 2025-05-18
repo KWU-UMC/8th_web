@@ -1,4 +1,4 @@
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useInfiniteQuery, useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import type {LpRecordResponse} from "../../model/response/LpRecordResponse.ts";
 import client from "../../util/client.ts";
@@ -9,6 +9,7 @@ import {useState} from "react";
 import {LpRecordTagUi} from "../../ui/LpRecordTag.tsx";
 import type {UserResponse} from "../../model/response/UserResponse.ts";
 import type {Comment} from "../../model/Comment.ts";
+import {useForm} from "react-hook-form";
 
 const CommentItem = ({comment, isAuthor, onChange}: {
     comment: Comment,
@@ -162,6 +163,8 @@ const CommentList = ({id, authorId}: {
 
 export const LpRecordPage = () => {
     const {id} = useParams()
+    const navigate = useNavigate()
+    const queryClient = useQueryClient()
 
     const {data: authorData} = useQuery<UserResponse>({
         queryKey: ['user'],
@@ -179,7 +182,67 @@ export const LpRecordPage = () => {
         },
     })
 
+    const deleteMutation = useMutation({
+        mutationFn: async () => {
+            await client.delete(`/v1/lps/${id}`)
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['lps'] })
+            navigate('/')
+        },
+        onError: () => {
+            alert('삭제 중 오류가 발생했습니다.')
+        }
+    })
+
+    const editMutation = useMutation({
+        mutationFn: async (formData: {
+            title: string,
+            content: string,
+            thumbnail: string,
+            tags: string[],
+            published: boolean
+        }) => {
+            await client.patch(`/v1/lps/${id}`, formData)
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['lpRecord', id] })
+        },
+        onError: () => {
+            alert('수정 중 오류가 발생했습니다.')
+        }
+    })
+
+    const { register, handleSubmit } = useForm<{
+        title: string,
+        content: string,
+    }>()
+
+    const handleDelete = () => {
+        if (window.confirm('정말로 삭제하시겠습니까?')) {
+            deleteMutation.mutate()
+        }
+    }
+
+    const [isEditing, setIsEditing] = useState(false)
+
+    const handleEdit = ({title, content}: {
+        title: string,
+        content: string,
+    }) => {
+        editMutation.mutate({
+            title: title === '' ? data?.data?.title ?? '' : title,
+            content: content === '' ? data?.data?.content ?? '' : content,
+            thumbnail: data?.data?.thumbnail ?? '',
+            tags: data?.data?.tags?.map(tag => tag.name) ?? [],
+            published: true
+        })
+
+        setIsEditing(false)
+    }
+
     const idInt = parseInt(id ?? '-1')
+    const isAuthor = authorData?.data?.id === data?.data?.author?.id
 
     return <div className="flex flex-col w-full p-4 gap-y-8">
         <div className="bg-neutral-300 w-full p-4 rounded-xl">
@@ -193,13 +256,39 @@ export const LpRecordPage = () => {
                     <span className="text-gray-800">{formatTime(data?.data?.createdAt ?? '')}</span>
                 </div>
 
-                <div className="flex justify-between items-center">
-                    <span className="font-bold text-lg">{data?.data?.title}</span>
+                <div className="flex justify-between items-center gap-x-2">
+                    {
+                        isEditing ? <input className="font-bold text-lg flex-1 border-2 rounded-lg" placeholder={data?.data?.title} {...register('title')} /> : <span className="font-bold text-lg">{data?.data?.title}</span>
+                    }
 
-                    <div className="flex gap-2">
-                        <button>EDIT</button>
-                        <button>DEL</button>
-                    </div>
+                    {!isEditing && isAuthor && (
+                        <div className="flex gap-2">
+                            <button 
+                                onClick={() => { setIsEditing(true) }}
+                                disabled={editMutation.isPending}
+                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300"
+                            >
+                                {editMutation.isPending ? 'EDIT...' : 'EDIT'}
+                            </button>
+                            <button 
+                                onClick={handleDelete}
+                                disabled={deleteMutation.isPending}
+                                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:bg-red-300"
+                            >
+                                {deleteMutation.isPending ? 'DEL...' : 'DEL'}
+                            </button>
+                        </div>
+                    )}
+
+                    {
+                        isEditing && (
+                            <button
+                                onClick={handleSubmit(handleEdit)}
+                                disabled={editMutation.isPending}
+                                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                            >DONE</button>
+                        )
+                    }
                 </div>
 
                 <div className="w-full rounded-xl px-[30%] mt-16">
@@ -211,7 +300,10 @@ export const LpRecordPage = () => {
                     </div>
                 </div>
 
-                <span className="text-lg mt-16">{data?.data?.content}</span>
+                {
+                    isEditing ? <input className="text-lg mt-16 flex-1" placeholder={data?.data?.content} {...register('content')} />
+                        : <span className="text-lg mt-16">{data?.data?.content}</span>
+                }
 
                 <div className="mt-16">
                     {data?.data?.tags?.map(tag => {
