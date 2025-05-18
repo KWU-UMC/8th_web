@@ -241,6 +241,34 @@ export const LpRecordPage = () => {
         setIsEditing(false)
     }
 
+    const likeMutation = useMutation({
+        mutationFn: async () => {
+            if (data?.data?.likes?.some(like => like.userId === authorData?.data?.id)) {
+                await client.delete(`/v1/lps/${id}/likes`)
+            } else {
+                await client.post(`/v1/lps/${id}/likes`)
+            }
+        },
+        onMutate: async () => {
+            queryClient.setQueryData(['lpRecord', id], (oldData: LpRecordResponse) => {
+                const newLikes = oldData.data.likes?.some(like => like.userId === authorData?.data?.id)
+                    ? oldData.data.likes.filter(like => like.userId !== authorData?.data?.id)
+                    : [...(oldData.data.likes ?? []), { userId: authorData?.data?.id, lpId: idInt }]
+
+                return {
+                    ...oldData,
+                    data: {
+                        ...oldData.data,
+                        likes: newLikes
+                    }
+                }
+            })
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['lpRecord', id] })
+        },
+    })
+
     const idInt = parseInt(id ?? '-1')
     const isAuthor = authorData?.data?.id === data?.data?.author?.id
 
@@ -263,14 +291,14 @@ export const LpRecordPage = () => {
 
                     {!isEditing && isAuthor && (
                         <div className="flex gap-2">
-                            <button 
+                            <button
                                 onClick={() => { setIsEditing(true) }}
                                 disabled={editMutation.isPending}
                                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:bg-blue-300"
                             >
                                 {editMutation.isPending ? 'EDIT...' : 'EDIT'}
                             </button>
-                            <button 
+                            <button
                                 onClick={handleDelete}
                                 disabled={deleteMutation.isPending}
                                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:bg-red-300"
@@ -312,7 +340,7 @@ export const LpRecordPage = () => {
                 </div>
 
                 <div className="flex gap-2 mt-16 self-center">
-                    <span>LIKES</span>
+                    <span onClick={() => likeMutation.mutate()}>LIKES</span>
                     <span>{data?.data?.likes?.length ?? 0}</span>
                 </div>
             </div>
