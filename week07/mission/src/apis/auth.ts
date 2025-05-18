@@ -38,3 +38,14 @@ export const patchMyInfo = async (userInfo: {
   const response = await axiosInstance.patch("/v1/users", userInfo);
   return response.data;
 };
+
+export const deleteMyinfo = async () => {
+  try {
+    const { data } = await axiosInstance.delete("/v1/users");
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
