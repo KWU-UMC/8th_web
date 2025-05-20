@@ -40,7 +40,6 @@ export const lpComments = async ({
   const url = `${
     import.meta.env.VITE_BASE_URL
   }/lps/${id}/comments?cursor=${cursor}&limit=10&order=${order}`;
-
   try {
     const { data } = await axios.get<LPComments>(url, {
       headers: {
