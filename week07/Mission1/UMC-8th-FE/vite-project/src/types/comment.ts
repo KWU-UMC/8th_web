@@ -26,3 +26,7 @@ export type GetCommentListReqDto = {
     limit?: number,
     order?: PAGINATION_ORDER,
 }
+
+export type postCommentRequestDto = {
+    content: string
+}

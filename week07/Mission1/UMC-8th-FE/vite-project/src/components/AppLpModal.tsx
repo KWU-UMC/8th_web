@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { usePostLp } from "../hooks/mutations/useePostLp";
 
 interface AddLpModalProps {
   onClose: () => void;
@@ -16,6 +17,8 @@ const AddLpModal = ({ onClose }: AddLpModalProps) => {
   const isFormValid = lpName.trim() !== "" && lpContent.trim() !== "";
   const isTagValid = tagInput.trim() !== "";
 
+  const postLpMutation = usePostLp();
+
   const handleImageClick = () => {
     setShowInput(true);
   };
@@ -29,6 +32,28 @@ const AddLpModal = ({ onClose }: AddLpModalProps) => {
 
   const handleRemoveTag = (index: number) => {
     setTags(tags.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = () => {
+    if (!isFormValid) return;
+
+    const payload = {
+      title: lpName,
+      content: lpContent,
+      thumbnail: imageUrl,
+      tags: tags,
+      published: true,
+    };
+
+    postLpMutation.mutate(payload, {
+      onSuccess: () => {
+        alert("등록 완료!");
+        onClose(); // 모달 닫기
+      },
+      onError: () => {
+        alert("등록 실패");
+      },
+    });
   };
 
   return (
@@ -122,15 +147,16 @@ const AddLpModal = ({ onClose }: AddLpModalProps) => {
 
         {/* LP 등록 버튼 */}
         <button
+          onClick={handleSubmit}
           className={`w-full p-2 rounded ${
             isFormValid
-              ? "bg-pink-500 text-white hover:bg-pink-600"
-              : "bg-gray-400 text-black cursor-not-allowed"
+            ? "bg-pink-500 text-white hover:bg-pink-600"
+            : "bg-gray-400 text-black cursor-not-allowed"
           }`}
           disabled={!isFormValid}
-        >
-          Add LP
-        </button>
+          >
+            Add LP
+          </button>
       </div>
     </div>
   );

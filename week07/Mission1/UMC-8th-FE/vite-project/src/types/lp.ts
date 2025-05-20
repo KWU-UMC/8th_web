@@ -65,3 +65,11 @@ export type LpDetail = {
 }
 
 export type ResponseLpDetailDto = CommonResponse<LpDetail>;
+
+export type CreateLpRequest = {
+  title: string;
+  content: string;
+  thumbnail: string;
+  tags: string[];
+  published: boolean;
+}

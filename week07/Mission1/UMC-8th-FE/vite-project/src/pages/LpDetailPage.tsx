@@ -7,13 +7,18 @@ import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import useGetInifiniteCommentList from "../hooks/queries/useGetInfiniteCommentList";
 import CommentSkeletonList from "../components/Comment/CommentSkeletonList";
+import { usePostComment } from "../hooks/mutations/usePostComment";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 const LpDetailPage = () => {
   const { lpId } = useParams();
   const { accessToken } = useAuth();
   const parsedLpId = lpId ? parseInt(lpId) : undefined;
-  
+  const [commentContent, setCommentContent] = useState("");
+  const postCommentMutation = usePostComment(parsedLpId!); // lpId는 이미 있음
+  const queryClient = useQueryClient();
+
   const [order, setOrder] = useState<PAGINATION_ORDER>(PAGINATION_ORDER.desc);
   const { ref, inView } = useInView({ threshold: 0 });
 
@@ -106,16 +111,43 @@ const LpDetailPage = () => {
       </div>
     </div>
     <div className="flex py-2">
-      <input type="text" placeholder="댓글을 입력해주세요." 
-        className="flex-1 bg-[#2a2a2a] text-white text-sm 
-        px-4 py-2 rounded-md placeholder-gray-400
-        border border-gray-500" 
-      />
-      <span className="px-2">
-        <button
-          className="bg-gray-500 text-white text-sm px-4 py-2 rounded-md cursor-not-allowed"
-        > 작성 </button>
-      </span>
+       <input
+    type="text"
+    placeholder="댓글을 입력해주세요."
+    className="flex-1 bg-[#2a2a2a] text-white text-sm 
+    px-4 py-2 rounded-md placeholder-gray-400 border border-gray-500"
+    value={commentContent}
+    onChange={(e) => setCommentContent(e.target.value)}
+  />
+  <span className="px-2">
+    <button
+      onClick={() => {
+        if (!commentContent.trim()) return;
+        postCommentMutation.mutate(
+          { content: commentContent.trim() },
+          {
+            onSuccess: () => {
+              setCommentContent(""); // 입력창 초기화
+              queryClient.invalidateQueries({
+                queryKey: ["comments", parsedLpId],
+              });
+            },
+            onError: () => {
+              alert("댓글 등록 실패");
+            },
+          }
+        );
+      }}
+      className={`text-white text-sm px-4 py-2 rounded-md ${
+        commentContent.trim()
+          ? "bg-pink-500 hover:bg-pink-600"
+          : "bg-gray-500 cursor-not-allowed"
+      }`}
+      disabled={!commentContent.trim()}
+    >
+      작성
+    </button>
+  </span>
     </div>
 
     <div className="space-y-3">
