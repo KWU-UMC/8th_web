@@ -4,6 +4,7 @@ import Item from "../components/item";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LP } from "../types/lptype";
 import SkeletonItem from "../components/skeletonitem";
+import { useThrottle } from "../utils/fnc";
 
 export default function Home() {
   const [isASC, setIsASC] = useState<boolean>(true);
@@ -24,6 +25,10 @@ export default function Home() {
     },
   });
 
+  const throttledFetchNextPage = useThrottle(() => {
+    fetchNextPage();
+  }, 2000);
+
   useEffect(() => {
     const merged =
       infiniteData?.pages.flatMap((page) => page?.data ?? []) ?? ([] as LP[]);
@@ -38,7 +43,7 @@ export default function Home() {
       observer.current = new IntersectionObserver(
         (entries) => {
           if (entries[0].isIntersecting) {
-            fetchNextPage();
+            throttledFetchNextPage();
           }
         },
         {
