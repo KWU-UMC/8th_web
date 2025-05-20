@@ -6,6 +6,7 @@ import useGetInfiniteList from "../hooks/queries/useGetInfinite";
 import { useAuth } from "../context/AuthContext";
 import LpSkeletonCard from "../components/LpSkeletonCard";
 import AddLpModal from "../components/AddLp";
+import useThrottle from "../hooks/useThrottle";
 
 const HomePage = () => {
   const [order, setOrder] = useState<PAGINATION_ORDER>(PAGINATION_ORDER.asc);
@@ -25,17 +26,19 @@ const HomePage = () => {
 
   const { ref, inView } = useInView();
 
+  const throttledInView = useThrottle(inView, 1000);
   useEffect(() => {
-    if (inView && hasNextPage) {
+    console.log("throttledInView:", throttledInView);
+    if (throttledInView && hasNextPage) {
       fetchNextPage();
     }
-  }, [inView, hasNextPage]);
+  }, [throttledInView, hasNextPage, fetchNextPage]);
 
   const lpList = data?.pages.flatMap((page) => page.data.data) ?? [];
 
   const handleCardClick = (id: number) => {
     if (!accessToken) {
-      if (window.confirm("로그인 후 이용할 수 있습니다.\n로그인 화면으로 이동할까요?")) {
+      if (window.confirm("로그인 후 이용할 수 있습니다.\n로그인 화면으로 이동하시겠습니까?")) {
         navigate("/login");
       }
       return;
