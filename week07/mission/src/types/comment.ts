@@ -1,22 +1,39 @@
-export interface LpComment {
-  id: number;
-  content: string;
-  createdAt: string;
-  author: {
-    id: number;
-    name: string;
-  };
+import { ResponseMyInfoDto } from "./auth";
+
+export type CommentResponseDto = {
+id: number;
+content: string;
+lpId: number;
+authorId: number;
+createdAt: string;
+updatedAt: string;
+author: ResponseMyInfoDto;
 }
 
-export interface CommentPaginationResponse {
-  data: LpComment[];
+export type CommentPaginationResponse = {
+  data: CommentResponseDto[];
   nextCursor: number;
   hasNext: boolean;
 }
 
-export interface CommentListResponseDto {
+export type CommentListResponseDto = {
   status: boolean;
   statusCode: number;
   message: string;
   data: CommentPaginationResponse;
+}
+
+export type CreateCommentDto = {
+  content: string;
+}
+
+export type UpdateCommentDto = {
+  content: string;
+}
+
+export type CommentResponse = {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: CommentResponseDto;
 }

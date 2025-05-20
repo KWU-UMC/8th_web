@@ -1,5 +1,3 @@
-import { CursorBasedResponse } from "./common";
-
 export type Tag ={
     id:number;
     name:string;
@@ -24,9 +22,9 @@ export type Lp = {
   likes: Likes[];
 };
 
-export type ResponseLpListDto = CursorBasedResponse<{
+export type ResponseLpListDto = {
   data: Lp[];
-}>;
+};
 
 export type LpDetail = Lp & {
   author: {
@@ -39,3 +37,19 @@ export type LpDetail = Lp & {
     updatedAt: string;
   };
 };
+
+export type CreateLpsDto = {
+  title: string;
+  content: string;
+  thumbnail: string|null;
+  tags: string[];
+  published: boolean;
+}
+
+export type UpdateLpsDto = {
+  title: string;
+  content: string;
+  thumbnail: string;
+  tags: string[];
+  published: boolean;
+}

@@ -5,11 +5,13 @@ import { PAGINATION_ORDER } from "../enums/common";
 import useGetInfiniteList from "../hooks/queries/useGetInfinite";
 import { useAuth } from "../context/AuthContext";
 import LpSkeletonCard from "../components/LpSkeletonCard";
+import AddLpModal from "../components/AddLp";
 
 const HomePage = () => {
   const [order, setOrder] = useState<PAGINATION_ORDER>(PAGINATION_ORDER.asc);
   const [search, setSearch] = useState("");
   const { accessToken } = useAuth();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   const {
@@ -42,6 +44,7 @@ const HomePage = () => {
   };
 
   return (
+    <>
     <div className="flex">
       <div className="flex-1">
         <div className="px-6">
@@ -104,6 +107,16 @@ const HomePage = () => {
         </div>
       </div>
     </div>
+
+    <button
+      onClick={() => setIsModalOpen(true)}
+      className="fixed bottom-6 right-6 w-18 h-18 bg-gray-700 text-white text-4xl rounded-full shadow-lg z-40"
+    >
+      +
+    </button>
+    {isModalOpen && <AddLpModal onClose={() => setIsModalOpen(false)} />}
+  </>
+
   );
 };
 

@@ -4,6 +4,7 @@ import {
     ResponseSigninDto,
     ResponseSignupDto,
     ResponseMyInfoDto,
+    UpdateUserDto,
  } from "../types/auth.ts";
 import { axiosInstance } from "./axios.ts";
 
@@ -30,3 +31,12 @@ export const postLogout = async() => {
 
     return data;
 }
+
+export const updateMyInfo = async (body: UpdateUserDto) => {
+  const { data } = await axiosInstance.patch("/v1/users", body);
+  return data;
+};
+
+export const deleteUser = async () => {
+  return await axiosInstance.delete("/v1/users");
+};
