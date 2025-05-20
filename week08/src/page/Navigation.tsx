@@ -30,7 +30,7 @@ export const Navigation = ({onClickHamburger}: {
             setAccessToken(undefined);
             setRefreshToken(undefined);
             queryClient.clear();
-            navigate('/signin');
+            navigate('/login');
         },
         onError: () => {
             alert("로그아웃 중 오류가 발생했습니다.");

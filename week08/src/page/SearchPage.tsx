@@ -1,6 +1,6 @@
 import '../index.css'
 import {useState} from "react";
-import {useQuery} from "@tanstack/react-query";
+import {useInfiniteQuery} from "@tanstack/react-query";
 import type {LpRecordsResponse} from "../model/response/LpRecordsResponse.ts";
 import client from "../util/client.ts";
 import {LpsGrid} from "../ui/LpsGrid.tsx";
@@ -8,17 +8,20 @@ import {LpsGrid} from "../ui/LpsGrid.tsx";
 export const SearchPage = () => {
     const [keyword, setKeyword] = useState('')
 
-    const {data} = useQuery<LpRecordsResponse>({
+    const {data, hasNextPage, fetchNextPage} = useInfiniteQuery<LpRecordsResponse>({
         queryKey: ['search', keyword],
-        queryFn: async () => {
+        queryFn: async ({pageParam}) => {
             const {data} = await client.get('/v1/lps', {
                 params: {
+                    cursor: pageParam,
                     search: keyword
                 }
             })
 
             return data
-        }
+        },
+        getNextPageParam: (response) => response.data.nextCursor ?? undefined,
+        initialPageParam: 0
     })
 
     return <div className="flex flex-col">
@@ -33,7 +36,17 @@ export const SearchPage = () => {
         </div>
 
         {
-            data ? <LpsGrid lps={data.data.data} /> : <></>
+            data ? <LpsGrid lps={data.pages.map(page => page.data.data).flat()} /> : <></>
+        }
+
+        {
+            hasNextPage ?
+                <button
+                    className="rounded-lg px-4 py-2 border-2 mt-4"
+                    onClick={() => fetchNextPage()}
+                >
+                    Load More...
+                </button> : <></>
         }
     </div>
 }

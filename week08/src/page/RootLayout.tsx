@@ -22,7 +22,7 @@ const SideBar = () => {
             setRefreshToken(undefined);
             queryClient.clear();
             alert('계정 삭제 성공');
-            navigate('/signin');
+            navigate('/login');
         },
         onError: () => {
             alert('계정 삭제 실패');
