@@ -30,3 +30,11 @@ export type GetCommentListReqDto = {
 export type postCommentRequestDto = {
     content: string
 }
+
+export type patchCommentRequestDto = {
+    content: string
+}
+
+export type deleteCommentResponseDto = {
+    message: string
+}

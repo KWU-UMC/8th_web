@@ -9,7 +9,8 @@ import useGetInifiniteCommentList from "../hooks/queries/useGetInfiniteCommentLi
 import CommentSkeletonList from "../components/Comment/CommentSkeletonList";
 import { usePostComment } from "../hooks/mutations/usePostComment";
 import { useQueryClient } from "@tanstack/react-query";
-
+import { useDeleteComment } from "../hooks/mutations/useDeleteComment";
+import { useUpdateComment } from "../hooks/mutations/useUpdateComment";
 
 const LpDetailPage = () => {
   const { lpId } = useParams();
@@ -18,6 +19,10 @@ const LpDetailPage = () => {
   const [commentContent, setCommentContent] = useState("");
   const postCommentMutation = usePostComment(parsedLpId!); // lpId는 이미 있음
   const queryClient = useQueryClient();
+  const deleteMutation = useDeleteComment();
+  const updateMutation = useUpdateComment();
+  const { user } = useAuth(); // 현재 로그인한 사용자 정보
+
 
   const [order, setOrder] = useState<PAGINATION_ORDER>(PAGINATION_ORDER.desc);
   const { ref, inView } = useInView({ threshold: 0 });
