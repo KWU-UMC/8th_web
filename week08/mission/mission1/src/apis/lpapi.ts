@@ -40,7 +40,7 @@ export const lpWithTag = async ({
 
   try {
     const { data } = await axios.get<LPSResponse>(url);
-    return data;
+    return data.data;
   } catch (error) {
     console.error("lp with tag request failed: ", error);
   }
