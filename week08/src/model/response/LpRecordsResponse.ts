@@ -3,7 +3,7 @@ import type {Response} from "./Response.ts";
 
 export type LpRecordData = {
     data: LpRecord[],
-    nextCursor: boolean,
+    nextCursor: string | null,
     hasNext: boolean
 }
 

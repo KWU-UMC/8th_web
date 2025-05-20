@@ -1,5 +1,5 @@
-import {Response} from "./Response.ts";
-import {Comment} from "../Comment.ts";
+import type {Response} from "./Response.ts";
+import type {Comment} from "../Comment.ts";
 
 export type CommentsResponse = Response<CommentData>
 
