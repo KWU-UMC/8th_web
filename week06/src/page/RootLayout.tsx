@@ -1,0 +1,46 @@
+import {Navigation} from "./Navigation.tsx";
+import {Outlet} from "react-router-dom";
+import {useState} from "react";
+
+const SideBar = () => {
+    return <div className="h-full min-h-screen flex flex-col bg-neutral-800 py-8">
+        <ul className="flex flex-1 flex-col gap-4 px-4 w-70">
+            <li className="text-white text-lg">찾기</li>
+            <li className="text-white text-lg">마이페이지</li>
+        </ul>
+
+        <div><span className="text-white text-lg px-4">탈퇴하기</span></div>
+    </div>
+}
+
+export const RootLayout = () => {
+    const [isVisible, setVisible] = useState(false);
+
+    return (
+        <div className="flex flex-col size-full">
+            <Navigation onClickHamburger={() => {setVisible(!isVisible)}} />
+
+            <div className="relative block md:hidden">
+                <div className="absolute top-0 left-0 my-4">
+                    <Outlet />
+                </div>
+
+                <div
+                    className={`${isVisible ? 'block' : 'hidden'} fixed inset-0 bg-black/50 z-5 transition-opacity`}
+                    onClick={() => setVisible(false)} />
+
+                <div className={`absolute top-0 left-0 ${isVisible ? 'opacity-100' : 'opacity-0'} ${isVisible ? 'w-70' : 'w-0'} z-10 transition-width duration-150 ease-in-out`}>
+                    <SideBar/>
+                </div>
+            </div>
+
+            <div className="hidden md:flex">
+                <SideBar/>
+
+                <div className="flex-1 my-4">
+                    <Outlet />
+                </div>
+            </div>
+        </div>
+    )
+}
