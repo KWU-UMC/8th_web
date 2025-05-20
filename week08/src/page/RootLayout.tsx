@@ -42,7 +42,7 @@ const SideBar = () => {
 
     return <div className="h-full flex flex-col bg-neutral-800 py-8">
         <ul className="flex flex-1 flex-col gap-4 px-4 w-70">
-            <li className="text-white text-lg">찾기</li>
+            <Link to='/search'><li className="text-white text-lg">찾기</li></Link>
             <Link to='/my'><li className="text-white text-lg">마이페이지</li></Link>
         </ul>
 

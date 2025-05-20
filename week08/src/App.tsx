@@ -8,6 +8,7 @@ import { RootLayout } from './page/RootLayout.tsx';
 import {ProtectedRoot} from "./page/protected/ProtectedRoot.tsx";
 import { LpRecordPage } from './page/protected/LpRecordPage.tsx';
 import {MyPage} from "./page/protected/MyPage.tsx";
+import {SearchPage} from "./page/SearchPage.tsx";
 
 const router = createBrowserRouter([
     {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
             {
                 path: '/signup',
                 element: <SignUpPage/>
+            },
+            {
+                path: '/search',
+                element: <SearchPage/>
             }
         ]
     },

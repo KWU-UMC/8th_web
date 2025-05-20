@@ -1,5 +1,5 @@
-import {LpRecord} from "../LpRecord.ts";
-import {Response} from "./Response.ts";
+import type {LpRecord} from "../LpRecord.ts";
+import type {Response} from "./Response.ts";
 
 export type LpRecordData = {
     data: LpRecord[],
