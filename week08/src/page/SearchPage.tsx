@@ -4,12 +4,14 @@ import {useInfiniteQuery} from "@tanstack/react-query";
 import type {LpRecordsResponse} from "../model/response/LpRecordsResponse.ts";
 import client from "../util/client.ts";
 import {LpsGrid} from "../ui/LpsGrid.tsx";
+import {useDebounce} from "../hooks/useDebounce.ts";
 
 export const SearchPage = () => {
     const [keyword, setKeyword] = useState('')
+    const debouncedKeyword = useDebounce(keyword, 1000)
 
     const {data, hasNextPage, fetchNextPage} = useInfiniteQuery<LpRecordsResponse>({
-        queryKey: ['search', keyword],
+        queryKey: ['search', debouncedKeyword],
         queryFn: async ({pageParam}) => {
             const {data} = await client.get('/v1/lps', {
                 params: {
