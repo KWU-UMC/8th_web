@@ -1,23 +1,19 @@
 import { ChangeEvent, useState } from "react";
 import { useDebounce } from "../utils/fnc";
+import { lpWithTag } from "../apis/lpapi";
 
 export default function Find() {
-  const [value, setValue] = useState<string>("");
-  const debounceFnc = useDebounce(() => {
-    console.log("debounce");
+  const debounceFnc = useDebounce(async (tag: string) => {
+    const lps = await lpWithTag({ tag });
+    console.log(lps?.data);
   }, 1000);
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-    debounceFnc();
+    debounceFnc(e.target.value);
   };
 
   return (
     <div className="w-full mt-10 flex justify-center items-center">
-      <input
-        className="bg-white color-black p-4"
-        value={value}
-        onChange={handleChange}
-      />
+      <input className="bg-white color-black p-4" onChange={handleChange} />
     </div>
   );
 }

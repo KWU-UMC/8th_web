@@ -4,22 +4,18 @@ export function useDebounce<T extends (...args: any[]) => void>(
   callback: T,
   delay: number
 ) {
-  const timeoutRef = useRef<number | null>(null);
+  const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const debouncedFunction = (...args: Parameters<T>) => {
-    if (timeoutRef.current !== null) {
-      clearTimeout(timeoutRef.current);
-    }
-    timeoutRef.current = window.setTimeout(() => {
+    if (timeout.current) clearTimeout(timeout.current);
+    timeout.current = setTimeout(() => {
       callback(...args);
     }, delay);
   };
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current !== null) {
-        clearTimeout(timeoutRef.current);
-      }
+      if (timeout.current) clearTimeout(timeout.current);
     };
   }, []);
 

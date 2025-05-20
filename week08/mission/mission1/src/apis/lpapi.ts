@@ -25,6 +25,27 @@ export const lp = async ({ id }: { id: string }) => {
   }
 };
 
+export const lpWithTag = async ({
+  cursor = 0,
+  limit = 20,
+  order = "asc",
+  tag,
+}: {
+  cursor?: number;
+  limit?: number;
+  order?: string;
+  tag: string;
+}) => {
+  const url = `${import.meta.env.VITE_BASE_URL}/lps/tag/${tag}`;
+
+  try {
+    const { data } = await axios.get<LPSResponse>(url);
+    return data;
+  } catch (error) {
+    console.error("lp with tag request failed: ", error);
+  }
+};
+
 type CreateLpI = {
   accessToken: string;
   title: string;
