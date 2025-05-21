@@ -33,6 +33,7 @@ export default function Find() {
   useEffect(() => {
     const merged =
       infiniteData?.pages.flatMap((page) => page?.data ?? []) ?? ([] as LP[]);
+
     setData(merged);
   }, [infiniteData]);
 
