@@ -1,6 +1,14 @@
+import { useDispatch } from "react-redux";
 import type { itemProps } from "../types/itemProps";
+import {
+  calculateTotals,
+  decrement,
+  increment,
+} from "../features/cart/cartSlice";
 
 export default function Item({ item }: { item: itemProps }) {
+  const dispatch = useDispatch();
+
   return (
     <div className="flex w-3/5 gap-5">
       <img
@@ -15,13 +23,25 @@ export default function Item({ item }: { item: itemProps }) {
           <span className="font-bold">{item.price}₩</span>
         </div>
         <div className="flex">
-          <button className="cursor-pointer bg-gray-300 w-10 h-10 rounded-md">
+          <button
+            className="cursor-pointer bg-gray-300 w-10 h-10 rounded-md"
+            onClick={() => {
+              dispatch(decrement(item));
+              dispatch(calculateTotals());
+            }}
+          >
             -
           </button>
           <p className="w-10 h-10 flex justify-center items-center bg-white border-2 border-gray-300 rounded-md">
             {item.amount}
           </p>
-          <button className="cursor-pointer bg-gray-300 w-10 h-10 rounded-xl">
+          <button
+            className="cursor-pointer bg-gray-300 w-10 h-10 rounded-xl"
+            onClick={() => {
+              dispatch(increment(item));
+              dispatch(calculateTotals());
+            }}
+          >
             +
           </button>
         </div>
