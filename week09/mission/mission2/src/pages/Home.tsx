@@ -2,8 +2,9 @@ import { useDispatch, useSelector } from "react-redux";
 import Cart from "../components/Cart";
 import Item from "../components/Item";
 import type { RootState } from "../app/store";
-import { calculateTotals, clearCart } from "../features/cart/cartSlice";
+import { calculateTotals } from "../features/cart/cartSlice";
 import { useEffect } from "react";
+import { openModal } from "../features/modal/modalSlice";
 
 export default function Home() {
   const items = useSelector((state: RootState) => state.cart.items);
@@ -24,8 +25,7 @@ export default function Home() {
         <button
           className="my-20 p-4 border-1 border-black rounded-xl cursor-pointer"
           onClick={() => {
-            dispatch(clearCart());
-            dispatch(calculateTotals());
+            dispatch(openModal());
           }}
         >
           전체 삭제
