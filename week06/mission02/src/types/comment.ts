@@ -1,0 +1,28 @@
+export interface Comment {
+  id: number;
+  content: string;
+  lpId: number;
+  authorId: number;
+  createdAt: string;
+  updatedAt: string;
+  author: {
+    id: number;
+    name: string;
+    email: string;
+    bio: string;
+    avatar: string;
+    createdAt: string;
+    updatedAt: string;
+  };
+}
+
+export interface ResponseCommentListDto {
+  status: boolean;
+  statusCode: number;
+  message: string;
+  data: {
+    data: Comment[];
+    nextCursor: number;
+    hasNext: boolean;
+  };
+}
