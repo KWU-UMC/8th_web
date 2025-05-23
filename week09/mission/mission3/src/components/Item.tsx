@@ -1,6 +1,9 @@
 import type { itemProps } from "../types/itemProps";
+import useCartStore from "../features/cart/useCartStore";
 
 export default function Item({ item }: { item: itemProps }) {
+  const { increment, decrement, calculateTotals } = useCartStore();
+
   return (
     <div className="flex w-3/5 gap-5">
       <img
@@ -15,13 +18,25 @@ export default function Item({ item }: { item: itemProps }) {
           <span className="font-bold">{item.price}₩</span>
         </div>
         <div className="flex">
-          <button className="cursor-pointer bg-gray-300 w-10 h-10 rounded-md">
+          <button
+            className="cursor-pointer bg-gray-300 w-10 h-10 rounded-md"
+            onClick={() => {
+              decrement(item);
+              calculateTotals();
+            }}
+          >
             -
           </button>
           <p className="w-10 h-10 flex justify-center items-center bg-white border-2 border-gray-300 rounded-md">
             {item.amount}
           </p>
-          <button className="cursor-pointer bg-gray-300 w-10 h-10 rounded-xl">
+          <button
+            className="cursor-pointer bg-gray-300 w-10 h-10 rounded-xl"
+            onClick={() => {
+              increment(item);
+              calculateTotals();
+            }}
+          >
             +
           </button>
         </div>
