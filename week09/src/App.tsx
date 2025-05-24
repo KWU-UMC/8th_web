@@ -10,10 +10,14 @@ function App() {
             <div className="flex flex-col gap-4 mx-80 my-8">
                 {
                     cartItems.map(item =>
-                        <PlaylistItem
-                            playlistItem={item}
-                            onAdd={() => {}}
-                            onRemove={() => {}} />)
+                        <>
+                            <PlaylistItem
+                                playlistItem={item}
+                                onAdd={() => {}}
+                                onRemove={() => {}} />
+
+                            <hr className="border-gray-300" />
+                        </>)
                 }
             </div>
         </>
