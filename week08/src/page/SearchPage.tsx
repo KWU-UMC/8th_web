@@ -30,7 +30,7 @@ export const SearchPage = () => {
     })
 
     useEffect(() => {
-        const scrollElement = scrollRef.current
+        const scrollElement = scrollRef.current?.parentElement
         if (!scrollElement) return
 
         const handleScroll = () => {
@@ -42,7 +42,10 @@ export const SearchPage = () => {
         return () => scrollElement.removeEventListener('scroll', handleScroll)
     })
 
-    useThrottle(scroll, () => fetchNextPage(), 1000)
+    const throttledScroll = useThrottle(scroll, 1000)
+    useEffect(() => {
+        fetchNextPage().then()
+    }, [throttledScroll, fetchNextPage])
 
     return <div ref={scrollRef} className="flex flex-col">
         <div className="flex gap-x-4 p-2">
