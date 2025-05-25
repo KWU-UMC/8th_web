@@ -73,3 +73,17 @@ export type CreateLpRequest = {
   tags: string[];
   published: boolean;
 }
+
+export type PatchLpDetailDto = {
+    id: number;
+    title: string;
+    content: string;
+    thumbnail: string;
+    published: boolean;
+    authorId: number;
+    createAt: Date;
+    updatedAt: Date;
+    tags: Tag[];
+}
+
+export type PatchLpDetailResponseDto = CommonResponse<PatchLpDetailDto>;

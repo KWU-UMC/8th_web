@@ -14,14 +14,23 @@ import { postSignin, postLogout } from "../apis/auth";
 interface AuthContextType{
     accessToken: string|null;
     refreshToken: string|null;
+    user: UserType|null;
     login:(signInData: RequestSigninDto) => Promise<void>;
     logout:() => Promise<void>;
+}
+
+interface UserType {
+    id: number;
+    name: string;
+    accessToken: string;
+    refreshToken: string;
 }
 
 //초기 상태를 저장하기 위함
 export const AuthContext = createContext<AuthContextType>({
     accessToken: null,
     refreshToken: null,
+    user: null,
     login: async() => {},
     logout: async() => {},
 });
@@ -38,6 +47,12 @@ export const AuthProvider =({children}: PropsWithChildren)=> {
         setItem: setRefreshTokenInStorage, 
         removeItem: removeRefreshTokenFromStorage,
     } = useLocalStorage(LOCAL_STORAGE_KEY.refreshToken);
+
+    const {
+        getItem: getUserFromStorage,
+        setItem: setUserInStorage,
+        removeItem: removeUserFromStorage,
+    } = useLocalStorage(LOCAL_STORAGE_KEY.user);
     
     //상태 만들기 -> accessToken 있으면 로그인 된 놈이다.
     //accessToken이 string 또는 null이 들어올 수 있다고 했으므로
@@ -50,11 +65,23 @@ export const AuthProvider =({children}: PropsWithChildren)=> {
         getRefreshTokenFromStorage(),
     );
 
+    const [user, setUser] = useState<UserType | null>(
+        getUserFromStorage(),
+    ) // UserType은 여러분이 사용하는 타입에 맞게
+
     //login function
     const login = async(signinData: RequestSigninDto) => {
         //비동기로 로그인이 성공했을 때의 로직처리
         try{
             const {data} = await postSignin(signinData);
+            
+            const userInfo: UserType = {
+                id: data.id,
+                name: data.name,
+                accessToken: data.accessToken,
+                refreshToken: data.refreshToken,
+            };
+
 
             if (data){
                 const newAccessToken = data.accessToken;
@@ -62,12 +89,14 @@ export const AuthProvider =({children}: PropsWithChildren)=> {
     
                 setAccessTokenInStorage(newAccessToken);
                 setRefreshTokenInStorage(newRefreshToken);
+                setUserInStorage(userInfo);
     
                 //상태도 관리하기 때문에 lazy initialization으로 햇음
                 // 이런 경우 상태도 따로 바꿔주지 않는 이상 리랜더링이 안되기 때문에 반영이 안됨
                 
                 setAccessToken(newAccessToken);
                 setRefreshToken(newRefreshToken);
+                setUser(userInfo);
 
                 alert("로그인 성공");
             }
@@ -84,11 +113,13 @@ export const AuthProvider =({children}: PropsWithChildren)=> {
             await postLogout();
             removeAccessTokenFromStorage();
             removeRefreshTokenFromStorage();
+            removeUserFromStorage();
 
             //localStorage.clear() => 다른 정보가 있을 경우 오류나기 때문
 
             setAccessToken(null);
             setRefreshToken(null);
+            setUser(null);
 
             alert("로그아웃 성공");
         }catch(error){
@@ -98,7 +129,7 @@ export const AuthProvider =({children}: PropsWithChildren)=> {
     };
 
     return(
-        <AuthContext.Provider value={{accessToken, refreshToken, login, logout}}>
+        <AuthContext.Provider value={{accessToken, refreshToken, user, login, logout}}>
             {children}
         </AuthContext.Provider>     
     )  

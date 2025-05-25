@@ -55,7 +55,7 @@ const ProtectedLayout = () => {
 
     <Footer />
     </div>
-  );
+    );
 };
 
 export default ProtectedLayout;

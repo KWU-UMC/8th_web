@@ -1,63 +1,111 @@
 import { useEffect, useState } from "react";
 import { getMyInfo } from "../apis/auth";
-import { ResponseMyInfoDto } from "../types/auth";
+import { useUpdateProfile } from "../hooks/mutations/useUpdateProfile";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { ResponseMyInfoDto } from "../types/auth";
+import { Check } from "lucide-react";
 
 const MyPage = () => {
-    //로그아웃 버튼
-    const navigate = useNavigate();
-    const{logout} = useAuth();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const updateProfileMutation = useUpdateProfile();
 
-    // const getEmptyMyInfo = (): ResponseMyInfoDto => ({
-    //     status: false,
-    //     message: "",
-    //     statusCode: 0,
-    //     data: {
-    //         id: 0,
-    //         name: "",
-    //         email: "",
-    //         bio: null,
-    //         avatar: null,
-    //         createdAt: new Date(),
-    //         updatedAt: new Date(),
-    //     },
-    // });
+  const [myInfo, setMyInfo] = useState<ResponseMyInfoDto["data"] | null>(null);
+  const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
+  const [avatar, setAvatar] = useState("");
 
-    const [data, setData] = useState<ResponseMyInfoDto>([]);
-
-    useEffect(()=> {
-        const getData = async () => {
-            const response  = await getMyInfo();
-            console.log(response);
-
-            setData(response);
-        };
-
-        getData();
-    },[]);
-
-    // 얘가 랜더링이 되어야 위에 있는 코드가 실행이 됨
-    // 그렇기 때문에 위에 처리가 안되는거임 -> 이거를 위해 "?" 가 있어야 함
-    console.log(data.data?.name);
-
-    const handleLogout = async() => {
-        await logout();
-        navigate("/");
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await getMyInfo();
+      setMyInfo(response.data);
+      setName(response.data.name);
+      setBio(response.data.bio ?? "");
+      setAvatar(response.data.avatar ?? "");
     };
+    fetchData();
+  }, []);
 
-    return (
-    <div>
-        <h1> {data.data?.name} </h1>
-        <img src={data.data?.avatar as string} alt={"구글 로고"}/>
-        <h1>{data.data?.email}</h1>
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
 
-        <button className="bg-blue-600 text-white py-3 rounded-md
-                text-lg font-medium hover:bg-blue-700 transition-colors
-                cursor-pointer disabled:bg-gray-300"
-        onClick={handleLogout}> 로그아웃 </button>
-    </div>
+  const handleSave = () => {
+    updateProfileMutation.mutate(
+      { name, bio, avatar },
+      {
+        onSuccess: () => alert("수정 성공!"),
+        onError: () => alert("수정 실패"),
+      }
     );
+  };
+
+  if (!myInfo) return <div className="text-white p-4">로딩 중...</div>;
+
+  return (
+    <div className="bg-black min-h-screen text-white p-8 flex justify-center items-start">
+      <div className="flex gap-10 items-start p-8 rounded-xl w-full max-w-3xl shadow-lg">
+        {/* 왼쪽: 프로필 사진 */}
+        <div className="flex-shrink-0">
+          <img
+            src={avatar || "https://via.placeholder.com/150"}
+            alt="프로필"
+            className="w-36 h-36 rounded-full object-cover border border-gray-600"
+          />
+        </div>
+
+        {/* 오른쪽: 정보 입력 */}
+        <div className="flex flex-col gap-4 w-full">
+          <div className="flex items-center gap-2">
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="flex-1 p-2 rounded bg-[#2a2a2a] border border-gray-600"
+            />
+            <button onClick={handleSave}>
+              <Check className="text-green-400" />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              placeholder="한줄 소개"
+              className="flex-1 p-2 rounded bg-[#2a2a2a] border border-gray-600"
+            />
+            <button onClick={handleSave}>
+              <Check className="text-green-400" />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              value={avatar}
+              onChange={(e) => setAvatar(e.target.value)}
+              placeholder="프로필 이미지 URL"
+              className="flex-1 p-2 rounded bg-[#2a2a2a] border border-gray-600"
+            />
+            <button onClick={handleSave}>
+              <Check className="text-green-400" />
+            </button>
+          </div>
+
+          {/* 이메일은 수정 안 됨 */}
+          <div className="text-sm text-gray-300 mt-2">{myInfo.email}</div>
+
+          <button
+            onClick={handleLogout}
+            className="mt-4 bg-red-500 px-4 py-2 rounded hover:bg-red-600 w-fit"
+          >
+            로그아웃
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default MyPage;
