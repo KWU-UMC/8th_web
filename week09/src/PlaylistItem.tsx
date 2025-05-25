@@ -15,9 +15,9 @@ export function PlaylistItem({playlistItem, onAdd, onRemove}: {
         </div>
 
         <div className="flex items-center">
-            <span className="size-12 flex items-center justify-center bg-neutral-300 rounded-l-lg" onClick={onRemove}>-</span>
+            <button className="size-12 flex items-center justify-center bg-neutral-300 rounded-l-lg" onClick={onRemove}>-</button>
             <span className="size-14 flex items-center justify-center border-2">{playlistItem.amount}</span>
-            <span className="size-12 flex items-center justify-center bg-neutral-300 rounded-r-lg" onClick={onAdd}>+</span>
+            <button className="size-12 flex items-center justify-center bg-neutral-300 rounded-r-lg" onClick={onAdd}>+</button>
         </div>
     </div>
 }
