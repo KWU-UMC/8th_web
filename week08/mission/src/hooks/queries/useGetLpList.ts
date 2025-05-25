@@ -17,8 +17,9 @@ function useGetLpList({ search, order, limit }: Omit<TPagination, "cursor">) {
       });
     },
     initialPageParam: 0,
-    getNextPageParam: (lastPage) =>
-      lastPage.hasNext ? lastPage.nextCursor : undefined,
+    getNextPageParam: (lastPage) => {
+      return lastPage.data.hasNext ? lastPage.data.nextCursor : undefined;
+    },
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
     retry: 3,

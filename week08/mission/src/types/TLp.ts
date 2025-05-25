@@ -40,6 +40,8 @@ export type TResponseLpList = TCursorBasedResponse<{
     tags: Tag[];
     likes: Likes[];
   }[];
+  nextCursor: number;
+  hasNext: boolean;
 }>;
 
 export type TResponseLpDetail = {

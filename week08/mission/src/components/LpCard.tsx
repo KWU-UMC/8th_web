@@ -2,6 +2,7 @@ import { formatDistanceToNow } from "date-fns";
 import type { TResponseLpList } from "../types/TLp";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { forwardRef } from "react";
 
 type LpItem = TResponseLpList["data"]["data"][number];
 
@@ -9,7 +10,7 @@ interface Props {
   lp: LpItem;
 }
 
-const LpCard = ({ lp }: Props) => {
+const LpCard = forwardRef<HTMLDivElement, Props>(({ lp }, ref) => {
   const { accessToken } = useAuth();
   const navigate = useNavigate();
   const { id, title, thumbnail, createdAt, likes } = lp;
@@ -27,6 +28,7 @@ const LpCard = ({ lp }: Props) => {
 
   return (
     <div
+      ref={ref}
       className="relative aspect-square w-full overflow-hidden rounded-lg transition-transform duration-300 hover:scale-105 cursor-pointer"
       onClick={handleClick}
     >
@@ -44,6 +46,6 @@ const LpCard = ({ lp }: Props) => {
       </div>
     </div>
   );
-};
+});
 
 export default LpCard;
