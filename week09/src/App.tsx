@@ -9,10 +9,17 @@ import {
     removeCartItem,
     removeCartItemAmount
 } from "./features/cartSlice.ts";
+import { Modal } from "./ui/Modal.tsx";
+import {openModal} from "./features/modalSlice.ts";
+import {ConfirmDeleteModalContent} from "./ui/ConfirmDeleteModalContent.tsx";
 
 function App() {
     const cartItems = useSelector((state: RootState) => state.cart.items)
     const totalPrice = useSelector((state: RootState) => state.cart.totalPrice)
+
+    const isModalOpen = useSelector((state: RootState) => state.modal.isOpen)
+    const modalContent = useSelector((state: RootState) => state.modal.content)
+
     const dispatch = useDispatch()
 
     return (
@@ -46,7 +53,17 @@ function App() {
 
                 <button
                     className="border-2 rounded-lg px-4 py-2 w-fit self-center mt-8"
-                    onClick={() => dispatch(clearCartItems())}>Delete All</button>
+                    onClick={() =>
+                        dispatch(openModal(
+                            <ConfirmDeleteModalContent
+                                confirm={() => dispatch(clearCartItems())} />
+                        ))}>Delete All</button>
+
+                {
+                    isModalOpen && <Modal>
+                        {modalContent}
+                    </Modal>
+                }
             </div>
         </>
     )

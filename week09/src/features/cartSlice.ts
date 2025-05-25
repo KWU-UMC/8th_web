@@ -8,7 +8,7 @@ export interface CartState {
 }
 
 const calculateTotalPrice = (items: PlaylistItem[]) => {
-    return items.reduce((acc, item) => acc + item.amount * item.price, 0)
+    return items.reduce((acc, item) => acc + item.amount * parseInt(item.price), 0)
 }
 
 const initialState: CartState = {
@@ -20,9 +20,6 @@ export const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
-        addCartItem: (state, action) => {
-            state.items.push(action.payload)
-        },
         removeCartItem: (state, action) => {
             const index = state.items.findIndex(item => item.id === action.payload.id)
             if (index !== -1) {
@@ -51,7 +48,6 @@ export const cartSlice = createSlice({
 })
 
 export const {
-    addCartItem,
     removeCartItem,
     addCartItemAmount,
     removeCartItemAmount,
