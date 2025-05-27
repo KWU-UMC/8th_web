@@ -7,16 +7,28 @@ import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import useGetInifiniteCommentList from "../hooks/queries/useGetInfiniteCommentList";
 import CommentSkeletonList from "../components/Comment/CommentSkeletonList";
-
+import { usePostComment } from "../hooks/mutations/usePostComment";
+import { useQueryClient } from "@tanstack/react-query";
+//import { useDeleteComment } from "../hooks/mutations/useDeleteComment";
+//import { useUpdateComment } from "../hooks/mutations/useUpdateComment";
+import Comment from "../components/Comment/Comment";
+import { deleteLike, postLike } from "../apis/like";
 
 const LpDetailPage = () => {
   const { lpId } = useParams();
   const { accessToken } = useAuth();
   const parsedLpId = lpId ? parseInt(lpId) : undefined;
-  
+  const [commentContent, setCommentContent] = useState("");
+  const postCommentMutation = usePostComment(parsedLpId!); // lpId는 이미 있음
+  const queryClient = useQueryClient();
+  //const deleteMutation = useDeleteComment();
+  //const updateMutation = useUpdateComment();
+  //const { user } = useAuth(); // 현재 로그인한 사용자 정보
+
+  const [likeCount, setLikeCount] = useState<number>(0);
   const [order, setOrder] = useState<PAGINATION_ORDER>(PAGINATION_ORDER.desc);
   const { ref, inView } = useInView({ threshold: 0 });
-
+  const [liked, setLiked] = useState<boolean>(false); // ✅ 하트 상태 관리
   const { data, isLoading, isError } = useQuery({
     queryKey: ["lp", lpId],
     queryFn: () => getLp(parsedLpId!),
@@ -36,6 +48,27 @@ const LpDetailPage = () => {
   }
 }, [inView, hasNextPage, isCommentFetching, fetchNextPage]);
 
+  useEffect(() => {
+    if (data?.data) {
+      setLikeCount(data.data.likes.length);
+    }
+  }, [data]);
+
+  const tryToggleLike = async () => {
+    if (!parsedLpId) return;
+    try {
+      await postLike(parsedLpId); // 먼저 좋아요 시도
+      setLikeCount((prev) => prev + 1);
+    } catch {
+      try {
+        await deleteLike(parsedLpId); // 실패 시 좋아요 취소
+        setLikeCount((prev) => prev - 1);
+      } catch (e) {
+        alert("좋아요 처리 실패");
+      }
+    }
+    queryClient.invalidateQueries({ queryKey: ["lp", lpId] });
+  };
 
   if (isLoading) return <div className="text-white">로딩 중...</div>;
   if (isError || !data?.data) return <div className="text-red-500">불러오기 실패</div>;
@@ -77,8 +110,14 @@ const LpDetailPage = () => {
         <button className="text-gray-400 hover:text-white">
           <i className="fas fa-trash"></i>
         </button>
-        <button className="text-pink-500">
-          ❤ {lp.likes.length}
+        <button
+          onClick={tryToggleLike}
+          className="flex items-center text-sm hover:scale-105 transition-transform"
+        >
+          <span className={liked ? "text-pink-500" : "text-gray-400"}>
+              {liked ? "❤️" : "🤍"}
+          </span>
+          <span className="ml-1">{likeCount}</span>
         </button>
       </div>
 
@@ -106,34 +145,50 @@ const LpDetailPage = () => {
       </div>
     </div>
     <div className="flex py-2">
-      <input type="text" placeholder="댓글을 입력해주세요." 
-        className="flex-1 bg-[#2a2a2a] text-white text-sm 
-        px-4 py-2 rounded-md placeholder-gray-400
-        border border-gray-500" 
-      />
-      <span className="px-2">
-        <button
-          className="bg-gray-500 text-white text-sm px-4 py-2 rounded-md cursor-not-allowed"
-        > 작성 </button>
-      </span>
+       <input
+    type="text"
+    placeholder="댓글을 입력해주세요."
+    className="flex-1 bg-[#2a2a2a] text-white text-sm 
+    px-4 py-2 rounded-md placeholder-gray-400 border border-gray-500"
+    value={commentContent}
+    onChange={(e) => setCommentContent(e.target.value)}
+  />
+  <span className="px-2">
+    <button
+      onClick={() => {
+        if (!commentContent.trim()) return;
+        postCommentMutation.mutate(
+          { content: commentContent.trim() },
+          {
+            onSuccess: () => {
+              setCommentContent(""); // 입력창 초기화
+              queryClient.invalidateQueries({
+                queryKey: ["comments", parsedLpId],
+              });
+            },
+            onError: () => {
+              alert("댓글 등록 실패");
+            },
+          }
+        );
+      }}
+      className={`text-white text-sm px-4 py-2 rounded-md ${
+        commentContent.trim()
+          ? "bg-pink-500 hover:bg-pink-600"
+          : "bg-gray-500 cursor-not-allowed"
+      }`}
+      disabled={!commentContent.trim()}
+    >
+      작성
+    </button>
+  </span>
     </div>
 
     <div className="space-y-3">
       {commentPages?.pages.flatMap((page) => page.data.data)
-      .map((comment) => (
-        <div key={comment.id} className="p-3 bg-[#1a1a1a] rounded-md text-white">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-6 h-6 rounded-full bg-pink-500 flex items-center justify-center text-xs">
-            {comment.author.name[0]}
-          </div>
-          <span className="text-sm font-medium">{comment.author.name}</span>
-          <span className="text-xs text-gray-400">
-            {new Date(comment.createdAt).toLocaleDateString("ko-KR")}
-          </span>
-        </div>
-        <p className="text-sm text-gray-200">{comment.content}</p>
-      </div>
-      ))}
+    .map((comment) => (
+      <Comment key={comment.id} cms={comment} lpId={parsedLpId!} />
+  ))}
 
       {isCommentFetching && <CommentSkeletonList count={10} /> && <div className="text-gray-400">로딩 중...</div>}
     </div>

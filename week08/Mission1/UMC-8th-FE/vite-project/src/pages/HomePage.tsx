@@ -1,29 +1,39 @@
-import { useEffect, useState } from "react";
+ import { useEffect, useState } from "react";
 import { PAGINATION_ORDER } from "../enums/common";
 import useGetInifiniteLpList from "../hooks/queries/useGetInfiniteLpList";
 import {useInView} from "react-intersection-observer";
 import LpCard from "../components/LpCard/LpCard";
 import LpCardSkeletonList from "../components/LpCard/LpCardSkeletonList";
+import AddLpModal from "../components/AppLpModal";
+import useDebounce from "../hooks/useDebounce";
+import { SEARCH_DELAY } from "../constants/delay";
+import { useLocation, useSearchParams } from "react-router-dom";
 
+//import { Plus } from "lucide-react"; // 아이콘 라이브러리 사용 (원하면 다른거 써도 OK)
     // const{data, isPending, ... } = useQuery({
     //     queryKey: [QUERY_KEY.lps],
     //     queryFn: () => getLPList({}), 
     // });
 
 const HomePage = () =>{
-    const [search, setSearch] = useState("");
+    // const location = useLocation();
+    const [searchParams] = useSearchParams();
+    const keywordFromQuery = searchParams.get("keyword") || "";
+
+    const [search, setSearch] = useState(keywordFromQuery);
     const [order, setOrder] = useState<PAGINATION_ORDER>(PAGINATION_ORDER.desc);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const debouncedValue = useDebounce(keywordFromQuery, SEARCH_DELAY);
+
     const{data: lps, isFetching, hasNextPage, fetchNextPage, isError} 
-        = useGetInifiniteLpList(10, search, order);
-    
-
-
+        = useGetInifiniteLpList(10, debouncedValue, order);
     //ref, inView
     //ref -> 특정한 HTM 요소를 감시할 수 있ㅇㅁ
     //inView: 그 요소가 화면에 보이면 true, 아니면 false
     const{ref, inView} = useInView({
         threshold: 0,
     });
+
 
     console.log(ref);
 
@@ -80,6 +90,15 @@ const HomePage = () =>{
                 {isFetching && <LpCardSkeletonList count={5}/>}
             </div>
             <div ref={ref} className="h-2"></div>
+
+            {isModalOpen && <AddLpModal onClose={() => setIsModalOpen(false)} />}
+            
+            <button
+                className="fixed bottom-6 right-6 bg-pink-500 hover:bg-pink-600 text-white rounded-full w-14 h-14 flex items-center justify-center text-3xl shadow-lg z-50"
+                onClick={() => setIsModalOpen(true)}
+            >
+                +
+            </button>
         </div>
     )
     ;

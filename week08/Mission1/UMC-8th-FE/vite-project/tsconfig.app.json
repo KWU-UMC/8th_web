@@ -22,5 +22,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "../../../../week07/Mission1/UMC-8th-FE/vite-project/src/components/AppLpModal.tsx"]
+  "include": ["src"]
 }
