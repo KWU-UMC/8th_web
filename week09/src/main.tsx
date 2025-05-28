@@ -4,6 +4,7 @@ import './index.css'
 import App from './App.tsx'
 import {Provider} from "react-redux";
 import {store} from "./app/store.ts";
+import AppZustand from "./AppZustand.tsx";
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -12,3 +13,10 @@ createRoot(document.getElementById('root')!).render(
         </Provider>
     </StrictMode>,
 )
+
+/*createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+        <AppZustand/>
+    </StrictMode>,
+)
+*/

@@ -40,6 +40,7 @@ export const cartSlice = createSlice({
         },
         clearCartItems: (state) => {
             state.items = []
+            state.totalPrice = 0
         },
         calculateCartTotalPrice: (state) => {
             state.totalPrice = calculateTotalPrice(state.items)

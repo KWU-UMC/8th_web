@@ -1,16 +1,14 @@
 import type {ReactNode} from "react";
-import {useDispatch} from "react-redux";
-import {closeModal} from "../features/modalSlice.ts";
 
 export function Modal({
+    onDismiss,
     children
 }: {
+    onDismiss: () => void
     children: ReactNode
 }) {
-    const dispatch = useDispatch()
-
     return <div
-        onClick={() => dispatch(closeModal())}
+        onClick={onDismiss}
         className="fixed inset-0 z-10 flex items-center justify-center bg-neutral-600/50">
         <div
             onClick={(e) => e.stopPropagation()}
