@@ -48,7 +48,7 @@ const HomePage = () => {
 
   const [scroll, setScroll] = useState<number>(0);
 
-  const throttledScroll = useThrottle(scroll, 1000);
+  const throttledScroll = useThrottle(scroll, 2000);
 
   useEffect(() => {
     console.log("fetch");
@@ -63,7 +63,7 @@ const HomePage = () => {
     window.addEventListener("scroll", handleScroll);
 
     return () => window.removeEventListener("scroll", handleScroll);
-  });
+  }, []);
 
   if (isError) {
     return <div className="mt-20">Error...</div>;
