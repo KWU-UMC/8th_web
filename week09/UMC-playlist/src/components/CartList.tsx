@@ -1,18 +1,18 @@
-import CartItem from "./CartItem"
-import { useSelector } from "../hooks/useCustomRedux";
+import CartItem from "./CartItem";
+import { useCartStore } from "../store/useCartStore";
 
 const CartList = () => {
-  const { cartItems } = useSelector((state) => state.cart);
+  const cartItems = useCartStore((state) => state.cartItems);
 
   return (
     <div className="flex flex-col items-center justify-center">
       <ul>
-        { cartItems.map((item) => (
-            <CartItem key={item.id} lp={item}/>
+        {cartItems.map((item) => (
+          <CartItem key={item.id} lp={item} />
         ))}
       </ul>
     </div>
-  )
-}
+  );
+};
 
-export default CartList
+export default CartList;
