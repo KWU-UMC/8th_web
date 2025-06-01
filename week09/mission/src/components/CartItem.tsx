@@ -1,25 +1,28 @@
-import { useDispatch } from "../hooks/useCustomRedux";
-import { decrease, removeItem } from "../slices/cartSlice";
-import { increase } from "../slices/cartSlice";
+// import { useDispatch } from "../hooks/useCustomRedux";
+// import { decrease, removeItem } from "../slices/cartSlice";
+// import { increase } from "../slices/cartSlice";
 import type { Lp } from "../types/cartType";
+import { useCartStore } from "../store/useCartStore";
 
 interface CartItemProps {
   lp: Lp;
 }
 
 const CartItem = ({ lp }: CartItemProps) => {
-  const dispatch = useDispatch();
+  const increase = useCartStore((state) => state.increase);
+  const decrease = useCartStore((state) => state.decrease);
+  const removeItem = useCartStore((state) => state.removeItem);
 
-  const handleIncrease = () => {
-    dispatch(increase({ id: lp.id }));
+  const handleIncreaseCount = () => {
+    increase(lp.id);
   };
 
-  const handleDecrease = () => {
+  const handleDecreaseCount = () => {
     if (lp.amount === 1) {
-      dispatch(removeItem({ id: lp.id }));
+      removeItem(lp.id);
       return;
     }
-    dispatch(decrease({ id: lp.id }));
+    decrease(lp.id);
   };
 
   return (
@@ -38,7 +41,7 @@ const CartItem = ({ lp }: CartItemProps) => {
       </div>
       <div className="flex items-center p-10">
         <button
-          onClick={handleDecrease}
+          onClick={handleDecreaseCount}
           className="px-3 py-1 bg-gray-200 text-gray-500 rounded-l hover:bg-gray-300 cursor-pointer"
         >
           -
@@ -47,7 +50,7 @@ const CartItem = ({ lp }: CartItemProps) => {
           {lp.amount}
         </span>
         <button
-          onClick={handleIncrease}
+          onClick={handleIncreaseCount}
           className="px-3 py-1 bg-gray-200 text-gray-500 rounded-r hover:bg-gray-300 cursor-pointer"
         >
           +
