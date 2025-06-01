@@ -4,6 +4,7 @@ import Navbar from './components/Navbar'
 import PriceBox from './components/PriceBox'
 import store from './store/store'
 import { Provider } from 'react-redux'
+import InitializeModal from './components/InitializeModal'
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Navbar/>
       <CartList/>
       <PriceBox/>
+      <InitializeModal/>
     </Provider>
   )
 }
