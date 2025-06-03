@@ -7,7 +7,7 @@ import LpCardSkeletonList from "../components/LpCard/LpCardSkeletonList";
 import AddLpModal from "../components/AppLpModal";
 import useDebounce from "../hooks/useDebounce";
 import { SEARCH_DELAY } from "../constants/delay";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 //import { Plus } from "lucide-react"; // 아이콘 라이브러리 사용 (원하면 다른거 써도 OK)
     // const{data, isPending, ... } = useQuery({
